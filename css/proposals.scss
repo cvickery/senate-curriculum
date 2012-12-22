@@ -1,0 +1,79 @@
+/* proposals.scss */
+
+@import 'base';
+
+/* No login required for this page */
+#login-form, #login-which-department { display: none; }
+
+h1 { padding-top:2.5em; }
+body, nav, #status-bar { width: 12 * $col; }
+
+body > p {
+  margin-left: $gutter;
+  }
+
+table {
+  border-collapse: collapse;
+  width: 12 * $col;
+  margin:2em auto;
+  border-radius:0.25em;
+  box-shadow: $shadow-color 0.25em 0.25em 0.25em;
+  td, th {
+    border: 1px solid $border-color;
+    padding: 0.25em 1em;
+    background-color: white;
+    }
+  th { background-color:$header-background; }
+  }
+
+#designation-approvals { width: 50%; margin: 1em; }
+
+.summary {
+  margin:1em auto;
+  width: 10 * $col;
+  td:last-child {
+    text-align:right;
+    padding-right:1em;
+    }
+  }
+
+p a { display:      inline; }
+
+.checkboxes { 
+  border-left: 2px solid $border-color;
+  border-right: 2px solid $border-color;
+	padding-right: 0.5em;
+ }
+
+.instructions {
+  border:         1px solid black;
+  border-radius:  0.25em;
+  box-shadow:     $shadow-color 0.25em 0.25em 0.25em;
+  text-align:     center;
+  padding:        1em;
+  }
+
+.line-one {
+  clear:both;
+	padding-top: 1em;
+  font-weight:bold;
+  span { display:block; }
+  }
+
+fieldset {
+  > div {
+    float: left;
+    margin-right:$gutter;
+    }
+  + * {
+    clear: left;
+    }
+  }
+
+.status-explanation {
+  margin: 0 3 * $gutter;
+  width: 5 * $col;
+  padding:0.25em 1em;
+  background-color:white;
+  border-radius: 0.25em;
+  }

@@ -1,0 +1,50 @@
+//  event_editor.scss
+
+@import 'base';
+
+#password-msg {
+  float:left;
+  font-weight:bolder;
+  font-size:1.3em;
+  color:black;
+  letter-spacing: 0.1em;
+  border: 1px solid $border-color;
+  border-radius:0.25em;
+  padding:0.25em;
+  background-color: white;
+  }
+
+#login-form {
+  position: fixed;
+	top: 2 * $col;
+	background-color:$body-background;
+	padding: $gutter;
+	}
+
+table, td { background-color: white; }
+th { background-color: $header-background; }
+
+#action-table {
+  background-color:$status-background;
+  width:$twelve-col;
+  padding: $gutter $gutter $gutter $gutter;
+  position:fixed;
+  top: 3 * $gutter + $col;
+  left:$gutter;
+  }
+
+#proposal-list {
+  margin-top: 3 * $gutter + 2 * $col;
+  tr:first-of-type { position:fixed; top: 3 * $gutter + 2 * $col; left: 2.0 * $gutter; }
+  th:nth-of-type(1) div, td:nth-of-type(1) div {width: 0.7 * $col; } //  Select
+  th:nth-of-type(2) div, td:nth-of-type(2) div {width: 0.5 * $col; } //  ID
+  th:nth-of-type(3) div, td:nth-of-type(3) div {width: 0.7 * $col; } //  Course
+  th:nth-of-type(4) div, td:nth-of-type(4) div {width: 0.7 * $col; } //  Type
+  th:nth-of-type(5) div, td:nth-of-type(5) div {width: 1.4 * $col; } //  SubCom
+  th:nth-of-type(6) div, td:nth-of-type(6) div {width: 1.4 * $col; } //  CurCom
+  th:nth-of-type(7) div, td:nth-of-type(7) div {width: 1.5 * $col; } //  College
+  th:nth-of-type(8) div, td:nth-of-type(8) div {width: 1.6 * $col; } //  CUNY
+  th:nth-of-type(9) div, td:nth-of-type(9) div {width: 1.8 * $col; } //  Comment
+	input[type="text"] { width:95%; }
+  }
+

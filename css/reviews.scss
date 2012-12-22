@@ -1,0 +1,46 @@
+//  reviews.scss
+
+@import 'base';
+
+$section-background: white;
+
+#password-msg {
+	float:left;
+	}
+
+body > section > a {
+  font-size: 1.1em;
+  font-weight: bold;
+  }
+
+section section {
+  border-radius: 0.25em;
+  background-color: $body-background;
+  margin: $gutter;
+  h1 {
+    text-align:left;
+    font-size: 1.1em;
+    margin:0;
+    padding:0.5em;
+    }
+  div {
+    margin: 0 2 * $gutter $gutter;
+    padding: 0.5em;
+    ul { margin: 0;
+      li { padding: 0.5em; } 
+      }
+    }
+  }
+
+h2+div {
+  margin: $gutter;
+  padding:1em;
+  background-color:$section-background;
+  border-radius:0.25em;
+  box-shadow: inset 0 0 0.25em $shadow-color;
+  }
+
+h3+ul {
+  line-height: 1.1em;
+  li { margin:0.5em 2em 0.5em 0 }
+  }

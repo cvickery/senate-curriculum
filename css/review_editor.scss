@@ -1,0 +1,8 @@
+//	review_editor.scss
+
+@import 'reviews';
+.need-review {
+  background-color:$highlight-background;
+	color:$highlight-color;
+	a { color:$highlight-color; }
+	}

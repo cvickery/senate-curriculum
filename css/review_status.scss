@@ -1,0 +1,20 @@
+//  review_status.scss
+
+@import 'base';
+
+#admin-nav {
+  a {
+    margin:0.5em 2em;
+    width:$four-col;
+    display: block;
+    text-align:left;
+    }
+  }
+
+table { margin: 0 0 2 * $gutter 2 * $gutter; }
+td { background-color: white; }
+th { background-color: $header-background; }
+
+th, td {
+  padding: 0.25em;
+  }

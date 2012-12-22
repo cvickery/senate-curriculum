@@ -1,0 +1,206 @@
+/* base.scss */
+
+$gutter:  10px;
+$grid:    60px;
+$col:     2 * $gutter + $grid;
+
+$quarter-gutter:  $gutter / 4;
+$half-gutter:     $gutter / 2;
+$half-col:        ($grid / 2) + $gutter;
+$col:             (1  * $grid) + (2  * $gutter);
+$two-col:         (2  * $grid) + (3  * $gutter);
+$three-col:       (3  * $grid) + (4  * $gutter);
+$four-col:        (4  * $grid) + (5  * $gutter);
+$six-col:         (6  * $grid) + (7  * $gutter);
+$eight-col:       (8  * $grid) + (9  * $gutter);
+$ten-col:         (10 * $grid) + (11 * $gutter);
+$twelve-col:      (12 * $grid) + (13 * $gutter);
+
+$shadow-color:            #333;
+$border-color:            #000;
+$page-background:         #666;
+$header-background:       #ccc;
+$status-background:       #eee;
+$selected-nav-background: #ddd;
+$instructions-background: #eee;
+$body-background:         #eee;
+$selected-row-background: #efe;
+$current-row-background:  #ffe;
+
+$highlight-background:    #c66;
+$highlight-color:         #ff3;
+
+$text-color:              #300;
+$acronym-color:           #060;
+$insert-color:            #393;
+$delete-color:            #f33;
+$line-one-color:          #00c;
+$dobre-color:             #060;
+$warning-color:           #611;
+$error-color:             #933;
+$focus-color:             #fff8f8;
+$dimmed-color:            #999;
+
+$link-color       : $text-color;
+$link-background  : $body-background;
+$hover-color      : $link-background;
+$hover-background : $link-color;
+
+$sans-serif:      Helvetica, Candara, Arial, Sans-Serif;
+
+html {
+  margin:0; padding:0;
+  background-color:$page-background;
+  }
+
+body {
+  width:$twelve-col;
+  margin:$gutter;
+  padding:$gutter;
+  background-color:$body-background;
+  color:$text-color;
+  border-radius:$half-gutter;
+  box-shadow:$shadow-color $quarter-gutter $quarter-gutter $quarter-gutter;
+  font-family:Helvetica, sans-serif;
+  }
+
+h1, h2, h3 { font-family: $sans-serif; }
+
+h1 { text-align:center;  font-size:1.4em; padding-top:2em;}
+
+h2 {
+  margin:$gutter 0;padding:0.25em;
+  font-weight:normal;
+  font-size:1em;
+  background-color:$header-background;
+  border-radius: $half-gutter;
+  border: 2px outset $shadow-color;
+  }
+
+h2 + div {
+    background-color: white;
+    border-radius: 0.25em 0.25em 0.25em 0.25em;
+    box-shadow: 0 0 0.25em #111111 inset;
+    margin: $gutter;
+    padding: 1em;
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 1.0em;
+  }
+
+h3 + div {
+  background-color: white;
+  margin: 0 $gutter;
+  padding: 0 1em;
+  border-radius: 0.25em;
+  }
+
+a[target="new"] {
+  background: transparent url(../images/external.png) top right no-repeat;
+  padding-right: 14px;
+  }
+
+ins       {color:$insert-color;}
+del       {color:$delete-color;}
+
+input[type='text'].triple-wide          { width:$six-col; }
+input[type='text'].triple-wide + button { width:6 + $six-col; }
+
+input[type="password"] {
+  width:$four-col;display: block;
+  margin-bottom: 1em;
+  }
+
+.password-fieldset { margin: 1em; }
+
+.is-good  { color:$dobre-color;    }
+.acronym  { color:$acronym-color;  }
+.warning  { color:$warning-color;  }
+.error    { color:$error-color;    }
+
+#need-javascript {
+  font-family:$sans-serif;
+  font-size:1.2em;
+  text-align:center;
+  color:$warning-color;
+  }
+
+#status-bar {
+  width:$twelve-col;
+  padding: $gutter $gutter $quarter-gutter $gutter;
+  background-color:$status-background;
+  position:fixed;
+  top:0;
+  left:$gutter;
+  border-radius:$quarter-gutter;
+  box-shadow:$shadow-color $quarter-gutter $quarter-gutter $quarter-gutter;
+  font-family: $sans-serif;
+  font-weight: lighter;
+  font-size: 12px;
+  }
+
+#show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
+#status-msg                             { float:right; margin: $half-gutter $gutter 0; }
+#logout-form                            { float:right; margin: 0 $gutter; }
+#logout-form button                     { width:$col; }
+
+nav {
+  clear:both;
+  text-align:center;
+  padding: 0.5em 0.5em 0 0;
+  a {
+    display: inline-block;
+    width: 2 * $grid;
+    padding: 0.25em;
+    font-size: 1.2em;
+    text-align: center;
+    text-decoration: none;
+    color: $link-color;
+    border: 1px solid $link-color;
+    border-radius:0.25em;
+  }
+  a:hover {
+    text-decoration:  none;
+    color:            $hover-color;
+    background-color: $hover-background;
+    }
+  a.current-page, a.current-page:hover {
+    color: $link-color;
+    background-color: $selected-nav-background;
+    cursor: default;
+   }
+  + nav {
+    margin: 0.25em 0;
+    border-bottom:none;
+    a {
+      background-color: $selected-nav-background;
+      border-radius: 0.25em;
+      }
+    a:hover {
+      color: $link-color;
+      background-color: $focus-color;
+      }
+    }
+ }
+
+a[target="new"] {
+  background: transparent url(../images/external.png) top right no-repeat;
+  padding-right: 14px;
+  }
+
+dt {
+  margin: 1em $gutter 0.5em $gutter;
+  font-weight: bold;
+  }
+
+table {
+  border-collapse: collapse;
+  td, th {
+    border: 1px solid $border-color;
+  }
+  &.summary {
+    background-color: white;
+    }
+}

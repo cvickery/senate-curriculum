@@ -1,0 +1,161 @@
+//  proposal.scss
+
+@import "base";
+
+h1 { padding-top: 3.2em; }
+
+.prereq                                 { font-style:italic;     }
+.line-one {
+  color:$line-one-color;
+  span {
+    display: block;
+    }
+  }
+
+.selected-row                           { background-color: $selected-row-background; }
+.current-proposal-row                   { background-color: $current-row-background;  }
+.instructions {
+  font-family: $sans-serif;
+  font-size: 0.9em;
+  font-style: italic;
+  background-color:$instructions-background;
+  border-radius:$half-gutter;
+  box-shadow: $shadow-color 0 0 $half-gutter;
+  margin:$half-gutter;
+  padding:$quarter-gutter;
+
+  > *  { margin:$gutter $gutter $gutter $col; }
+  > h3 { margin:$gutter; }
+  > h3.sub-instructions { margin: $gutter $col; }
+  }
+.instructions em {
+  letter-spacing:0.1em;
+  font-style:normal;
+  }
+.instructions table {
+  margin:0 1em;
+  td, th { padding: 0 0.5em; }
+  }
+.unsaved-edits {
+  text-align:center;
+  }
+
+input[type='text']                      { width:$four-col; }
+input[type='text'].double-wide          { width:$two-col; }
+input[type='text'].half-wide            { width:$col; }
+input[type='text'].quarter-wide         { width:$half-col; }
+input[type="radio"]:disabled + label    { color:$dimmed-color; }
+button[type='submit']                   { width:6 + $four-col;display:block; }
+textarea                                { display:block; width:$ten-col; margin:0 2em; height:10em;}
+
+
+legend { font-family:Helvetica, Arial, sans-serif; padding:$gutter; letter-spacing:0.1em; }
+label                                   { font-weight:bold; }
+
+div>label:first-child {
+  display:inline-block;
+  width: 5 * $gutter + 2 * $col;
+  text-align:right;
+  padding-right:$gutter;
+  }
+
+.course-str-div {
+  position: relative;
+  }
+.discipline-suggestion-list {
+  background-color: $body-background;
+  margin: 0 0 0 $two-col + $gutter;
+  position:absolute;
+  top:1.25em;
+  left:$gutter;
+  list-style-type: none;
+  width:$four-col;
+  padding:0;
+  li {
+    border:1px solid #999;
+    }
+  }
+.course-str-msg {
+  font-variant:small-caps;
+  }
+
+.designation-msg {
+  margin: -$gutter $gutter $gutter $gutter;
+  font-style:italic;
+}
+
+#designation-approvals {
+  margin:0 0 $gutter $half-col;
+  border-collapse:collapse;
+  border:1px solid $text-color;
+  }
+#designation-approvals td, #designation-approvals th {
+  padding: 0 $gutter;
+  border:1px solid $text-color;
+  }
+
+#designation-approvals td:first-child {
+  text-align:center;
+  }
+
+#description-label {
+  width:$two-col;
+  text-align:left;
+  margin:$gutter $gutter $half-gutter $gutter;
+  }
+
+.centered-button                        { margin:auto; }
+.pw-justification                       { display:none; }
+.requirement-radio                      { display:inline-block; width:$four-col; }
+
+.designation-paragraph {
+  margin:0 $gutter;
+  font-weight:bold;
+  }
+
+#select-proposal, #create-proposal, #upload-syllabus {
+  width: $four-col;
+  display:block;
+  margin: 1em auto;
+  }
+
+.delete-proposal {
+  text-align:center;
+  button { font-weight:bold; }
+  }
+#select-copula {
+  text-align:center;
+  font-variant:small-caps;
+  margin:0.5em 0 0 0;
+  font-weight:bold;
+  }
+
+.selection-table {
+  width:$six-col;
+  margin: $gutter auto;
+  font-family:$sans-serif;
+  font-size:0.8em;
+  border-collapse: collapse;
+  border: 1px solid $border-color;
+  th, td { border: 1px solid $border-color; padding:$quarter-gutter; }
+  th { background-color:$instructions-background;}
+  td:first-child {
+    text-align:center;
+    input { display:inline-block; width:100%;}
+    }
+  th, td { white-space: nowrap; padding: 0 0.5em;}
+  }
+
+.criterion-label {display:block; margin-top:1em;}
+
+.overview {
+  ul {
+    width: $ten-col;
+    margin:auto;
+    padding: 0.5em 2em;
+    border: 1px solid $border-color;
+    border-radius: 0.15em;
+    box-shadow:0.25em 0.25em 0.25em $shadow-color;
+    }
+  }
+

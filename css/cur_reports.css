@@ -1,0 +1,18 @@
+
+html {
+	background-color:#ccc;
+	color:#000;
+  margin:0; padding:0;
+}
+
+body {
+  padding:1em;
+}
+h1 { font-family:Helvetica, "Arial Black", sans-serif; text-align:center;}
+h2 { font-family:Helvetica, "Arial Black", sans-serif; color:#666;}
+div { border-bottom: 1px solid black; padding-bottom: 1em;}
+h3 { margin-top:1em; } 
+h3, .text { width: 80%; margin: 0 auto; font-family:Helvetica, "Arial Black", sans-serif; font-size:0.8em; }
+h3 { margin-top:1em; } 
+.text { text-align: justify; text-align-last:left; }
+.missing { color: red; }

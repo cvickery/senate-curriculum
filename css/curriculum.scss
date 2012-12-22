@@ -1,0 +1,9 @@
+/* curriculum.scss */
+
+/*	This is for the index page of the Curriculum site  */
+
+@import "base";
+
+/* No login required for this page */
+#login-form, #login-which-department { display: none; }
+

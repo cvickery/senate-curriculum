@@ -1,0 +1,7 @@
+//	syllabi.scss
+
+@import 'base';
+
+/* No login required for this page */
+#login-form, #login-which-department { display: none; }
+

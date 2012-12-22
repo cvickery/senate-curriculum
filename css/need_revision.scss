@@ -1,0 +1,28 @@
+//	css/need_revisions.scss
+
+@import 'base';
+
+h1 {
+  margin-top: 3em;
+	}
+
+table, td { background-color: white; }
+th { background-color: $header-background; }
+
+#password-msg {
+	float:left;
+	font-weight:bolder;
+	font-size:1.3em;
+	color:black;
+	letter-spacing: 0.1em;
+	border: 1px solid $border-color;
+	border-radius:0.25em;
+	padding:0.25em;
+	background-color: white;
+	}
+
+.need-review td {
+  background-color:$highlight-background;
+	color:$highlight-color;
+	a { color:$highlight-color; }
+	}
