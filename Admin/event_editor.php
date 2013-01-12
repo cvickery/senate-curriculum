@@ -24,7 +24,7 @@ $agency_groups = array(
     'GCC'       =>  $agency_group_names[1],
     'Senate'    =>  $agency_group_names[2],
     'Registrar' =>  $agency_group_names[2],
-    'CCCRC'     =>  $agency_group_names[3],
+    'CCRC'      =>  $agency_group_names[3],
     'BOT'       =>  $agency_group_names[3]);
 
 //  Here beginnith the web page
@@ -143,7 +143,7 @@ EOD;
           {
             preg_match('/^select-(\d+)$/', $name, $matches);
             $proposal_id = $matches[1];
-            $comment = $_POST['comment-' . $proposal_id];
+            $comment = sanitize($_POST['comment-' . $proposal_id]);
             $query = <<<EOD
 INSERT INTO events VALUES (
         default,                                                        -- id
