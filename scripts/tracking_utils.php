@@ -3,7 +3,7 @@
 
 //  Class Event
 //  -------------------------------------------------------------------------------------
-/*  Provides a to_string function so and array of Events can be sorted easily.
+/*  Provides a to_string function so an array of Events can be sorted easily.
  */
 class Event
 {
@@ -39,8 +39,7 @@ class Event
 
     //  Figure out the column contents based on the events for this proposal.
     //  sort($events);
-    $subcommittee = $committee = $senate = $cccrc = '';
-    $discipline_number = explode(' ', $course);
+    $subcommittee = $committee = $senate = $ccrc = '';
     foreach ($events as $event)
     {
       if (isset($past_tense[$event->action]))
@@ -55,31 +54,31 @@ class Event
         case 'WSC':
         case 'GEAC':
           //$subcommittee = $event->toString();
-          $subcommittee = $event->agency . ' ' . $event->event_date . ' ' . $event->action;
+          $subcommittee = $event->action . ' ' . $event->event_date . ' ' . $event->agency;
           if ($event->action === 'Approve') $ucc = 'Pending';
           break;
         case 'UCC':
         case 'GCC':
         case 'Registrar':
-          $committee = $event->agency . ' ' . $event->event_date . ' ' . $event->action;
+          $committee = $event->action . ' ' . $event->event_date . ' ' . $event->agency;
           if ($event->action === 'Approve') $senate = 'Pending';
           if ($class === 'Course') $subcommittee = 'N/A';
           if ($type === 'FIX')
           {
             $senate = 'N/A';
-            $cccrc  = 'N/A';
+            $ccrc  = 'N/A';
           }
           break;
         case 'Senate':
-          $senate = $event->agency . ' ' . $event->event_date . ' ' . $event->action;
+          $senate = $event->action . ' ' . $event->event_date;
           if (($event->action === 'Approve') && ($class === 'CUNY'))
           {
-            $cccrc = 'Pending';
+            $ccrc = 'Pending';
           }
-          else $cccrc = 'N/A';
+          else $ccrc = 'N/A';
           break;
-        case 'CCCRC':
-          $cccrc = $event->agency . ' ' . $event->event_date . ' ' . $event->action;
+        case 'CCRC':
+          $ccrc = $event->action . ' ' . $event->event_date;
           break;
       }
     }
@@ -95,25 +94,70 @@ class Event
   <td>$id_link</td>
   <td>$type</td>
   <td>$course</td>
+  <td>$submitted_date</td>
   <td>$submitter_name</td>
   <td>$subcommittee</td>
   <td>$committee</td>
   <td>$senate</td>
-  <td>$cccrc</td>
+  <td>$ccrc</td>
 </tr>
 
 EOD;
     $csv = "\"$current_id\",";
     $csv .= "\"$type\",";
     //  Separate the Course into discipline and number columns for CSV
+    $discipline_number = explode(' ', $course);
     $csv .= "\"${discipline_number[0]}\",\"{$discipline_number[1]}\",";
     $csv .= "\"$submitted_date\",";
     $csv .= "\"$submitter_name\",";
-    $csv .= "\"$subcommittee\",";
-    $csv .= "\"$committee\",";
-    $csv .= "\"$senate\",";
-    $csv .= "\"$cccrc\"\r\n";
-    return $csv;
+    //  Separate subcommittee fields: action-date-agency
+    $subcommittee_fields = explode(' ', $subcommittee);
+    if (3 === count($subcommittee_fields))
+    {
+      $csv .= "\"$subcommittee_fields[0]\",";
+      $csv .= "\"$subcommittee_fields[1]\",";
+      $csv .= "\"$subcommittee_fields[2]\",";
+    }
+    else
+    {
+      $csv .= ',,';
+    }
+    //  Separate committee fields: action-date-agency
+    $committee_fields = explode(' ', $committee);
+    if (3 === count($committee_fields))
+    {
+      $csv .= "\"$committee_fields[0]\",";
+      $csv .= "\"$committee_fields[1]\",";
+      $csv .= "\"$committee_fields[2]\",";
+    }
+    else
+    {
+      $csv .= ',,';
+    }
+    //  Separate senate fields: action-date
+    $senate_fields = explode(' ', $senate);
+    if (2 === count($senate_fields))
+    {
+      $csv .= "\"$senate_fields[0]\",";
+      $csv .= "\"$senate_fields[1]\",";
+    }
+    else
+    {
+      $csv .= ',';
+    }
+    //  Separate CCRC fields: action-date
+    $ccrc_fields = explode(' ', $ccrc);
+    if (2 === count($ccrc_fields))
+    {
+      $csv .= "\"$ccrc_fields[0]\",";
+      $csv .= "\"$ccrc_fields[1]\",";
+    }
+    else
+    {
+      $csv .= ',';
+    }
+
+    return $csv . "\r\n";
   }
 
 //  tracking_table()
@@ -169,7 +213,7 @@ EOD;
 SELECT      p.id                                    AS proposal_id,
             t.abbr                                  AS type,
             c.abbr                                  AS class,
-            p.discipline||' '||p.course_number      AS course,
+            p.discipline||' '||p.course_number      AS course,
             to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
             p.submitter_name                        AS submitter_name,
             p.submitter_email                       AS submitter_email,
@@ -230,8 +274,9 @@ EOD;
         $agencies[$agency_abbr] = true;
       }
       //  Columns to include
-      $columns = array('Proposal', 'Type', 'Course', 'Submitted Date', 'Submitted By',
-          'Subcommittee', 'Committee', 'Senate', 'CCCRC');
+      $columns = array('Proposal ID', 'Proposal Type', 'Course',
+                       'Submitted Date', 'Submitted By',
+                       'Subcommittee', 'Committee', 'Senate', 'CCRC');
 
       echo "<table class='summary'><tr>";
       foreach ($columns as $column)
@@ -242,6 +287,22 @@ EOD;
         {
           //  Separate the Course into discipline and number columns for CSV
           $csv .= 'Discipline, Number';
+        }
+        else if ($column === 'Subcommittee')
+        {
+          $csv .= 'Subcommittee Action,Subcommittee Date,Subcommittee Name';
+        }
+        else if ($column === 'Committee')
+        {
+          $csv .= 'Committee Action,Committee Date,Committee Name';
+        }
+        else if ($column === 'Senate')
+        {
+          $csv .= 'Senate Action,Senate Date';
+        }
+        else if ($column === 'CCRC')
+        {
+          $csv .= 'CCRC Action,CCRC Date';
         }
         else
         {
