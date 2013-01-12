@@ -76,7 +76,7 @@ body, nav, #status-bar { width: 960px; }
 body > p { margin-left: 10px; }
 
 table { border-collapse: collapse; width: 960px; margin: 2em auto; border-radius: 0.25em; box-shadow: #333333 0.25em 0.25em 0.25em; }
-table td, table th { border: 1px solid black; padding: 0.25em 1em; background-color: white; }
+table td, table th { border: 1px solid black; padding: 0.25em 1em; background-color: white; font-size: 0.8em; }
 table th { background-color: #cccccc; }
 
 #designation-approvals { width: 50%; margin: 1em; }
