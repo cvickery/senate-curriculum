@@ -88,11 +88,11 @@ EOD;
       </div>
       <!-- Navigation -->
       <nav>
-        <a href='../Proposals'>Browse Proposals</a>
-        <a href='../Model_Proposals' class='current-page'>Model Proposals</a>
+        <a href='../Proposals'>Track Proposals</a>
+        <a href='../Model_Proposals' class='current-page'>Guidelines</a>
         <a href='../Proposal_Editor'>Proposal Editor</a>
-        <a href='../Syllabi'>Browse Syllabi</a>
-        <a href='../Reviews'>Browse Reviews</a>
+        <a href='../Syllabi'>Syllabi</a>
+        <a href='../Reviews'>Reviews</a>
         $review_link
       </nav>
     </div>

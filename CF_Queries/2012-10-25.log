@@ -384,6 +384,6 @@ by-course:
 Processing 13290 prerequisite records:
   10195 pre- or co-requisite descriptions kept.
 
-Analysis completed in 8.58 sec
-Generating database tables ... ... 1.86 sec
+Analysis completed in 11.56 sec
+Generating database tables ... ... 1.32 sec
 

@@ -175,7 +175,7 @@ EOD;
  *    csv             CSV table, as a string.
  */
   function tracking_table($types = null,
-                          $order_by = 'proposals.id',
+                          $order_by = 'p.id',
                           $include_closed = false)
   {
     global  $curric_db, $agency_ids,

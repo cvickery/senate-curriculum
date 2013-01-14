@@ -1,0 +1,157 @@
+<?php
+//  Curriculum/index.php
+/*  Set up secure connection if not already established.
+ *  Redirect to login page if user is not yet logged in.
+ *  Log user out if logout request has been made.
+ */
+  session_start();
+  require_once('credentials.inc');
+	$gened_db = gened_connect();
+  //  Set up discipline/dept/division cache
+  $query =  "SELECT disciplines.abbreviation AS discp,"                 .
+            "departments.short_name as dept,"                   .
+            " deans.division_abbreviation as div"               .
+            "  FROM disciplines, departments, deans"            .
+            " WHERE departments.id = disciplines.department_id" .
+            "   AND deans.id = disciplines.dean_id";
+  $result = pg_query($gened_db, $query);
+  $depts  = array();
+  $divs   = array();
+  while ( $row = pg_fetch_assoc($result) )
+  {
+    $depts[$row['discp']] = $row['dept'];
+    $divs[$row['discp']] = $row['div'];
+  }
+  $mime_type = "text/html";
+  $html_attributes="lang=\"en\"";
+  if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
+        (stristr($_SERVER["HTTP_ACCEPT"], "application/xhtml") ||
+         stristr($_SERVER["HTTP_ACCEPT"], "application/xml") )
+       ||
+       (array_key_exists("HTTP_USER_AGENT", $_SERVER) &&
+        stristr($_SERVER["HTTP_USER_AGENT"], "W3C_Validator"))
+     )
+  {
+    $mime_type = "application/xhtml+xml";
+    $html_attributes = "xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\"";
+    header("Content-type: $mime_type");
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  }
+  else
+  {
+    header("Content-type: $mime_type; charset=utf-8");
+  }
+?>
+<!DOCTYPE html>
+<html <?php echo $html_attributes;?>>
+  <head>
+    <title>GenEd Courses</title>
+    <style>
+      table {border-collapse:collapse;border:1px solid black;margin:auto;}
+      td,th {border:1px solid black;padding:0.1em 0.5em;}
+    </style>
+    <link rel="stylesheet" type="text/css" href="css/blue/style.css" />
+    <script type="text/javascript" src="../js/jquery-current.js"></script>
+    <script type="text/javascript" src="scripts/jquery.tablesorter.js"></script>
+		<script type="text/javascript">
+      $(document).ready(function() 
+      {
+        //console.log(document.getElementById('thelist').getElementsByTagName('thead')[0]);
+        $('#thelist').tablesorter(); 
+      });
+    </script>
+  </head>
+  <body>
+    <h1>GenEd Courses Approved by The Academic Senate</h1>
+    
+    <form method="post" action="scripts/download.php"><p><button type="submit" name="download">Download CSV</button></p></form>
+    <p id='working'>Working...</p>
+    <table id="thelist" class="tablesorter">
+      <thead class='vickery'>
+        <tr>
+          <th>Division</th>
+          <th>Department</th>
+          <th>Course</th>
+          <th>Requirement</th>
+          <th>Date Approved</th>
+          <th>BOT Approval</th>
+          <th>Sections</th>
+          <th>Seats</th>
+          <th>Enrollment</th>
+        </tr>
+      </thead>
+      <tbody>
+    <?php
+      $csv = "Division, Department, Course, Requirement, Date Approved, BOT approval, Sections, Seats, Enrollments\n";
+      $query =
+       " SELECT  events.discipline, events.number, events.date,"                    . 
+       "         requirements.abbreviation AS requirement,"                         .
+       "         requires_bot_approval     AS bot"                                  .
+       " FROM    events, requirements, proposals"                                   .
+       " WHERE   action_id = (SELECT id FROM actions WHERE name = 'Approved')"      .
+       "   AND   actor_id = (SELECT id FROM actors WHERE name = 'Academic Senate')" .
+       "   AND   requirement_id = requirements.id"                                  .
+       "   AND   proposals.id = proposal_id"                                        .
+       " ORDER BY abbreviation";
+      $result = pg_query($gened_db, $query);
+      while ( $row = pg_fetch_assoc($result) )
+      {
+				$division       = $divs[$row['discipline']];
+				$department     = $depts[$row['discipline']];
+        $course         = $row['discipline'] . ' ' . $row['number'];
+        $requirement    = $row['requirement'];
+        $approval_date  = $row['date'];
+        $bot            = ($row['bot'] === 't') ? 'is needed' : ' ';
+				
+				//  Get enrollment data for this course
+				$subject     = $row['discipline'];
+				$catalog_nbr = ltrim($row['number'], " 0");
+				$sections = $seats = $enrollment = $date_loaded = '?';
+				$enrollment_query = "SELECT enrl_cap, enrl_tot, date_loaded FROM octsims.erp805_class_section " .
+				    "WHERE subject = '$subject' AND catalog_nbr = '$catalog_nbr'";
+        $enrollment_info = json_decode(exec("(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
+            "export ORACLE_HOME=\$DYLD_LIBRARY; echo \"$enrollment_query\"|/usr/local/bin/oci_query)"));
+		    if (!is_array($enrollment_info))
+				{
+					$sections = 'Unavailable';
+				}
+				else
+				{
+					$sections = count($enrollment_info);
+					$seats = 0;
+					$enrollment = 0;
+					for ($i = 0; $i < $sections; $i++)
+					{
+						$row = get_object_vars($enrollment_info[$i]);
+						$seats += $row['ENRL_CAP'];
+						$enrollment += $row['ENRL_TOT'];
+						$date_loaded = $row['DATE_LOADED'];
+					}
+				}
+        echo <<<END_ROW
+          <tr>
+					  <td>$division</td>
+						<td>$department</td>
+            <td>$course</td>
+            <td>$requirement</td>
+            <td>$approval_date</td>
+            <td>$bot</td>
+						<td>$sections</td>
+						<td>$seats</td>
+						<td>$enrollment</td>
+          </tr>
+END_ROW;
+        $csv .= "$division, $department, $course, $requirement, $approval_date, $bot, $sections, $seats, $enrollment\n";
+      }
+			$date_loaded = new DateTime($date_loaded);
+			$date_loaded = "Enrollment data as of " . $date_loaded->format('F j, Y');
+      $_SESSION['csv'] = '"' . $date_loaded . "\",,,,,,,,\n" . $csv;
+      echo <<<END_DOC
+      </tbody>
+    </table>
+    <p id='done'>Ready</p>
+		<p id='date-loaded'>$date_loaded</p>
+  </body>
+</html>
+END_DOC;
+?>

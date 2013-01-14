@@ -10,43 +10,7 @@
  *  Users who login through the 856 table get added to the curric.people table for use
  *  during future logins.
  *
- *  $_SESSION[person] is set when an induvidual person has provided a verifiably
- *  identifiable instance of personhood with an email address in the qc.cuny.edu domain.
- *  $_SESSION[need_password] is always set. Its value is set to true for everyone until a
- *  single person has been identified and has entered a password, at which point it
- *  becomes false.
- *
- *    This module manages these two session variables. Various pages on the site have
- *    different security requirements. Public pages simply don't include this module.
- *    Others test person and need_password to decide whether further login processing is
- *    needed, and include this module if necessary.
- *
- *    Examples: Browse Proposals and Browse Reviews ignore them and do not include this
- *    module; Proposal Editor checks if person is set, includes this module if not but
- *    ignores need_password; Browse Reviews requires person and if the user is a member of
- *    GEAC, enables additional content if need_password is false; Admin pages require both
- *    person and false for need_password and membership in the Admin role.
  */
-
-
-//  logout()
-//  --------------------------------------------------------------------------------------
-/*  Log a person out. Used when a person fails to log in or fails to change password.
- *  Logging out fromt the status bar is handled by init_session.php, not here.
- */
-  function logout($error_msg = '')
-  {
-    global $person, $login_error_msg;
-    $login_error_msg = $error_msg;
-    unset($person);
-    unset($_SESSION[person]);
-    foreach ($_SESSION as $key => $value)
-    {
-      unset($_SESSION[$key]);
-    }
-    $_SESSION[need_password] = true;
-  }
-
 
 //  add_to_curric()
 //  --------------------------------------------------------------------------------------
@@ -73,67 +37,45 @@ EOD;
 
   //  Manage the login process
   //  ==================================================================================
-  /*  It's complicated. There are two different forms in this module: login-form gets a
-   *  user name or email address, an optional passowrd, and an optional {new_password |
-   *  repeat_new_password} pair. The email gets looked up in the curric.people table and,
-   *  if that fails, the octsims.erp856 table. The 856 table can return multiple hits
-   *  (departments), which get disambibuated by the login-which-dept form.
+  /*  It's complicated. There are two different forms in this module: login-form
+   *  gets a user name or email address, which gets looked up in the curric.people table
+   *  and, if that fails, the octsims.erp856 table. The 856 table can return multiple hits
+   *  (departments), which get disambibuated by login-which-dept. See also need_password.
    *
    *  Algorithm:
-   *  + Set SESSION[need_password] to false if it is not yet set.
-   *  + form_to_display = login-form
-   *  + Process form data:
+   *  + Process form data. Set SESSION[person] if user/dept have been identified. Set
+   *    SESSION[password] if one is entered correctly. Update person's password if new one
+   *    is given.
+   *  + Display the appropriate form, or none if the user is logged in and either doesn't
+   *    need a password or has already provided one.
+   *  + User has supplied a preferred_dept_index or an email address that is in the
+   *    curric.people table or and email address that matches a single entry in the 856
+   *    table: complete the login process.
+   *  + User has supplied an email address that matches multiple entries in the 856
+   *    table: display a disambiguation form.
+   *  + User has displayed an invalid email address or one that is in neither the
+   *    curric.people nor the 856 table: set an error message.
+   *  + Display either the login-which-department form, the login-form, or nothing
+   *    depending on
    *
-   *    form_name == login-form:
-   *      if person is in curric.people
-   *        create global Person object named $person
-   *        set SESSION[person] to serialized $person
-   *        if password is correct
-   *          set SESSION[need_password] to false
-   *          unset SESSION[login_error_msg]
-   *          form_to_display = none
-   *          if new_password is not blank
-   *            if new_password == new_password_again
-   *              change password
-   *            else
-   *              logout(change password mismatch)
-   *        else (incorrect password)
-   *          logout(bad password)
-   *      else (not in curric.people)
-   *        if person is in octsims.erp856
-   *          if one department
-   *            create global Person object named $person
-   *            set SESSION[person] to serialized $person
-   *            add person to curric.people using password from login-form
-   *            form_to_display = none
-   *            ignore {new_password | repeat_new_password}
-   *          else (multiple departments)
-   *            setup login-which-dept
-   *            form_to_display = login-which-dept
-   *        else (unidentifiable alien)
-   *          logout(unknown user)
-   *
-   *    form_name == login-which-dept
-   *      create global Person object named $person
-   *      set SESSION[person] to serialized $person
-   *      add person to curric.people using password from login-which-dept, which does
-   *      not include {new_password | repeat_new_password}
-   *
-   *    Note: a user can't be a member of a committee or subcommittee until he or she is
-   *    in curric.people because of a foreign key constraint. New members of committees or
-   *    subcommittees must be sure they don't continue to use the default (empty)
-   *    password.
-   *
-   *  + Generate content:
-   *      form_to_display == login-form:        display it
-   *      form_to_display == login-which-dept:  display it
-   *
+   *    SESSION variables
+   *      session_state:        ss_is_logged_in or ss_not_logged_in
+   *      person:               Either unset or a serialized Person object
+   *                              carries array of depts and index of preferred one
+   *      need_password:        If set
+   *                              if true
+   *                                invoking page requires a password and none or wrong
+   *                                one entered
+   *                              else
+   *                                password required and correct one has been entered
+   *                            Else
+   *                              no password needed
+   *      login_error_msg:      Error message (if any) to display in login form
    *    POST variables
    *      qc_email
    *      password (maybe)
-   *      new_password
-   *      repeat_new_password
    *      preferred_dept_index
+   *      remember_me           (not implemented)
    *    form_name
    *      login-which-department
    *      login-form

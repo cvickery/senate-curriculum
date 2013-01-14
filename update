@@ -1,0 +1,26 @@
+#! /bin/bash
+
+# Update individual files in public site from testing site after
+# checking diffs.
+
+if [[ $# != 1 ]]
+then echo "usage" ./update file
+     exit 1
+fi
+if [[ ! -f $1 ]]
+then echo $1 is not a file
+     exit 1
+fi
+
+diff $1 ../Curriculum/$1
+if [[ $? == 1 ]]
+then
+  read -p "OK to copy [Y|n]? "
+  if [[ $REPLY == [Nn]* ]]
+  then echo "Not copied"
+  else cp $1 ../Curriculum/$1
+  fi
+else
+  echo "  no diff"
+fi
+

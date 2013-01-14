@@ -121,7 +121,7 @@ EOD;
   $type_abbr = '';
   $discp_abbr = '';
 
-  //  Display by ID
+  //  Display By ID
   //  ===============================================================================
   /*  If GET[id] is set, it could be either an id or a course.
    *    proposal_id not empty:  one proposal
@@ -212,13 +212,68 @@ EOD;
     }
   }
 
-  //  Display by Class
+  //  Display By Class
   //  ===============================================================================
   else if (isset($_GET['class']))
   {
     $class_id = sanitize($_GET['class']);
-    if ($class_id > 0)
+    if (is_numeric($class_id) && $class_id > 0)
     {
+      //  Determine which types make up this class
+      $query = <<<EOD
+  SELECT  *
+  FROM    proposal_types
+  WHERE   class_id = $class_id
+
+EOD;
+      $result = pg_query($curric_db, $query) or die("<h1 class='error'>Unable to "
+          . "access proposals: " . pg_last_error($curric_db) . ' ' . basename(__FILE__)
+          . ' ' . __LINE__ . '</h1></body></html');
+      $num_types = pg_num_rows($result);
+      if ($num_types > 0)
+      {
+        $types = array();
+        while ($row = pg_fetch_assoc($result))
+        {
+          $types[] = $row['abbr'];
+        }
+        $class_name = $proposal_classes[$class_id]['full_name'];
+        $class_abbr = $proposal_classes[$class_id]['abbr'];
+        echo "      <h1>$class_name ($class_abbr) Proposals</h1>\n";
+        $csv = tracking_table($types, 'p.type_id, p.id');
+        if ($csv === '')
+        {
+          echo "    <h2>No Proposals Found</h2>\n";
+        }
+        else
+        {
+          $_SESSION['csv'] = $csv;
+          echo <<<EOD
+        <form action='../scripts/download_csv.php' method='post'>
+          <input type='hidden' name='form-name' value='csv' />
+          <button type='submit'>Save CSV</button>
+         </form>
+
+EOD;
+        }
+      }
+      else
+      {
+      echo <<<EOD
+    <h1 class='error'>$class_id is not a valid proposal class code.</h1>
+
+EOD;
+      }
+    }
+    else
+    {
+      echo <<<EOD
+      <h1 class='error'>$class_id is not a valid class of proposals.</h1>
+
+EOD;
+    }
+  }
+/*
       $query = <<<EOD
   SELECT proposals.*,
          cf_academic_organizations.department_name  dept_name,
@@ -311,9 +366,10 @@ EOD;
       }
     }
   }
+ */
   else if (isset($_GET['type']))
   {
-    //  Display by Type
+    //  Display By Type
     //  =================================================================================
     $type_abbr = sanitize($_GET['type']);
     //  Handle missing plusses from URL encoding
@@ -690,11 +746,11 @@ EOD;
       </div>
       <!-- Navigation -->
       <nav>
-        <a href='.' class='current-page'>Browse Proposals</a>
-        <a href='../Model_Proposals'>Model Proposals</a>
+        <a href='.' class='current-page'>Track Proposals</a>
+        <a href='../Model_Proposals'>Guidelines</a>
         <a href='../Proposal_Editor'>Proposal Editor</a>
-        <a href='../Syllabi'>Browse Syllabi</a>
-        <a href='../Reviews'>Browse Reviews</a>
+        <a href='../Syllabi'>Syllabi</a>
+        <a href='../Reviews'>Reviews</a>
         $review_link
       </nav>
     </div>
@@ -703,4 +759,3 @@ EOD;
 ?>
   </body>
 </html>
-

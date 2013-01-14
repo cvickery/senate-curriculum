@@ -119,16 +119,16 @@ EOD;
 
     <dl>
 
-      <dt><a href="Proposals">Browse Proposals</a></dt>
+      <dt><a href="Proposals">Track Proposals</a></dt>
       <dd>View and track submitted curriculum proposals.</dd>
 
-      <dt><a href="Model_Proposals">Model Proposals</a></dt>
+      <dt><a href="Model_Proposals">Proposal Guidelines</a></dt>
       <dd>View sample proposals with comments and guidelines.</dd>
 
       <dt><a href="Proposal_Editor">Proposal Editor</a></dt>
       <dd>Create or edit course and designation proposals.</dd>
 
-      <dt><a href="Reviews">Proposal Reviews</a></dt>
+      <dt><a href="Reviews">Reviews</a></dt>
       <dd>View reviewers’ comments and recommendations for proposals.</dd>
 
       <dt><a href="Pathways">Senate Ad Hoc Committee on Pathways</a></dt>
@@ -164,11 +164,11 @@ EOD;
       </div>
       <!-- Navigation Row-->
       <nav>
-        <a href='./Proposals'>Browse Proposals</a>
-        <a href='./Model_Proposals'>Model Proposals</a>
+        <a href='./Proposals'>Track Proposals</a>
+        <a href='./Model_Proposals'>Guidelines</a>
         <a href='./Proposal_Editor'>Proposal Editor</a>
-        <a href='./Syllabi'>Browse Syllabi</a>
-        <a href='./Reviews'>Browse Reviews</a>
+        <a href='./Syllabi'>Syllabi</a>
+        <a href='./Reviews'>Reviews</a>
         $review_link;
       </nav>
     </div>
