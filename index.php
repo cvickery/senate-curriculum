@@ -112,24 +112,37 @@ EOD;
       <p>
         This site supports the work of the Academic Senate’s various curriculum committees
         and subcomiittees, primarily by providing tools and mechanisms for proposing
-        changes to the courses offered at Queens College, and for monitoring the status of
-        those proposals.
+        changes to the courses offered at Queens College, and for tracking those proposals
+        through the approval process.
       </p>
     </div>
 
     <dl>
 
       <dt><a href="Proposals">Track Proposals</a></dt>
-      <dd>View and track submitted curriculum proposals.</dd>
+      <dd>
+        View and track curriculum proposals.
+      </dd>
 
       <dt><a href="Model_Proposals">Proposal Guidelines</a></dt>
-      <dd>View sample proposals with comments and guidelines.</dd>
+      <dd>
+        Guidelines for preparing curriculum proposals, with examples.
+      </dd>
 
-      <dt><a href="Proposal_Editor">Proposal Editor</a></dt>
-      <dd>Create or edit course and designation proposals.</dd>
+      <dt><a href="Proposal_Editor">Manage Proposals</a></dt>
+      <dd>
+        Create, edit, submit, or delete your course and designation proposals.
+        <br/>
+        <em>Requires a valid Queens College email address.</em>
+      </dd>
 
       <dt><a href="Reviews">Reviews</a></dt>
-      <dd>View reviewers’ comments and recommendations for proposals.</dd>
+      <dd>
+        View subcommittee or curriculum committee reviewers’ comments and
+        recommendations for proposals.
+        <br/>
+        <em>Requires a valid Queens College email address.</em>
+      </dd>
 
       <dt><a href="Pathways">Senate Ad Hoc Committee on Pathways</a></dt>
       <dd>
@@ -139,7 +152,7 @@ EOD;
 
       <dt><a href="gened_offerings">Perspectives Offerings</a></dt>
       <dd>
-          View historical and current Perspectives (PLAS) course offerings.
+          Historical and current Perspectives (PLAS) course offerings.
       </dd>
 
       <dt><a href="cur_reports.php">Chancellor’s University Reports (CURs)</a></dt>
@@ -166,7 +179,7 @@ EOD;
       <nav>
         <a href='./Proposals'>Track Proposals</a>
         <a href='./Model_Proposals'>Guidelines</a>
-        <a href='./Proposal_Editor'>Proposal Editor</a>
+        <a href='./Proposal_Editor'>Manage Proposals</a>
         <a href='./Syllabi'>Syllabi</a>
         <a href='./Reviews'>Reviews</a>
         $review_link;

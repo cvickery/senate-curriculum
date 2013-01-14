@@ -425,8 +425,10 @@ EOD;
   /*  Proposal controls are displayed whether a proposal has been selected or not.  But
    *  the setup depends on whether the user has a proposal selected and/or a set of
    *  previously-selected proposals.
-   */
-  $section_status = 'Click here to create a proposal or select an existing one.';
+ */
+$section_status = <<<EOD
+Click here to create a new proposal or to select an existing one to edit or submit.
+EOD;
   $proposal_id    = 0; // none assumed
   if (isset($_SESSION[proposal]))
   {

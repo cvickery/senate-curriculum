@@ -109,15 +109,15 @@ EOD;
       </div>
       <!-- Navigation -->
       <nav>
-        <a href='../Proposals'>Browse Proposals</a>
-        <a href='../Model_Proposals'>Model Proposals</a>
-        <a href='.' class='current-page'>Proposal Editor</a>
-        <a href='../Syllabi'>Browse Syllabi</a>
-        <a href='../Reviews'>Proposal Reviews</a>
+        <a href='../Proposals'>Track Proposals</a>
+        <a href='../Model_Proposals'>Guidelines</a>
+        <a href='.' class='current-page'>Manage Proposals</a>
+        <a href='../Syllabi'>Syllabi</a>
+        <a href='../Reviews'>Reviews</a>
         $review_link
       </nav>
     </div>
-    <h2><a href='.'>Return to Proposal Editor</a></h2>
+    <h2><a href='.'>Return to Manage Proposals</a></h2>
 
 EOD;
     ?>

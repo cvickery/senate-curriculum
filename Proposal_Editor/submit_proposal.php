@@ -429,7 +429,7 @@ EOD;
     }
     echo <<<EOD
     <h2><a href='https://senate.qc.cuny.edu/$base_dir/Proposal_Editor/'>
-      Proposal Editor</a>
+      Manage Proposals</a>
     </h2>
 
 EOD;

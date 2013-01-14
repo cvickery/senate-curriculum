@@ -372,7 +372,7 @@ EOD;
         <div class='instructions'>
           <p>
             Much of this site is open to the public with no neeed to sign in. For other
-            parts, such as the Proposal Editor, you must provide your Queens College email
+            parts, such as managing your proposals, you must provide your Queens College email
             address, which must be on record with CUNYfirst. Contact $webmaster_email if
             you are unable to sign in.
           </p>

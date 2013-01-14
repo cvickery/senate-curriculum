@@ -45,7 +45,7 @@ require_once('include/atoms.inc');
 <!DOCTYPE html>
 <html <?php echo $html_attributes;?>>
   <head>
-    <title>Curriculum Proposal Editor</title>
+    <title>Manage Curriculum Proposals</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/proposal_editor.css" />
     <script type="text/javascript" src="../../js/jquery-current.js"></script>
@@ -57,7 +57,7 @@ require_once('include/atoms.inc');
 <?php
 echo $dump_if_testing;
 ?>
-    <h1>Proposal Editor</h1>
+    <h1>Manage Proposals</h1>
     <div class='warning overview'>
       <ul>
         <li>
@@ -148,11 +148,12 @@ echo $dump_if_testing;
         designation proposal.
       </p>
       <p>
-        <strong>Sample Proposals</strong>
+        <strong>Proposal Preparation Guidelines</strong>
       </p>
       <p>
-        There are <a href='../Model_Proposals' target='new'>sample proposals with
-        guidelines</a> available if you would like some examples to look at.
+        The <a href='../Model_Proposals' target='new'> Guidelines</a> link at the top of
+        the page will take you to some guidelines for preparing proposals, along with some
+        annotated samples to look at.
       </p>
       <p>
         <strong>Terminology Notes:</strong>
@@ -165,7 +166,7 @@ echo $dump_if_testing;
             <p>
               CUNY Core courses offered at Queens must meet all the criteria established
               by CUNY, plus additional criteria required of all General Education courses
-              offered here.
+              offered at Queens.
             </p>
           </li>
           <li>
@@ -218,8 +219,8 @@ echo $dump_if_testing;
         deleted.
       </p>
       <p>
-        There is a <a href='../Proposals' target='new'>separate web page</a> for browsing
-        all proposals that have been submitted here. The “Browse Proposals” button at the
+        There is a <a href='../Proposals' target='new'>separate web page</a> for tracking
+        all proposals that have been submitted here. The “Track Proposals” button at the
         top of this page is a link to it.
       </p>
       <h3 class='sub-instructions'>Upload Syllabi</h3>
@@ -379,7 +380,7 @@ EOD;
       <nav>
         <a href='../Proposals'>Track Proposals</a>
         <a href='../Model_Proposals'>Guidelines</a>
-        <a href='.' class='current-page'>Proposal Editor</a>
+        <a href='.' class='current-page'>Manage Proposals</a>
         <a href='../Syllabi'>Syllabi</a>
         <a href='../Reviews'>Reviews</a>
         $review_link

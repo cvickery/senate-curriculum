@@ -309,7 +309,7 @@ EOD;
               $reviewer_info = <<<EOD
         <br/>
         Comments from individual $agency_abbr reviewers may also be available at the
-        <a href='../Reviews#$proposal_id'>Browse Reviews</a> page.
+        <a href='../Reviews#$proposal_id'>Reviews</a> page.
 
 EOD;
             }

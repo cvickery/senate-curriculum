@@ -61,7 +61,7 @@ require_once('init_session.php');
     }
     else
     {
-      die("<h1 class='error'>Browse Proposals: Invalid login state</h1></body></html>");
+      die("<h1 class='error'>Reviews: Invalid login state</h1></body></html>");
     }
 
     $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
@@ -219,11 +219,11 @@ EOD;
       </div>
       <!-- Navigation -->
       <nav>
-        <a href='../Proposals'>Browse Proposals</a>
-        <a href='../Model_Proposals'>Model Proposals</a>
-        <a href='../Proposal_Editor'>Proposal Editor</a>
-        <a href='../Syllabi'>Browse Syllabi</a>
-        <a href='../Reviews'>Browse Reviews</a>
+        <a href='../Proposals'>Track Proposals</a>
+        <a href='../Model_Proposals'>Guidelines</a>
+        <a href='../Proposal_Editor'>Manage Proposals</a>
+        <a href='../Syllabi'>Syllabi</a>
+        <a href='../Reviews'>Reviews</a>
         $review_link
       </nav>
     </div>
