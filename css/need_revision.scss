@@ -6,8 +6,13 @@ h1 {
   margin-top: 3em;
 	}
 
-table, td { background-color: white; }
+
+td { background-color: white; }
 th { background-color: $header-background; }
+th, td {
+  font-size: 0.8em;
+  padding: 0.25em;
+  }
 
 #password-msg {
 	float:left;

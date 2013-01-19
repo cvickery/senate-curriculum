@@ -136,10 +136,11 @@ EOD;
     //  Proposals lacking reviews
     //  -------------------------------------------------------------------------------
     $query = <<<EOD
-SELECT    p.id                                    AS proposal,
+SELECT    p.id                                    AS proposal_id,
           p.discipline||' '||p.course_number      AS course,
           t.abbr                                  AS type,
-          to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date
+          to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
+					p.submitter_email
 FROM      proposals p, proposal_types t
 WHERE     p.id > 160
 AND       p.submitted_date IS NOT NULL
@@ -165,17 +166,20 @@ EOD;
           <th>Course</th>
           <th>Type</th>
           <th>Submitted</th>
+					<th>Submitter</th>
         </tr>
 
 EOD;
       while ($row = pg_fetch_assoc($result))
       {
+				$proposal_id = $row['proposal_id'];
         echo <<<EOD
         <tr>
-          <td>{$row['proposal']}</td>
+          <td><a href="../Proposals?id=$proposal_id">$proposal_id</a></td>
           <td>{$row['course']}</td>
           <td>{$row['type']}</td>
           <td>{$row['submitted_date']}</td>
+					<td>{$row['submitter_email']}</td>
         </tr>
 
 EOD;

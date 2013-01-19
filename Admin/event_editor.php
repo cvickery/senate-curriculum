@@ -179,7 +179,7 @@ EOD;
         <div id='action-table'>
           <table>
             <tr>
-              <th><label for='agency'>Agent</label></th>
+              <th><label for='agency'>Agency</label></th>
               <th><label for='action'>Action</label></th>
               <th><label for='action_date'>Action Date</label></th>
             </tr>
@@ -238,7 +238,7 @@ EOD;
         }
         echo "<th><div>Comment</div></th>\n        </tr>\n";
 
-      //  Get all proposals that have not been approved by the senate yet, and display
+      //  Get all proposals that have not been closed yet, and display
       //  them, along with controls for updating selected ones.
       $query = <<<EOD
    SELECT proposals.id            proposal_id,
@@ -247,6 +247,7 @@ EOD;
           proposal_types.abbr     proposal_type
      FROM proposals, proposal_types
     WHERE proposals.submitted_date IS NOT NULL
+      AND proposals.closed_date IS NULL
       AND proposals.type_id = proposal_types.id
       AND proposals.type_id IN
           (SELECT id
@@ -286,7 +287,8 @@ EOD;
         }
         while ($event = pg_fetch_assoc($event_result))
         {
-          $action = $event['agency'] . ' ' . $event['action'] . ' ' . $event['event_date'];
+          $action = $event['agency'] . ' ' . $event['action'] . '<br />'
+                  . $event['event_date'];
           $actions[$agency_groups[$event['agency']]] = $action;
         }
 
@@ -297,7 +299,7 @@ EOD;
             <div><input type='checkbox' name='select-{$row['proposal_id']}' /></div>
           </td>
           <td><div><a href='../Proposals?id=$proposal_id'>$proposal_id</a></div></td>
-          <td><div>{$row['discipline']}<br/>{$row['course_number']}</div></td>
+          <td><div>{$row['discipline']} {$row['course_number']}</div></td>
           <td><div>{$row['proposal_type']}</div></td>
 
 EOD;

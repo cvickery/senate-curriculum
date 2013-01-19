@@ -6,7 +6,7 @@
 
 if (! isset($curric_db))
 {
-  $curric_db = $curric_db = curric_connect() or die('Unable to access curriculum db');
+  $curric_db = curric_connect() or die('Unable to access curriculum db');
 }
 
 //  Contact

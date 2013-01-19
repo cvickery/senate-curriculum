@@ -1,208 +1,83 @@
 /* base.scss */
-html {
-  margin: 0;
-  padding: 0;
-  background-color: #666666; }
+html { margin: 0; padding: 0; background-color: #666666; }
 
-body {
-  width: 850px;
-  margin: 10px;
-  padding: 10px;
-  background-color: #eeeeee;
-  color: #330000;
-  border-radius: 5px;
-  box-shadow: #333333 2.5px 2.5px 2.5px;
-  font-family: Helvetica, sans-serif; }
+body { width: 850px; margin: 10px; padding: 10px; background-color: #eeeeee; color: #330000; border-radius: 5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, sans-serif; }
 
-h1, h2, h3 {
-  font-family: Helvetica, Candara, Arial, Sans-Serif; }
+h1, h2, h3 { font-family: Helvetica, Candara, Arial, Sans-Serif; }
 
-h1 {
-  text-align: center;
-  font-size: 1.4em;
-  padding-top: 2em; }
+h1 { text-align: center; font-size: 1.4em; padding-top: 2em; }
 
-h2 {
-  margin: 10px 0;
-  padding: 0.25em;
-  font-weight: normal;
-  font-size: 1em;
-  background-color: #cccccc;
-  border-radius: 5px;
-  border: 2px outset #333333; }
+h2 { margin: 10px 0; padding: 0.25em; font-weight: normal; font-size: 1em; background-color: #cccccc; border-radius: 5px; border: 2px outset #333333; }
 
-h2 + div {
-  background-color: white;
-  border-radius: 0.25em 0.25em 0.25em 0.25em;
-  box-shadow: 0 0 0.25em #111111 inset;
-  margin: 10px;
-  padding: 1em; }
+h2 + div { background-color: white; border-radius: 0.25em 0.25em 0.25em 0.25em; box-shadow: 0 0 0.25em #111111 inset; margin: 10px; padding: 1em; }
 
-h3 {
-  font-weight: bold;
-  font-size: 1.0em; }
+h3 { font-weight: bold; font-size: 1.0em; }
 
-h3 + div {
-  background-color: white;
-  margin: 0 10px;
-  padding: 0 1em;
-  border-radius: 0.25em; }
+h3 + div { background-color: white; margin: 0 10px; padding: 0 1em; border-radius: 0.25em; }
 
-a[target="new"] {
-  background: transparent url(../images/external.png) top right no-repeat;
-  padding-right: 14px; }
+a[target="new"] { background: transparent url(../images/external.png) top right no-repeat; padding-right: 14px; }
 
-ins {
-  color: #339933; }
+ins { color: #339933; }
 
-del {
-  color: #ff3333; }
+del { color: #ff3333; }
 
-input[type='text'].triple-wide {
-  width: 430px; }
+input[type='text'].triple-wide { width: 430px; }
 
-input[type='text'].triple-wide + button {
-  width: 436px; }
+input[type='text'].triple-wide + button { width: 436px; }
 
-input[type="password"] {
-  width: 290px;
-  display: block;
-  margin-bottom: 1em; }
+input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 
-.password-fieldset {
-  margin: 1em; }
+.password-fieldset { margin: 1em; }
 
-.is-good {
-  color: #006600; }
+.is-good { color: #006600; }
 
-.acronym {
-  color: #006600; }
+.acronym { color: #006600; }
 
-.warning {
-  color: #661111; }
+.warning { color: #661111; }
 
-.error {
-  color: #993333; }
+.error { color: #993333; }
 
-#need-javascript {
-  font-family: Helvetica, Candara, Arial, Sans-Serif;
-  font-size: 1.2em;
-  text-align: center;
-  color: #661111; }
+#need-javascript { font-family: Helvetica, Candara, Arial, Sans-Serif; font-size: 1.2em; text-align: center; color: #661111; }
 
-#status-bar {
-  width: 850px;
-  padding: 10px 10px 2.5px 10px;
-  background-color: #eeeeee;
-  position: fixed;
-  top: 0;
-  left: 10px;
-  border-radius: 2.5px;
-  box-shadow: #333333 2.5px 2.5px 2.5px;
-  font-family: Helvetica, Candara, Arial, Sans-Serif;
-  font-weight: lighter;
-  font-size: 12px; }
+#status-bar { width: 850px; padding: 10px 10px 2.5px 10px; background-color: #eeeeee; position: fixed; top: 0; left: 10px; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
 
-#show-hide-instructions-button {
-  float: left;
-  margin: 0 10px; }
+#show-hide-instructions-button { float: left; margin: 0 10px; }
 
-#status-msg {
-  float: right;
-  margin: 5px 10px 0; }
+#status-msg { float: right; margin: 5px 10px 0; }
 
-#logout-form {
-  float: right;
-  margin: 0 10px; }
+#logout-form { float: right; margin: 0 10px; }
 
-#logout-form button {
-  width: 80px; }
+#logout-form button { width: 80px; }
 
-nav {
-  clear: both;
-  text-align: center;
-  padding: 0.5em 0.5em 0 0; }
-  nav a {
-    display: inline-block;
-    width: 120px;
-    padding: 0.25em;
-    font-size: 1em;
-    text-align: center;
-    text-decoration: none;
-    color: #330000;
-    border: 1px solid #330000;
-    border-radius: 0.25em; }
-  nav a:hover {
-    text-decoration: none;
-    color: #eeeeee;
-    background-color: #330000; }
-  nav a.current-page, nav a.current-page:hover {
-    color: #330000;
-    background-color: #dddddd;
-    cursor: default; }
-  nav + nav {
-    margin: 0.25em 0;
-    border-bottom: none; }
-    nav + nav a {
-      background-color: #dddddd;
-      border-radius: 0.25em; }
-    nav + nav a:hover {
-      color: #330000;
-      background-color: #fff8f8; }
+nav { clear: both; text-align: center; padding: 0.5em 0.5em 0 0; }
+nav a { display: inline-block; width: 120px; padding: 0.25em; font-size: 1em; text-align: center; text-decoration: none; color: #330000; border: 1px solid #330000; border-radius: 0.25em; }
+nav a:hover { text-decoration: none; color: #eeeeee; background-color: #330000; }
+nav a.current-page, nav a.current-page:hover { color: #330000; background-color: #dddddd; cursor: default; }
+nav + nav { margin: 0.25em 0; border-bottom: none; }
+nav + nav a { background-color: #dddddd; border-radius: 0.25em; }
+nav + nav a:hover { color: #330000; background-color: #fff8f8; }
 
-a[target="new"] {
-  background: transparent url(../images/external.png) top right no-repeat;
-  padding-right: 14px; }
+a[target="new"] { background: transparent url(../images/external.png) top right no-repeat; padding-right: 14px; }
 
-dt {
-  margin: 1em 10px 0.5em 10px;
-  font-weight: bold; }
+dt { margin: 1em 10px 0.5em 10px; font-weight: bold; }
 
-table {
-  border-collapse: collapse; }
-  table td, table th {
-    border: 1px solid black; }
-  table.summary {
-    background-color: white; }
+table { border-collapse: collapse; }
+table td, table th { border: 1px solid black; }
+table.summary { background-color: white; }
 
-#password-msg {
-  float: left; }
+#password-msg { float: left; }
 
-body > section > a {
-  font-size: 1.1em;
-  font-weight: bold; }
+body > section > a { font-size: 1em; font-weight: bold; }
 
-section section {
-  border-radius: 0.25em;
-  background-color: #eeeeee;
-  margin: 10px; }
-  section section h1 {
-    text-align: left;
-    font-size: 1.1em;
-    margin: 0;
-    padding: 0.5em; }
-  section section div {
-    margin: 0 20px 10px;
-    padding: 0.5em; }
-    section section div ul {
-      margin: 0; }
-      section section div ul li {
-        padding: 0.5em; }
+table { font-size: 0.8em; }
 
-h2 + div {
-  margin: 10px;
-  padding: 1em;
-  background-color: white;
-  border-radius: 0.25em;
-  box-shadow: inset 0 0 0.25em #333333; }
+section section { border-radius: 0.25em; background-color: #eeeeee; margin: 10px; }
+section section h1 { text-align: left; font-size: 1.1em; margin: 0; padding: 0.5em; }
+section section div { margin: 0 20px 10px; padding: 0.5em; }
+section section div ul { margin: 0; }
+section section div ul li { padding: 0.5em; }
 
-h3 + ul {
-  line-height: 1.1em; }
-  h3 + ul li {
-    margin: 0.5em 2em 0.5em 0; }
+h2 + div { margin: 10px; padding: 1em; background-color: white; border-radius: 0.25em; box-shadow: inset 0 0 0.25em #333333; }
 
-.need-review {
-  background-color: #cc6666;
-  color: #ffff33; }
-  .need-review a {
-    color: #ffff33; }
+.need-review { background-color: #cc6666; color: #ffff33; }
+.need-review a { color: #ffff33; }
