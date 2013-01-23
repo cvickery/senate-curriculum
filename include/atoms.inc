@@ -29,8 +29,12 @@ define('prerequisites',         'prerequisites');
 define('catalog_description',   'catalog_description');
 define('designation',           'designation');
 define('justifications',        'justifications');
+define('with_approvals',        'with_approvals');
 
+//  Course String RegEx
+define('course_str_re',         '/^\s*([a-z]{2,6})\s*\-?\s*([1-9]\d{0,3}[wh]?)\s*$/i');
 //  Proposal ID ranges
 define('MAX_PLAS_ID',           '160');
+
 
 ?>

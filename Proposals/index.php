@@ -7,7 +7,7 @@ require_once('simple_diff.php');
 require_once('tracking_utils.php');
 require_once('display_proposal.php');
 
-require_once('../Proposal_Editor/include/atoms.inc');
+require_once('../include/atoms.inc');
 
 //  Set up page title
 $proposal_id    = '';
@@ -163,7 +163,7 @@ EOD;
           break;
         case 1:
           $row = pg_fetch_assoc($result);
-          display_proposal($row[id]);
+          display_proposal($row['id']);
           break;
         default:
           //  Multiple proposals for the course: display a selection table.
