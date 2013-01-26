@@ -92,8 +92,7 @@ EOD;
     }
     else
     {
-      $csv =  '"Proposal","Type","Course","Proposal Date","Assigned",' .
-              '"Reviewed", "Recommended", "Reviewer"';
+      $reviewer_counts = array();
       echo <<<EOD
       <h2>$num Missing or Oboslete Reviews</h2>
       <table>
@@ -102,8 +101,8 @@ EOD;
           <th>Type</th>
           <th>Course</th>
           <th>Proposal Date</th>
-          <th>Assigned</th>
-          <th>Reviewed</th>
+          <th>Assigned Date</th>
+          <th>Review Date</th>
           <th>Recommendation</th>
           <th>Reviewer</th>
         </tr>
@@ -115,6 +114,7 @@ EOD;
         $proposed = $row['proposal_date'];
         $assigned = $row['assigned_date'];
         $reviewed = $row['reviewed_date'];
+        $reviewer = $row['reviewer'];
         echo <<<EOD
         <tr>
           <td><a href='../Reviews#$id'>$id</a></td>
@@ -124,11 +124,37 @@ EOD;
           <td>$assigned</td>
           <td>$reviewed</td>
           <td>{$row['recommendation']}</td>
-          <td>{$row['reviewer']}</td>
+          <td>$reviewer</td>
         </tr>
 
 EOD;
+        if (isset($reviewer_counts[$reviewer]))
+        {
+          $reviewer_counts[$reviewer]++;
+        }
+        else
+        {
+          $reviewer_counts[$reviewer] = 1;
+        }
 
+      }
+      echo "      </table>\n";
+    }
+    if (count($reviewer_counts) > 0)
+    {
+      ksort($reviewer_counts);
+      //  Display number of missing obsolete reviews for each reviewer
+      echo <<<EOD
+      <table>
+        <tr>
+          <th>Reviewer</th>
+          <th>Num to do</th>
+        </tr>
+
+EOD;
+      foreach ($reviewer_counts as $reviewer => $count)
+      {
+        echo "        <tr><td>$reviewer</td><td>$count</td></tr>\n";
       }
       echo "      </table>\n";
     }
@@ -140,7 +166,7 @@ SELECT    p.id                                    AS proposal_id,
           p.discipline||' '||p.course_number      AS course,
           t.abbr                                  AS type,
           to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
-					p.submitter_email
+          p.submitter_email
 FROM      proposals p, proposal_types t
 WHERE     p.id > 160
 AND       p.submitted_date IS NOT NULL
@@ -166,20 +192,20 @@ EOD;
           <th>Course</th>
           <th>Type</th>
           <th>Submitted</th>
-					<th>Submitter</th>
+          <th>Submitter</th>
         </tr>
 
 EOD;
       while ($row = pg_fetch_assoc($result))
       {
-				$proposal_id = $row['proposal_id'];
+        $proposal_id = $row['proposal_id'];
         echo <<<EOD
         <tr>
           <td><a href="../Proposals?id=$proposal_id">$proposal_id</a></td>
           <td>{$row['course']}</td>
           <td>{$row['type']}</td>
           <td>{$row['submitted_date']}</td>
-					<td>{$row['submitter_email']}</td>
+          <td>{$row['submitter_email']}</td>
         </tr>
 
 EOD;
