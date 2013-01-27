@@ -193,7 +193,7 @@ EOD;
     if (count($missing_obsolete) > 0)
     {
       echo <<<EOD
-      <table>
+      <p><table>
         <tr><th>Reviewer</th><th>Reviews Needed</th></tr>
 
 EOD;
@@ -204,7 +204,7 @@ EOD;
 
 EOD;
       }
-      echo "      </table>\n";
+      echo "      </table></p>\n";
     }
     echo <<<EOD
       <form action='../scripts/download_csv.php' method='post'>
