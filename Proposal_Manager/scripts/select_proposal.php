@@ -1,5 +1,5 @@
 <?php
-//  .../Proposal_Editor/scripts/select_course.php
+//  .../Proposal_Manager/scripts/select_course.php
 /*  The Course/Proposal selection module.
  *
  *  Part I:   Process form data, if any.

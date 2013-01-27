@@ -83,7 +83,7 @@ EOD;
       echo <<<EOD
     <nav id='admin-nav'>
       <a href='./event_editor.php'>Event Editor</a>
-			<a href='./review_status.php'>Review Status</a>
+      <a href='./review_status.php'>Review Status</a>
       <a href='./need_revision.php'>Proposals Pending Revision</a>
     </nav>
 
@@ -113,16 +113,16 @@ EOD;
       <nav>
         <a href='../Proposals'>Track Proposals</a>
         <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Editor'>Manage Proposals</a>
+        <a href='../Proposal_Manager'>Manage Proposals</a>
         <a href='../Syllabi'>Syllabi</a>
         <a href='../Reviews'>Reviews</a>
         $review_link
       </nav>
-			<nav>
-				<a href='.' class='current-page'>Admin</a>
-				<a href='event_editor.php'>Event Editor</a>
-				<a href='review_status.php'>Review Status</a>
-				<a href='need_revision.php'>Pending Revision</a>
+      <nav>
+        <a href='.' class='current-page'>Admin</a>
+        <a href='event_editor.php'>Event Editor</a>
+        <a href='review_status.php'>Review Status</a>
+        <a href='need_revision.php'>Pending Revision</a>
       </nav>
     </div>
 

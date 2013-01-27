@@ -718,7 +718,7 @@ EOD;
     </p>
 
 EOD;
-        if (strpos(getcwd(), 'Proposal_Editor') !== false)
+        if (strpos(getcwd(), 'Proposal_Manager') !== false)
         {
           $designation_msg .= <<<EOD
     <p class='designation-msg warning'>

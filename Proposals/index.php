@@ -748,7 +748,7 @@ EOD;
       <nav>
         <a href='.' class='current-page'>Track Proposals</a>
         <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Editor'>Manage Proposals</a>
+        <a href='../Proposal_Manager'>Manage Proposals</a>
         <a href='../Syllabi'>Syllabi</a>
         <a href='../Reviews'>Reviews</a>
         $review_link

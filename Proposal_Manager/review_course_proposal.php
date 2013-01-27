@@ -33,7 +33,7 @@ $agency_name        = $agency_names[$proposal->agency_id];
 $base_dir           = basename(dirname(getcwd()));
 $view_url           = "http://senate.qc.cuny.edu/$base_dir/Proposals?id=$proposal_id";
 $submission_url     =
-       "http://senate.qc.cuny.edu/$base_dir/Proposal_Editor/submit_proposal.php?token=$guid";
+       "http://senate.qc.cuny.edu/$base_dir/Proposal_Manager/submit_proposal.php?token=$guid";
 
 //  To be determined:
 $email_sender     = 'An Academic Senate Robot';

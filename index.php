@@ -129,7 +129,7 @@ EOD;
         Guidelines for preparing curriculum proposals, with examples.
       </dd>
 
-      <dt><a href="Proposal_Editor">Manage Proposals</a></dt>
+      <dt><a href="Proposal_Manager">Manage Proposals</a></dt>
       <dd>
         Create, edit, submit, or delete your course and designation proposals.
         <br/>
@@ -179,7 +179,7 @@ EOD;
       <nav>
         <a href='./Proposals'>Track Proposals</a>
         <a href='./Model_Proposals'>Guidelines</a>
-        <a href='./Proposal_Editor'>Manage Proposals</a>
+        <a href='./Proposal_Manager'>Manage Proposals</a>
         <a href='./Syllabi'>Syllabi</a>
         <a href='./Reviews'>Reviews</a>
         $review_link;

@@ -348,7 +348,7 @@ EOD;
 
   Your $proposal_type proposal, ID #$proposal_id, for $discipline $course_number
   has been $transaction_type to the $agency. You can track the progress of the proposal at
-	$proposal_link.
+  $proposal_link.
 
   Thank you,
   An Academic Senate Robot
@@ -361,7 +361,7 @@ EOD;
   <p>
     Your <a href='$proposal_link'>$proposal_type proposal for $discipline $course_number
     (ID #$proposal_id)</a> has been $transaction_type to the $agency. You can track the
-		progress of the proposal at $proposal_link.
+    progress of the proposal at $proposal_link.
   </p>
   <p>
     Thank you,
@@ -428,7 +428,7 @@ EOD;
 
     }
     echo <<<EOD
-    <h2><a href='https://senate.qc.cuny.edu/$base_dir/Proposal_Editor/'>
+    <h2><a href='https://senate.qc.cuny.edu/$base_dir/Proposal_Manager/'>
       Manage Proposals</a>
     </h2>
 
