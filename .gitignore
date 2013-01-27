@@ -1,6 +1,9 @@
 .DS_Store
 _notes/
 db/
+CF_Queries/
+gened_offerings/
+cur_reports/
 Pathways/
 Syllabi/
 *.swp
