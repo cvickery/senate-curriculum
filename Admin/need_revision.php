@@ -3,19 +3,6 @@
 set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
 
-//  Nicknames for reviewers
-//  TODO: Simply extract first name from email address and capitalize.
-$reviewers = array(
-    'lesle' => 'Leslee',
-    'pablo' => 'Pablo',
-    'megha' => 'Meghan',
-    'chris' => 'Chris',
-    'natha' => 'Nathalia',
-    'kathe' => 'Kate',
-    'eugen' => 'Eugenia',
-    'alexa' => 'Alex');
-
-
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -92,23 +79,27 @@ $reviewers = array(
 EOD;
 
 
-  //  List proposals submitted, but listed as needing revisions.
+  //  List proposals reviewed but the review is not 'Accept'
     $query = <<<EOD
 
-   SELECT proposals.id                                        AS id,
-          proposal_types.abbr                                 AS type,
-          proposals.discipline||' '||proposals.course_number  AS course,
-          proposals.submitter_name                            AS submitter,
-          proposals.submitter_email                           AS email,
-          proposals.submitted_date                            AS proposal_date,
-          reviews.submitted_date                              AS review_date,
-          reviews.reviewer_email                              AS reviewer_email
-     FROM proposals, proposal_types, reviews
-    WHERE proposals.submitted_date IS NOT NULL
-      AND proposals.id = reviews.proposal_id
-      AND proposals.type_id = proposal_types.id
-      AND reviews.recommendation = 'Revise'
- ORDER BY proposals.id
+SELECT    p.id                                AS id,
+          t.abbr                              AS type,
+          p.discipline||' '||p.course_number  AS course,
+          p.submitter_name                    AS submitter,
+          p.submitter_email                   AS email,
+          p.submitted_date                    AS proposal_date,
+          r.submitted_date                    AS review_date,
+          r.recommendation                    AS recommendation,
+          r.reviewer_email                    AS reviewer_email
+FROM      proposals p,
+          proposal_types t,
+          reviews r
+WHERE     p.submitted_date IS NOT NULL
+AND       p.closed_date IS NULL
+AND       p.id = r.proposal_id
+AND       p.type_id = t.id
+AND       (r.submitted_date IS NULL OR r.recommendation != 'Accept')
+ORDER BY  p.id
 
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: " .
@@ -123,6 +114,7 @@ EOD;
           <th>Course</th>
           <th>Submitted</th>
           <th>Reviewed</th>
+          <th>Recommendation</th>
           <th>Reviewer</th>
           <th>Submitter</th>
           <th>Email</th>
@@ -130,8 +122,10 @@ EOD;
 
 EOD;
     $num_proposals = 0;
+    $missing_obsolete = array();
     $this_id = 0;
-    $csv="Proposal, Type, Course, Submitted, Reviewed, Reviewer, Submitter, Email\r\n";
+    $csv =  "Proposal, Type, Course, Submitted, Reviewed, Recommendation, Reviewer, " .
+            "Submitter, Email\r\n";
     while ($row = pg_fetch_assoc($result))
     {
       $id = $row['id'];
@@ -144,19 +138,40 @@ EOD;
       $proposal_date_str  = $proposal_date->format('Y-m-d');
       $review_date        = new DateTime($row['review_date']);
       $review_date_str    = $review_date->format('Y-m-d');
-      $reviewer           = $reviewers[substr($row['reviewer_email'], 0, 5)];
-      if ($proposal_date > $review_date)
+      $recommendation     = $row['recommendation'];
+      $reviewer           = $row['reviewer_email'];
+      preg_match('/\.(.+)@/', $row['reviewer_email'], $matches);
+      if (count($matches) == 2)
       {
-        $backwards = " class='need-review'";
+        $reviewer = ucfirst(strtolower($matches[1]));
       }
-      else $backwards = '';
+      if ( ($proposal_date > $review_date)
+            ||
+            ($recommendation === 'None')
+            ||
+         ($recommendation === null)
+
+         )
+      {
+        $highlight_row = " class='need-review'";
+        if (isset($missing_obsolete[$reviewer]))
+        {
+          $missing_obsolete[$reviewer]++;
+        }
+        else
+        {
+          $missing_obsolete[$reviewer] = 1;
+        }
+      }
+      else $highlight_row = '';
       echo <<<EOD
-        <tr$backwards>
+        <tr$highlight_row>
           <td><a href='../Reviews#$id'>$id</a></td>
           <td>{$row['type']}</td>
           <td>{$row['course']}</td>
           <td>$proposal_date_str</td>
           <td>$review_date_str</td>
+          <td>$recommendation</td>
           <td>$reviewer</td>
           <td>{$row['submitter']}</td>
           <td>{$row['email']}</td>
@@ -168,13 +183,30 @@ EOD;
       $csv .= "\"{$row['course']}\",";
       $csv .= "\"$proposal_date_str\",";
       $csv .= "\"$review_date_str\",";
+      $csv .= "\"$recommendation\",";
       $csv .= "\"$reviewer\",";
       $csv .= "\"{$row['submitter']}\",";
       $csv .= "\"{$row['email']}\"\r\n";
 
     }
+    echo "      </table>\n";
+    if (count($missing_obsolete) > 0)
+    {
+      echo <<<EOD
+      <table>
+        <tr><th>Reviewer</th><th>Reviews Needed</th></tr>
+
+EOD;
+      foreach ($missing_obsolete as $reviewer => $count)
+      {
+        echo <<<EOD
+        <tr><td>$reviewer</td><td>$count</td></tr>
+
+EOD;
+      }
+      echo "      </table>\n";
+    }
     echo <<<EOD
-      </table>
       <form action='../scripts/download_csv.php' method='post'>
         <input type='hidden' name='form-name' value='csv' />
         <button type='submit'>Save CSV</button>

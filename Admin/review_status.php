@@ -1,4 +1,4 @@
-<?php  /* Admin/need_revision.php */
+<?php  /* Admin/review_status.php */
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
