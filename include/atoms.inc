@@ -61,5 +61,4 @@ define('justifications',        'justifications');
 //  Proposal ID ranges
 define('MAX_PLAS_ID',           '160');
 
-
 ?>

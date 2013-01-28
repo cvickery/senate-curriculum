@@ -26,7 +26,7 @@
 
 //  When in a testing directory
 //  -------------------------------------------------------------------------------------
-/*  If the current directory includes the string 'testing', enable logging, and dump
+/*  If the current directory includes the string 'test', enable logging, and dump
  *  _SESSION and _POST arrays into a comment string that can be displayed in the page
  *  body.
  *
@@ -41,9 +41,9 @@
  */
   $home_dir = 'Curriculum';
   $dump_if_testing = '';
-  if (strstr($_SERVER['REQUEST_URI'], 'testing'))
+  if (strstr($_SERVER['REQUEST_URI'], 'test'))
   {
-    $home_dir = 'testing_Curriculum';
+    $home_dir = 'test_Curriculum';
     require_once('logging.php');
     ob_start();
     echo "\n<!--\nSESSION\n";

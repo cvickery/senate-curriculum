@@ -24,9 +24,9 @@
   //  Handle the logout form if it was submitted.
   //  -----------------------------------------------------------------------------------
   $home_dir = 'Curriculum';
-  if (strstr($_SERVER['REQUEST_URI'], 'testing'))
+  if (strstr($_SERVER['REQUEST_URI'], 'test'))
   {
-    $home_dir = 'testing_Curriculum';
+    $home_dir = 'test_Curriculum';
   }
 
   if ($form_name === 'logout')

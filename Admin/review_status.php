@@ -148,7 +148,7 @@ EOD;
       <table>
         <tr>
           <th>Reviewer</th>
-          <th>Num to do</th>
+          <th>Reviews Needed</th>
         </tr>
 
 EOD;

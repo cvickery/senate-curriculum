@@ -78,8 +78,8 @@ if (isset($_GET['id']))
     <link rel="stylesheet" type="text/css" href="../css/proposals.css" />
   </head>
   <body>
-
 <?php
+  echo $dump_if_testing;
   //  Handle the logging in/out situation here
   $last_login       = '';
   $status_msg       = 'Not signed in';
@@ -248,6 +248,7 @@ EOD;
         else
         {
           $_SESSION['csv'] = $csv;
+          $_SESSION['csv_name'] = str_replace(' ', '_', strtolower($class_name));
           echo <<<EOD
         <form action='../scripts/download_csv.php' method='post'>
           <input type='hidden' name='form-name' value='csv' />
@@ -505,6 +506,7 @@ EOD;
       else
       {
         $_SESSION['csv'] = $csv;
+        $_SESSION['csv_name'] = strtolower($type_abbr);
         echo <<<EOD
       <form action='../scripts/download_csv.php' method='post'>
         <input type='hidden' name='form-name' value='csv' />

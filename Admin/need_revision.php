@@ -192,6 +192,7 @@ EOD;
     echo "      </table>\n";
     if (count($missing_obsolete) > 0)
     {
+      ksort($missing_obsolete);
       echo <<<EOD
       <p><table>
         <tr><th>Reviewer</th><th>Reviews Needed</th></tr>
@@ -214,6 +215,7 @@ EOD;
 
 EOD;
     $_SESSION['csv'] = $csv;
+    $_SESSION['csv_name'] = 'need_revision';
   }
 
   //  Status/Nav Bars

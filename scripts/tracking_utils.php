@@ -156,7 +156,6 @@ EOD;
     {
       $csv .= ',';
     }
-
     return $csv . "\r\n";
   }
 
@@ -242,7 +241,7 @@ EOD;
     $n = pg_num_rows($result);
     if ($n === 0)
     {
-      return;
+      return '';  //  Empty csv string
     }
     else
     {
@@ -356,8 +355,8 @@ EOD;
       </table>
 
 EOD;
+    return $csv;
     }
-  return $csv;
   }
 
  ?>
