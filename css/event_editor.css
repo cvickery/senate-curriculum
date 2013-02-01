@@ -65,9 +65,11 @@ table { border-collapse: collapse; }
 table td, table th { border: 1px solid black; }
 table.summary { background-color: white; }
 
+body { width: 1040px; }
+
 #password-msg { float: left; font-weight: bolder; font-size: 1.3em; color: black; letter-spacing: 0.1em; border: 1px solid black; border-radius: 0.25em; padding: 0.25em; background-color: white; }
 
-#status-bar { box-shadow: none; border-bottom: 1px solid black; }
+#status-bar { width: 1040px; box-shadow: none; border-bottom: 1px solid black; }
 
 nav:nth-of-type(2) { padding-bottom: 1.25em; }
 
@@ -77,7 +79,7 @@ table { font-size: 0.8em; }
 table td { background-color: white; }
 table th { background-color: #cccccc; }
 
-#action-table { background-color: #eeeeee; width: 850px; padding: 10px 10px 10px 10px; position: fixed; top: 110px; left: 10px; }
+#action-table { background-color: #eeeeee; width: 1040px; padding: 10px 10px 10px 10px; position: fixed; top: 110px; left: 10px; }
 
 #proposal-list { margin-top: 190px; }
 #proposal-list tr:first-of-type { position: fixed; top: 190px; left: 20px; }
@@ -90,4 +92,5 @@ table th { background-color: #cccccc; }
 #proposal-list th:nth-of-type(7) div, #proposal-list td:nth-of-type(7) div { width: 120px; }
 #proposal-list th:nth-of-type(8) div, #proposal-list td:nth-of-type(8) div { width: 128px; }
 #proposal-list th:nth-of-type(9) div, #proposal-list td:nth-of-type(9) div { width: 144px; }
+#proposal-list th:nth-of-type(10) div, #proposal-list td:nth-of-type(10) div { width: 144px; }
 #proposal-list input[type="text"] { width: 95%; }

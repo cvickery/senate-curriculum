@@ -1,4 +1,4 @@
-<?php  /* Admin/index.php */
+<?php  /* Admin/event_editor.php */
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
@@ -106,6 +106,11 @@ EOD;
       $remote_ip = $_SERVER['REMOTE_ADDR'];
     }
     //  Update db if new data were posted.
+    //  The agency, action, and action date must all be set for all events
+    //  By default, the effective date is the same as the action date, but if
+    //  the effective date for an event is a valid date string, that becomes the effective
+    //  date for the event; if the effective date is non-blank but not a valid date, that
+    //  event is not created.
     $agency = '';
     $action = '';
     $action_date = '';
@@ -142,12 +147,48 @@ EOD;
           if (strpos($name, 'select') !== FALSE)
           {
             preg_match('/^select-(\d+)$/', $name, $matches);
-            $proposal_id = $matches[1];
-            $comment = sanitize($_POST['comment-' . $proposal_id]);
+            $proposal_id          = $matches[1];
+            $comment              = sanitize($_POST['comment-' . $proposal_id]);
+            $effective_date_db    = $action_date_db;
+            $effective_date_post  = sanitize($_POST['effective-' . $proposal_id]);
+            if ($effective_date_post !== '')
+            {
+              try
+              {
+                $effective_date = new DateTime($effective_date_post);
+                $effective_date_db = $effective_date->format('Y-m-d');
+              }
+              catch (Exception $e)
+              {
+                $error_msg .= <<<EOD
+            <div class='error'>
+              Invalid effective date for proposal $proposal_id. Event skipped.
+            </div>
+
+EOD;
+                continue;
+              }
+            }
             $query = <<<EOD
-INSERT INTO events VALUES (
+INSERT INTO events
+        (
+          id,
+          event_date,
+          effective_date,
+          agency_id,
+          action_id,
+          proposal_id,
+          discipline,
+          course_number,
+          annotation,
+          entered_by,
+          entered_from,
+          entered_at
+        )
+VALUES (
         default,                                                        -- id
         '$action_date_db',                                              -- event_date
+        '$effective_date_db',                                           -- effective_date
         (SELECT id FROM agencies WHERE abbr = '$agency'),               -- agency_id
         (SELECT id FROM actions WHERE full_name = '$action'),           -- action_id
         $proposal_id,                                                   -- proposal_id
@@ -227,17 +268,21 @@ EOD;
         <!-- Proposal List -->
         <table id='proposal-list'>
           <tr>
-            <th><div>Select</div></th>
+            <th><div>Sel</div></th>
             <th><div>ID</div></th>
             <th><div>Course</div></th>
             <th><div>Type</div></th>
 EOD;
         foreach ($agency_group_names as $agency_group)
         {
-          echo "<th><div>$agency_group</div></th>";
+          echo "            <th><div>$agency_group</div></th>";
         }
-        echo "<th><div>Comment</div></th>\n        </tr>\n";
+        echo <<<EOD
+            <th><div>Comment</div></th>
+            <th><div>Effective Date</div></th>
+          </tr>
 
+EOD;
       //  Get all proposals that have not been closed yet, and display
       //  them, along with controls for updating selected ones.
       $query = <<<EOD
@@ -310,6 +355,9 @@ EOD;
         echo <<<EOD
           <td>
             <div><input type='text' name='comment-{$row['proposal_id']}' /></div>
+          </td>
+          <td>
+            <div><input type='text' name='effective-{$row['proposal_id']}' /></div>
           </td>
         </tr>
 

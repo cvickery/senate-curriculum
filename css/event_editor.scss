@@ -2,6 +2,7 @@
 
 @import 'base';
 
+body { width: 13 * $col; }
 #password-msg {
   float:left;
   font-weight:bolder;
@@ -14,7 +15,11 @@
   background-color: white;
   }
 
-#status-bar { box-shadow: none; border-bottom: 1px solid $border-color;}
+#status-bar {
+  width: 13 * $col; 
+	box-shadow: none; 
+	border-bottom: 1px solid $border-color;
+	}
 
 nav:nth-of-type(2) { padding-bottom: 1.25em; }
 
@@ -33,7 +38,7 @@ table	{
 
 #action-table {
   background-color:$status-background;
-  width:$twelve-col;
+  width:13 * $col;
   padding: $gutter $gutter $gutter $gutter;
   position:fixed;
   top: 3 * $gutter + $col;
@@ -52,6 +57,7 @@ table	{
   th:nth-of-type(7) div, td:nth-of-type(7) div {width: 1.5 * $col; } //  College
   th:nth-of-type(8) div, td:nth-of-type(8) div {width: 1.6 * $col; } //  CUNY
   th:nth-of-type(9) div, td:nth-of-type(9) div {width: 1.8 * $col; } //  Comment
+	th:nth-of-type(10) div, td:nth-of-type(10) div {width: 1.8 * $col; } // Effective
 	input[type="text"] { width:95%; }
   }
 

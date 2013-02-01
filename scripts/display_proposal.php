@@ -274,6 +274,7 @@ EOD;
       $events = array();
       $events_query = <<<EOD
   SELECT event_date,
+         effective_date,
          agencies.full_name as agency_name,
          agencies.abbr      as agency_abbr,
          actions.full_name  as action,
@@ -294,12 +295,14 @@ EOD;
       {
         while ($status_row = pg_fetch_assoc($events_result))
         {
-          $event_date     = new DateTime($status_row['event_date']);
-          $event_date_str = $event_date->format('F j, Y');
-          $agency_name    = $status_row['agency_name'];
-          $agency_abbr    = $status_row['agency_abbr'];
-          $action         = $status_row['action'];
-          $annotation     = $status_row['annotation'];
+          $event_date         = new DateTime($status_row['event_date']);
+          $effective_date     = new DateTime($status_row['effective_date']);
+          $event_date_str     = $event_date->format('F j, Y');
+          $effective_date_str = $effective_date->format('F j, Y');
+          $agency_name        = $status_row['agency_name'];
+          $agency_abbr        = $status_row['agency_abbr'];
+          $action             = $status_row['action'];
+          $annotation         = $status_row['annotation'];
           if ($action === 'Revise')
           {
             $reviewer_info = '';
@@ -324,7 +327,18 @@ EOD;
           }
           else
           {
-            $what = ($action === 'Fix') ? 'CUNYfirst catalog data' : 'proposal';
+            $what = 'proposal';
+            $when = 'on';
+            if ($action === 'Fix')
+            {
+              //  Fixes require special treatment in order to present the correct sequence
+              //  of events. The effective_date entered into CUNYfirst is what gets
+              //  displayed. But the event_date is taken as the date the fix was entered
+              //  into this system so that the most recent event for the proposal will be
+              //  the fix event.
+              $what = 'CUNYfirst catalog data,';
+              $when = "effective $effective_date_str, on";
+            }
             if (isset($past_tense[$action]))
             {
               $action = $past_tense[$action];
@@ -339,7 +353,7 @@ EOD;
             }
             $event_str = <<<EOD
       <p>
-        The $agency_name <strong>$action</strong> the $what on $event_date_str.
+        The $agency_name <strong>$action</strong> the $what $when $event_date_str.
       </p>
 
 EOD;
