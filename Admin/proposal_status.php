@@ -1,4 +1,4 @@
-<?php  /* Admin/need_revision.php */
+<?php  /* Admin/proposal_status.php */
 
 set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
@@ -29,12 +29,14 @@ require_once('init_session.php');
 <!DOCTYPE html>
 <html <?php echo $html_attributes;?>>
   <head>
-    <title>Review Status</title>
+    <title>Proposal Status</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_status.css" />
+    <script type="application/javascript" src='js/jquery-1.8.3.min.js'></script>
+    <script type="application/javascript" src='js/proposal_status.js'></script>
   </head>
   <body>
-    <h1>Review Status</h1>
+    <h1>Proposal Status</h1>
 <?php
   echo $dump_if_testing;
 
@@ -77,142 +79,185 @@ require_once('init_session.php');
 
 EOD;
 
-
-  //  Display missing/backdated reviews
-    $query = <<<EOD
-   SELECT * FROM review_status
-
-EOD;
-    $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: " .
-        pg_last_error($curric_db) . ': ' . basename(__FILE__) . ' ' . __LINE__ .
-        '</h1></body></html>');
-    if (($num = pg_num_rows($result)) < 1)
+  //  Proposals that need to be marked 'Approved' by GEAC
+  //  ----------------------------------------------------
+  //  First process the geac-approval-form, if it was submitted
+  if ($form_name === 'geac-approval-form')
+  {
+    try
     {
-      echo "<h2>All reviews are available and up to date</h2>\n";
-    }
-    else
-    {
-      $reviewer_counts = array();
-      echo <<<EOD
-      <h2>$num Missing or Oboslete Reviews</h2>
-      <table>
-        <tr>
-          <th>Proposal</th>
-          <th>Type</th>
-          <th>Course</th>
-          <th>Proposal Date</th>
-          <th>Assigned Date</th>
-          <th>Review Date</th>
-          <th>Recommendation</th>
-          <th>Reviewer</th>
-        </tr>
-
-EOD;
-      while ($row = pg_fetch_assoc($result))
+      //  Common to all approvals
+      $num = 0;
+      $event_date     = new DateTime(sanitize($_POST['geac-approval-date']));
+      $event_date     = $event_date->format('Y-m-d');
+      $effective_date = $event_date;
+      $agency         = 'GEAC';
+      $action         = 'Approve';
+      $comment        = '';
+      $remote_ip = 'Unknown Host IP';
+      if (isset($_SERVER['REMOTE_ADDR']))
       {
-        $id       = $row['proposal'];
-        $proposed = $row['proposal_date'];
-        $assigned = $row['assigned_date'];
-        $reviewed = $row['reviewed_date'];
-        $reviewer = $row['reviewer'];
-        echo <<<EOD
-        <tr>
-          <td><a href='../Reviews#$id'>$id</a></td>
-          <td>{$row['type']}</td>
-          <td>{$row['course']}</td>
-          <td>$proposed</td>
-          <td>$assigned</td>
-          <td>$reviewed</td>
-          <td>{$row['recommendation']}</td>
-          <td>$reviewer</td>
-        </tr>
+        $remote_ip = $_SERVER['REMOTE_ADDR'];
+      }
 
-EOD;
-        if (isset($reviewer_counts[$reviewer]))
+      //  Generate approval event for each proposal selected
+      pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
+          . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
+          . "</h2></body></html>\n");
+      foreach ($_POST as $key => $value)
+      {
+        if (strstr($key, 'geac-accept'))
         {
-          $reviewer_counts[$reviewer]++;
+          $proposal_id = str_replace('geac-accept-', '', $key);
+          $query = <<<EOD
+INSERT INTO events
+        (
+          id,
+          event_date,
+          effective_date,
+          agency_id,
+          action_id,
+          proposal_id,
+          discipline,
+          course_number,
+          annotation,
+          entered_by,
+          entered_from,
+          entered_at
+        )
+VALUES (
+        default,                                                        -- id
+        '$event_date',                                                  -- event_date
+        '$effective_date',                                              -- effective_date
+        (SELECT id FROM agencies WHERE abbr = '$agency'),               -- agency_id
+        (SELECT id FROM actions WHERE full_name = '$action'),           -- action_id
+        $proposal_id,                                                   -- proposal_id
+        (SELECT discipline FROM proposals WHERE id = $proposal_id),     -- discipline
+        (SELECT course_number FROM proposals WHERE id = $proposal_id),  -- course_number
+        '$comment',                                                     -- annotation
+        '{$person->email}',                                             -- entered_by
+        '$remote_ip',                                                   -- entered_from
+        now()                                                           -- entered_at
+        )
+EOD;
+            $result = pg_query($curric_db, $query) or die("Update error: " .
+              pg_last_error($curric_db) . ' file ' . basename(__FILE__) . ' line ' .
+              __LINE__);
+            $num++;
         }
-        else
-        {
-          $reviewer_counts[$reviewer] = 1;
-        }
-
       }
-      echo "      </table>\n";
-    }
-    if (count($reviewer_counts) > 0)
-    {
-      ksort($reviewer_counts);
-      //  Display number of missing obsolete reviews for each reviewer
       echo <<<EOD
-      <table>
-        <tr>
-          <th>Reviewer</th>
-          <th>Num to do</th>
-        </tr>
+      <h2 class='warning'>$num GEAC approvals entered.</h2>
 
 EOD;
-      foreach ($reviewer_counts as $reviewer => $count)
-      {
-        echo "        <tr><td>$reviewer</td><td>$count</td></tr>\n";
-      }
-      echo "      </table>\n";
+      pg_query($curric_db, 'COMMIT') or die("<h1 class='error'>Query Failed: "
+          . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
+          . "</h2></body></html>\n");
     }
-
-    //  Proposals lacking reviews
-    //  -------------------------------------------------------------------------------
-    $query = <<<EOD
-SELECT    p.id                                    AS proposal_id,
-          p.discipline||' '||p.course_number      AS course,
-          t.abbr                                  AS type,
-          to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
-          p.submitter_email
-FROM      proposals p, proposal_types t
-WHERE     p.id > 160
-AND       p.submitted_date IS NOT NULL
-AND       t.id = p.type_id
-AND       p.agency_id = (SELECT id FROM agencies WHERE abbr = 'GEAC')
-AND       p.id NOT IN (SELECT proposal_id FROM reviews)
-ORDER BY  p.id;
-
-EOD;
-    $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: " .
-        basename(__FILE__) . ' ' . __LINE__) . "</h2></body></html>\n";
-    if (($num = pg_num_rows($result)) < 1)
-    {
-      echo "<h2>All GEAC proposals have been assigned to reviewers</h2>\n";
-    }
-    else
+    catch (Exception $e)
     {
       echo <<<EOD
-      <h2>$num GEAC proposals not yet assigned to reviewers</h2>
-      <table>
-        <tr>
-          <th>Proposal</th>
-          <th>Course</th>
-          <th>Type</th>
-          <th>Submitted</th>
-          <th>Submitter</th>
-        </tr>
+      <h2 class='error'>
+        Invalid GEAC Approval Date. No approvals entered.
+      </h2>
 
 EOD;
-      while ($row = pg_fetch_assoc($result))
-      {
-        $proposal_id = $row['proposal_id'];
-        echo <<<EOD
-        <tr>
-          <td><a href="../Proposals?id=$proposal_id">$proposal_id</a></td>
-          <td>{$row['course']}</td>
-          <td>{$row['type']}</td>
-          <td>{$row['submitted_date']}</td>
-          <td>{$row['submitter_email']}</td>
-        </tr>
-
-EOD;
-      }
-      echo "      </table>\n";
     }
   }
+  //  Now display the proposals than need to be marked Approved, if any.
+  $query = <<<EOD
+select *
+from double_accepts
+order by id;
+
+EOD;
+  $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: "
+      . pg_last_error($curric_db) . " " . basename(__FILE__) . " " . __LINE__
+      . "</h1></body></html>");
+  $num = pg_num_rows($result);
+  if ($num > 0)
+  {
+    echo <<<EOD
+      <h2>Proposals that need to be marked 'Approved' by GEAC</h2>
+      <form name='geac-approval-form' action='./proposal_status.php' method='post'>
+        <input type='hidden' name='form-name' value='geac-approval-form' />
+        <table>
+          <tr>
+            <th>Accept</th>
+            <th>ID</th>
+            <th>Course</th>
+            <th>Type</th>
+            <th>Num Accepts</th>
+          </tr>
+
+EOD;
+      while ($row = pg_fetch_assoc($result))
+      {
+        $id = $row['id'];
+        echo <<<EOD
+          <tr>
+            <td><input type='checkbox' name='geac-accept-$id' checked='checked' /></td>
+            <td><a href='../Proposals?id=$id' target='_blank'>$id</a></td>
+            <td>{$row['course']}</td>
+            <td>{$row['type']}</td>
+            <td>{$row['num_accepts']}</td>
+          </tr>
+
+EOD;
+      }
+          echo <<<EOD
+        </table>
+        <fieldset><legend>Submit approvals</legend>
+          <label for='geac-approval-date'>GEAC Approval Date</label>
+          <input  type='text'
+                  name='geac-approval-date'
+                  value='today'
+                  id='geac-approval-date' />
+          <button type='submit' id='geac-approval-button'>
+          <span id='num-accept'>Approve $num Proposals</span></button>
+        </fieldset>
+      </form>
+
+EOD;
+  }
+  else
+  {
+    echo "<h2>There are no proposals that need to be marked 'Approved' by GEAC</h2>\n";
+  }
+  //  Proposals that are approved by GEAC, but not by UCC
+  //  ----------------------------------------------------
+  echo <<<EOD
+      <h2>Proposals that are approved by GEAC, but not by UCC</h2>
+
+EOD;
+
+  //  Proposals that are approved by UCC, but not by Senate
+  //  ------------------------------------------------------
+  echo <<<EOD
+      <h2>Proposals that are approved by UCC, but not by Senate</h2>
+
+EOD;
+
+  //  Proposals approved by Senate, but not by CCRC
+  //  ----------------------------------------------
+  echo <<<EOD
+      <h2>Proposals approved by Senate, but not by CCRC</h2>
+
+EOD;
+
+  //  Proposals approved by Senate, but not by BOT
+  //  ---------------------------------------------
+  echo <<<EOD
+      <h2>Proposals approved by Senate, but not by BOT</h2>
+
+EOD;
+
+  //  Proposals to Fix CUNYfirst awaiting Registrar action
+  //  -----------------------------------------------------
+  echo <<<EOD
+      <h2>Proposals to Fix CUNYfirst awaiting Registrar action</h2>
+
+EOD;
 
   //  Status/Nav Bars
   //  =================================================================================
@@ -252,6 +297,7 @@ EOD;
     </div>
 
 EOD;
+  }
 
 ?>
   </body>
