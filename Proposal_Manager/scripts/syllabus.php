@@ -221,22 +221,21 @@ EOD;
     else $num_syllabi = 0;
     if ($num_syllabi > 0)
     {
-      //  TODO: Consider getting rid of this cleverness, and display the full list of
-      //  links with the upload date as the link text.
+      //  List all syllabi for the course that have been uploaded to date.
+      $what = 'A syllabus';
       $copula = 'was';
-      $what = 'syllabus';
       $plural = '';
       if ($num_syllabi > 1)
       {
+        $what = 'Syllabi';
         $copula = 'were';
-        $what = 'following syllabi';
         $plural = 's';
       }
       $num_syllabi = num2str($num_syllabi);
       echo <<<EOD
     <h3>Available Syllabi</h3>
     <p>
-      The $what for $course_str $copula saved on the date$plural
+      $what for $course_str $copula saved on the date$plural
       indicated:
     </p>
     <ul>
@@ -244,7 +243,10 @@ EOD;
 EOD;
       foreach ($current_syllabi as $date_str => $pathname)
       {
-        $saved_date = substr($date_str, 0, 10) . ' ' . substr($date_str, 14, 5);
+        $saved_date     = substr($date_str, 0, 10) . ' ' . substr($date_str, 14, 5);
+				$human_date_obj = new DateTime($saved_date);
+				$human_date_str = $human_date_obj->format('F j, Y \a\t g:i ') 
+				    . substr($date_str, 20, 2);
         $query = <<<EOD
 SELECT saved_by
 FROM syllabus_uploads
@@ -260,7 +262,7 @@ EOD;
           $row = pg_fetch_assoc($result);
           $byline = ' by ' . $row['saved_by'];
         }
-        echo "      <li><a href='$pathname'>$date_str</a> $byline</li>\n";
+        echo "      <li><a href='$pathname'>$human_date_str</a> $byline</li>\n";
       }
       echo "    </ul>\n";
     }

@@ -156,16 +156,7 @@ EOD;
                            FROM proposals
                           WHERE submitted_date IS NOT NULL
                             AND closed_date IS NULL)
-     AND proposal_id NOT IN
-        (SELECT proposal_id
-          FROM events
-         WHERE action_id IN
-              (SELECT id
-                 FROM actions
-                WHERE full_name = 'Approve'
-                   OR full_name = 'Reject'
-              )
-        )
+
 ORDER BY proposal_id
 EOD;
         $result = pg_query($curric_db, $query) or

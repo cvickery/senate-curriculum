@@ -48,6 +48,7 @@
     if ($val > pow(2, 10)) return number_format($val / pow(2, 10), 1) . ' KB';
     return number_format($val) . ' bytes';
   }
+
 //  get_current_syllabus()
 //  --------------------------------------------------------------------------------------
 /*  Returns pathname of the most recent syllabus for a course, or null if there is none.
@@ -64,18 +65,26 @@
 //  --------------------------------------------------------------------------------------
 /*  Returns possibly empty array of pathnames to syllabi for a course, sorted in reverse
  *  order of modification time; keyed by printable representation of the file modification
- *  times.
+ *  times. Ignore syllabi that were uploaded more than once in a day.
  */
   function get_syllabi($course_str)
   {
     $pathnames = array();
     $result = preg_match(course_str_re, $course_str, $matches);
-    if ($result < 1) throw new Exception('Invalid course string');
+    if ($result < 1)
+    {
+      throw new Exception('Invalid course string: ' 
+          . basename(__FILE__) . ' line ' . __LINE__);
+    }
     $syllabus_dir = opendir('../Syllabi');
-    $syllabus_str = strtoupper($matches[1]) . '-' . strtoupper($matches[2]) . '_';
+    //  Only the latest syllabus on a day matches the following regular expression
+    //  If there are multiple ones in a day, the earlier one(s) will have a dot-number
+    //  between the date and the .pdf suffix, and won't be recognized.
+    $syllabus_re = '/^' . strtoupper($matches[1]) . '-' . strtoupper($matches[2]) .
+      '_\d{4}-\d{2}-\d{2}\.pdf/';
     while ($syllabus = readdir($syllabus_dir))
     {
-      if (preg_match("/^$syllabus_str/", $syllabus))
+      if (preg_match($syllabus_re, $syllabus))
       {
         $pathname = "../Syllabi/$syllabus";
         $key = date('Y-m-d \a\t h:i a', filemtime($pathname));

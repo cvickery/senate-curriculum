@@ -170,28 +170,78 @@ EOD;
 
       //  Current Syllabus
       //  -----------------------------------------------------------------------------
-      $syllabus = get_current_syllabus("$discipline $course_number");
-      if ($syllabus)
+      $syllabi = get_syllabi("$discipline $course_number");
+      $num_syllabi = count($syllabi);
+      switch ($num_syllabi)
       {
-        echo "<h2>Current Syllabus for $discipline $course_number</h2>\n";
-        $size_str = humanize_num(filesize($syllabus));
-        $date_str = date('F j, Y', filemtime($syllabus));
-        echo <<<EOD
+        case 0:
+          echo <<<EOD
+      <h2 class='error'>No Syllabi Available for $discipline $course_number</h2>
+
+EOD;
+          break;
+        case 1:
+          $keys = array_keys($syllabi);
+          $syllabus = $syllabi[$keys[0]];
+          $size_str = humanize_num(filesize($syllabus));
+          $date_str = date('F j, Y', filemtime($syllabus));
+          $date_saved = date('Y-m-d H-i', filemtime($syllabus));
+          $by_line  = '';
+          $query = <<<EOD
+select  saved_by
+from    syllabus_uploads
+where   to_char(saved_date, 'YY-MM-DD HH-MI') = '$date_saved'
+
+EOD;
+          $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
+              . basename(__FILE__) . ' ' . __LINE__ . '</h1></body></html>');
+          if (pg_num_rows($result) === 1)
+          {
+            $by_line = "by {$row['saved_by']}";
+          }
+          echo <<<EOD
+      <h2>Current Syllabus for $discipline $course_number</h2>
       <p>
         <a href='$syllabus'>The current syllabus for $discipline $course_number</a>
-        was uploaded on $date_str ($size_str).
+        ($size_str) was uploaded $by_line on $date_str.
       </p>
 
 EOD;
-      }
-      else
-      {
-        echo <<<EOD
-    <h2 class='error'>
-      No Syllabus Available for $discipline $course_number
-    </h2>
+          break;
+        default:
+          echo <<<EOD
+      <h2>
+        $num_syllabi syllabi for $discipline $course_number, most current one first.
+      </h2>
 
 EOD;
+          foreach ($syllabi as $syllabus)
+          {
+            $size_str = humanize_num(filesize($syllabus));
+            $date_str = date('F j, Y', filemtime($syllabus));
+            $date_saved = date('Y-m-d H-i', filemtime($syllabus));
+            $by_line  = '';
+            $query = <<<EOD
+select  saved_by
+from    syllabus_uploads
+where   to_char(saved_date, 'YY-MM-DD HH-MI') = '$date_saved'
+
+EOD;
+            $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
+              . basename(__FILE__) . ' ' . __LINE__ . '</h1></body></html>');
+            if (pg_num_rows($result) === 1)
+            {
+              $by_line = "by {$row['saved_by']}";
+            }
+            echo <<<EOD
+    <p>
+      <a href='$syllabus'>$discipline $course_number</a> ($size_str) uploaded $by_line on
+      $date_str.
+    </p>
+
+EOD;
+          }
+          break;
       }
 
       //  Other Proposals

@@ -224,12 +224,55 @@ EOD;
   {
     echo "<h2>There are no proposals that need to be marked 'Approved' by GEAC</h2>\n";
   }
+
   //  Proposals that are approved by GEAC, but not by UCC
   //  ----------------------------------------------------
-  echo <<<EOD
-      <h2>Proposals that are approved by GEAC, but not by UCC</h2>
-
+  $query = 'select * from ucc_pending';
+  $result = pg_query($curric_db, $query) or die("h1 class='error'>Query Failed: "
+      . pg_last_error($curric_db) . ' File ' . __FILE__ . ' ' . __LINE__
+      . "</h1></body></html>");
+  $num = pg_num_rows($result);
+  $suffix = 's';
+  $copula = 'are';
+  if ($num == 1)
+  {
+    $suffix = '';
+    $copula = 'is';
+  }
+  if ($num > 0)
+  {
+    echo <<<EOD
+      <h2>$num proposal$suffix that $copula approved by GEAC, but not by UCC</h2>
+      <table>
+        <tr>
+          <th>Select</th>
+          <th>ID</th>
+          <th>Course</th>
+          <th>Type</th>
+          <th>Submitted</th>
+          <th>GEAC Approved</th>
+        </tr>
 EOD;
+    while ($row = pg_fetch_assoc($result))
+    {
+      $id = $row['proposal_id'];
+      echo <<<EOD
+        <tr>
+          <td><input type='checkbox' name='ucc-approve-$id' checked='checked' /></td>
+          <td><a href='../Proposals?id=$id'>$id</a></td>
+          <td>{$row['course']}</td>
+          <td>{$row['type']}</td>
+          <td>{$row['submitted']}</td>
+          <td>{$row['geac_approved']}</td>
+        </tr>
+EOD;
+    }
+    echo "      </table>\n";
+  }
+  else
+  {
+    echo "<h2>There are no proposals approved by GEAC but not by UCC</h2>\n";
+  }
 
   //  Proposals that are approved by UCC, but not by Senate
   //  ------------------------------------------------------
