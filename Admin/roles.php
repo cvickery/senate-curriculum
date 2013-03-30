@@ -1,6 +1,8 @@
 <?php  /* Admin/manage_roles.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . '/../scripts' );
+set_include_path(get_include_path() 
+    . PATH_SEPARATOR . getcwd() . '/../scripts' 
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session1.php');
 require_once('login1.php');
 

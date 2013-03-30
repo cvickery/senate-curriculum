@@ -2,7 +2,9 @@
 //  .../[test_]Curriculum/scripts/init_session.php
 
 /*  Common setup for all pages:
- *    set_include_path(get_include_path() . PATH_SEPARATOR . [path_to_this_dir] );
+ *    set_include_path(get_include_path() 
+ *      . PATH_SEPARATOR . [path_to_this_dir]
+ *      . PATH_SEPARATOR . [ path_path_to_include_dir ]);
  *    require this
  *    ...
  *
@@ -118,7 +120,7 @@
     $person = unserialize($_SESSION['person']);
     unset($pending_person);
   }
-  else if (isset($_SESSION['pending_person]))
+  else if (isset($_SESSION['pending_person']))
   {
     $pending_person = unserialize($_SESSION['pending_person']);
     unset($person);
