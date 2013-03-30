@@ -300,7 +300,7 @@ EOD;
     }
     if (strlen($text_str) > 70)
     {
-      $text_str = substr($text_str, 0, 66) . '...';
+      $text_str = mb_substr($text_str, 0, 66, 'utf-8') . '...';
     }
     echo "<tr><td>$criterion</td><td>$text_str</td></tr>\n";
   }

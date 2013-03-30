@@ -55,7 +55,11 @@ require_once('include/atoms.inc');
   </head>
   <body>
 <?php
-echo $dump_if_testing;
+  echo $dump_if_testing;
+  if (isset($_SESSION['login_error_msg']))
+  {
+    echo "<h3 class='error'>{$_SESSION['login_error_msg']}</h3>\n";
+  }
 ?>
     <h1>Manage Proposals</h1>
     <div class='warning overview'>

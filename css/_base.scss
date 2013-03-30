@@ -129,6 +129,7 @@ input[type="password"] {
 
 #status-bar {
   width:$twelve-col;
+	margin:0;
   padding: $gutter $gutter $quarter-gutter $gutter;
   background-color:$status-background;
   position:fixed;

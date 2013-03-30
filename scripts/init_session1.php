@@ -1,17 +1,47 @@
 <?php
-//  .../Curriculum/scripts/init_session.php
+//  .../[test_]Curriculum/scripts/init_session.php
 
 /*  Common setup for all pages:
  *    set_include_path(get_include_path() . PATH_SEPARATOR . [path_to_this_dir] );
  *    require this
  *    ...
+ *
+ *  Postconditions: global variables set
+ *
+ *    $site_home_url will be a string suitable for redirecting to the site home directory,
+ *    namely one of the following:
+ *      https://senate.qc.cuny.edu/Curriculum
+ *      https://senate.qc.cuny.edu/test_Curriculum
+ *      http://localhost/senate.qc.cuny.edu/test_Curriculum
+ *
+ *    $curric_db will be a resource to the curric or test_curric database.
+ *
+ *    $dump_if_testing will be either an empty string or an HTML comment string with
+ *    debugging information.
+ *
+ *    $form_name will be the name of the form being submitted, if any
+ *
+ *    $person will be unserialized copy of $_SESSION['person'] iff person is logged in.
  */
+  //  Default $site_home_url components
+  $http_protocol  = 'https';
+  $http_host      = 'senate.qc.cuny.edu';
+  $home_dir       = 'Curriculum';
+
   //  Force HTTPS connection if not already in place and not coming from localhost
-  if ( !isset($_SERVER['HTTPS']) &&
-       !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost') )
+  if ( !isset($_SERVER['HTTPS']))
   {
-    header("Location: https://{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}");
-    exit;
+    if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
+    {
+      $http_protocol  = 'http';  // Exception for off-site development
+      $http_host      = 'localhost/senate.qc.cuny.edu';
+    }
+    else
+    {
+      //  Force https connection
+      header("Location: https://{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}");
+      exit;
+    }
   }
 
 //  Modules used by all pages
@@ -19,9 +49,9 @@
   date_default_timezone_set('America/New_York');
   session_start();
   require_once('credentials.inc');
-	require_once('nav_functions.php');
-  require_once('../include/atoms.inc');
-	require_once('assertions.php');
+  require_once('nav_functions.php');
+  require_once('atoms.inc');
+  require_once('assertions.php');
   require_once('classes.php');
   require_once('utils.php');
 
@@ -40,7 +70,6 @@
  *  didn't sanitize user input before saving it in _SESSION. For example, if a
  *  justification contains '--' it will break the html comment syntax.
  */
-  $home_dir = 'Curriculum';
   $dump_if_testing = '';
   if (strstr($_SERVER['REQUEST_URI'], 'test'))
   {
@@ -59,9 +88,8 @@
     ob_end_clean();
   }
 
-  //  Be sure session_state has a value
-  if ( ! isset($_SESSION[session_state])) $_SESSION[session_state] = ss_not_logged_in;
-
+  //  Final $site_home_url
+  $site_home_url = "$http_protocol://$http_host/$home_dir";
   //  Global form_name: which form, if any, was submitted.
   $form_name = '';
   if ( isset($_POST[form_name])) $form_name = sanitize($_POST[form_name]);
@@ -76,11 +104,28 @@
     {
       unset($_SESSION[$key]);
     }
-    //  Set the session_state
-    $_SESSION['session_state'] = ss_not_logged_in;
     //  And redirect to site index page
-    header("Location: https://{$_SERVER['SERVER_NAME']}/$home_dir");
+    header("Location: $site_home_url");
     exit;
   }
 
+  //  Set login state
+  //  ----------------------------------------------------------------------------------
+  $person         = '';
+  $pending_person = '';
+  if (isset($_SESSION['person']))
+  {
+    $person = unserialize($_SESSION['person']);
+    unset($pending_person);
+  }
+  else if (isset($_SESSION['pending_person]))
+  {
+    $pending_person = unserialize($_SESSION['pending_person']);
+    unset($person);
+  }
+  else
+  {
+    unset($person);
+    unset($pending_person);
+  }
 ?>

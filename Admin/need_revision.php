@@ -249,9 +249,10 @@ EOD;
         $review_link
       </nav>
       <nav>
-        <a href='.'>Admin</a>
+        <a href='.'>Admin Home</a>
         <a href='event_editor.php'>Event Editor</a>
         <a href='review_status.php'>Review Status</a>
+        <a href='proposal_status.php'>Proposal Status</a>
         <a href='need_revision.php' class='current-page'>Pending Revision</a>
       </nav>
     </div>

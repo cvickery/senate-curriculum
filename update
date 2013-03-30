@@ -15,7 +15,7 @@ fi
 diff $1 ../Curriculum/$1
 if [[ $? == 1 ]]
 then
-  read -p "OK to copy [Y|n]? "
+  read -p "OK to copy $1 [Y|n]? "
   if [[ $REPLY == [Nn]* ]]
   then echo "Not copied"
   else cp $1 ../Curriculum/$1

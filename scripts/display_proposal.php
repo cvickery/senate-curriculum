@@ -37,7 +37,7 @@ EOD;
     {
       $row                = pg_fetch_assoc($result);
       $opened_date        = $row['opened_date'];
-      $submitted_date     = $row['submitted_date'];
+      $submitted_date     = $row['activated_date'];
       $closed_date        = $row['closed_date'];
       $dept_approval_date = $row['dept_approval_date'];
       $dept_approval_name = $row['dept_approval_name'];
@@ -63,7 +63,18 @@ EOD;
         $submitted_status_1 = "submitted on $submitted_date_str";
         $submitted_status_2 = '';
       }
-      $course             = new Course($cur_catalog);
+      $course = new Course($new_catalog);
+      if ($proposal_abbr === 'REV-U' || 
+          $proposal_abbr === 'REV_G' ||
+          $proposal_abbr === 'FIX')
+      {
+        $course             = new Course($cur_catalog);
+      }
+      $course_title       = $course->course_title;
+      if ($course_title === 'No Title')
+      {
+        $course_title = 'Unknown Title';
+      }
       $catalog_info       = $course->toHTML(with_approvals);
       if ($course->course_id === 0)
       {
@@ -81,7 +92,10 @@ EOD;
 EOD;
       }
       echo <<<EOD
-  <h1>Proposal #$proposal_id<br/>$discipline $course_number: $proposal_type</h1>
+  <h1>
+    $proposal_abbr Proposal No. $proposal_id<br/>
+    $discipline $course_number: {$course_title}
+  </h1>
 
 EOD;
       $is_new = ($proposal_abbr === 'NEW-U' || $proposal_abbr === 'NEW-G');
@@ -176,7 +190,7 @@ EOD;
       {
         case 0:
           echo <<<EOD
-      <h2 class='error'>No Syllabi Available for $discipline $course_number</h2>
+      <h2 class='error'>No Syllabus Available for $discipline $course_number</h2>
 
 EOD;
           break;

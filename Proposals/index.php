@@ -240,7 +240,7 @@ EOD;
         $class_name = $proposal_classes[$class_id]['full_name'];
         $class_abbr = $proposal_classes[$class_id]['abbr'];
         echo "      <h1>$class_name ($class_abbr) Proposals</h1>\n";
-        $csv = tracking_table($types, 'p.type_id, p.id');
+        $csv = tracking_table($types, 'p.type_id, p.id', true);
         if ($csv === '')
         {
           echo "    <h2>No Proposals Found</h2>\n";
@@ -498,7 +498,7 @@ EOD;
       </form>
 
 EOD;
-      $csv = tracking_table($type_abbr, "$order_by $direction");
+      $csv = tracking_table($type_abbr, "$order_by $direction", true);
       if ($csv === '')
       {
         echo "    <h2>No $type_abbr Proposals Found</h2>\n";
@@ -533,19 +533,45 @@ EOD;
   <h1>Proposals for $discipline_name ($discp_abbr) Courses</h1>
 
 EOD;
+//      $query = <<<EOD
+//  SELECT proposals.*,
+//         cf_academic_organizations.department_name  dept_name,
+//         proposal_types.full_name                   proposal_type,
+//         proposal_classes.abbr                      class_abbr,
+//         proposal_classes.full_name                 class_name
+//    FROM proposals, cf_academic_organizations, proposal_types, proposal_classes
+//   WHERE proposals.discipline = '$discp_abbr'
+//     AND dept_id = cf_academic_organizations.id
+//     AND type_id = proposal_types.id
+//     AND proposal_classes.id = (SELECT class_id FROM proposal_types WHERE id = type_id)
+//     AND proposals.submitted_date IS NOT NULL
+//ORDER BY lpad(proposals.course_number, 3), proposal_classes.id
+//
+//EOD;
       $query = <<<EOD
-  SELECT proposals.*,
-         cf_academic_organizations.department_name  dept_name,
-         proposal_types.full_name                   proposal_type,
-         proposal_classes.abbr                      class_abbr,
-         proposal_classes.full_name                 class_name
-    FROM proposals, cf_academic_organizations, proposal_types, proposal_classes
-   WHERE proposals.discipline = '$discp_abbr'
-     AND dept_id = cf_academic_organizations.id
-     AND type_id = proposal_types.id
-     AND proposal_classes.id = (SELECT class_id FROM proposal_types WHERE id = type_id)
-     AND proposals.submitted_date IS NOT NULL
-ORDER BY lpad(proposals.course_number, 3), proposal_classes.id
+SELECT      p.id                                    AS proposal_id,
+            t.abbr                                  AS type,
+            c.abbr                                  AS class,
+            p.discipline||' '||p.course_number      AS course,
+            to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
+            p.submitter_name                        AS submitter_name,
+            p.submitter_email                       AS submitter_email,
+            g.abbr                                  AS agency,
+            a.full_name                             AS action,
+            e.event_date                            AS event_date
+FROM        proposals p LEFT JOIN events e
+                        ON  p.id = e.proposal_id
+                        LEFT JOIN actions a
+                        ON a.id = e.action_id,
+          proposal_types t,
+          agencies g,
+          proposal_classes c
+WHERE     p.discipline ~* '$discp_abbr'
+AND       t.id  = p.type_id
+AND       c.id = (SELECT class_id FROM proposal_types WHERE id = p.type_id)
+AND       p.submitted_date IS NOT NULL
+AND       g.id = e.agency_id
+ORDER BY  lpad(p.course_number, 3), c.id, e.event_date
 
 EOD;
       $result = pg_query($curric_db, $query)
@@ -557,53 +583,46 @@ EOD;
       }
       else
       {
-       echo <<<EOD
-      <table class='summary'>
-        <tr>
-          <th>ID</th>
-          <th>Course</th>
-          <th>Type</th>
-          <th>Date</th>
-          <th>Submitted By</th>
-        </tr>
-
-EOD;
+        $csv = generate_table_headings(array());
+        $current_id = 0;
         while ($row = pg_fetch_assoc($result))
         {
-          $proposal_id      = $row['id'];
-          $opened_date      = $row['opened_date'];
-          $submitted_date   = substr($row['submitted_date'], 0, 10);
-          $discipline       = $row['discipline'];
-          $course_number    = $row['course_number'];
-          $submitter_name   = $row['submitter_name'];
-          $proposal_type    = $row['proposal_type'];
-          $class_abbr       = $row['class_abbr'];
-          $id_link = "<a href='.?id=$proposal_id'>$proposal_id</a>";
-          if (!$submitted_date)
+          $proposal_id = $row['proposal_id'];
+          if ($proposal_id !== $current_id)
           {
-            $submitted_date = 'not submitted yet';
-            $id_link        = $proposal_id;
+            //  Starting a new proposal
+            if ($current_id !== 0)
+            {
+              //  Display current proposal before starting new one
+              $csv .= generate_table_row( $current_id,
+                                          $course,
+                                          $type,
+                                          $class,
+                                          $submitted_date,
+                                          $submitter_name,
+                                          $events);
+            }
+            $current_id = $proposal_id;
+            $events     = array();
           }
-          if ($class_abbr === 'PLAS')
-          {
-            $id_link = $proposal_id;
-            $submitted_date .= ' (Senate Approved)';
-          }
-          else
-          {
-            $submitted_date .= ' (Submitted)';
-          }
-          echo <<<EOD
-        <tr>
-          <td>$id_link</td>
-          <td>$discipline $course_number</td>
-          <td>$proposal_type ($class_abbr)</td>
-          <td>$submitted_date</td>
-          <td>$submitter_name</td>
-        </tr>
-
-EOD;
+          $course         = $row['course'];
+          $type           = $row['type'];
+          $class          = $row['class'];
+          $submitted_date = substr($row['submitted_date'], 0, 10);
+          $submitter_name = $row['submitter_name'];
+          $agency         = $row['agency'];
+          $event_date     = $row['event_date'];
+          $action         = $row['action'];
+          $events[]       = new Event($agency, $event_date, $action);
         }
+        //  Last proposal; end of table
+        $csv .= generate_table_row( $proposal_id,
+                                    $course,
+                                    $type,
+                                    $class,
+                                    $submitted_date,
+                                    $submitter_name,
+                                    $events);
         echo "    </table>\n";
       }
     }

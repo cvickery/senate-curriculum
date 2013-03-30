@@ -13,8 +13,40 @@ while ($row = pg_fetch_assoc($result))
 }
 
 //  Map agencies to agency_groups
-//  There is one column in the table for each agency group. The model requires
-//  a proposal to be processed by no more than one agency from each group.
+//  There is one column in the table for each agency group. The table of proposals
+//  includes a column for each agency group, showing the latest event for that group.
+//  if any.
+
+$query = <<<EOD
+select    a.abbr            agency_name,
+          a.agency_group_id agency_group_id,
+          g.name            agency_group_name
+from      agencies      a,
+          agency_groups g
+where     g.id = a.agency_group_id
+order by  a.display_order
+
+EOD;
+$result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: "
+    . pg_last_error($curric_db) . ' ' . basename(__FILE__) . ' ' . __LINE__
+    . "</h1></body></html>");
+
+//  list of agency groups names indexed by id
+$agency_groups_by_id      = array();
+//  list of agency group names indexed by agency
+$agency_groups_by_agency  = array();
+
+while ($row = pg_fetch_assoc($result))
+{
+  $agency_name        = $row['agency_name'];
+  $agency_group_id    = $row['agency_group_id'];
+  $agency_group_name  = $row['agency_group_name'];
+
+  $agency_groups_by_id[$agency_group_id] = $agency_group_name;
+  $agency_groups_by_agency[$agency_name] = $agency_group_name;
+}
+
+/*
 $agency_group_names = array('Subcommittee', 'Curriculum', 'College', 'CUNY');
 $agency_groups = array(
     'GEAC'      =>  $agency_group_names[0],
@@ -22,11 +54,12 @@ $agency_groups = array(
     'AQRAC'     =>  $agency_group_names[0],
     'UCC'       =>  $agency_group_names[1],
     'GCC'       =>  $agency_group_names[1],
+    'Dept'      =>  $agency_group_names[2],
     'Senate'    =>  $agency_group_names[2],
     'Registrar' =>  $agency_group_names[2],
     'CCRC'      =>  $agency_group_names[3],
     'BOT'       =>  $agency_group_names[3]);
-
+*/
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -99,7 +132,7 @@ $agency_groups = array(
 
 EOD;
     $error_msg = '';
-    $agencies = array_keys($agency_groups);
+    $agencies = array_keys($agency_groups_by_agency);
     $remote_ip = 'Unknown Host IP';
     if (isset($_SERVER['REMOTE_ADDR']))
     {
@@ -273,9 +306,9 @@ EOD;
             <th><div>Course</div></th>
             <th><div>Type</div></th>
 EOD;
-        foreach ($agency_group_names as $agency_group)
+        foreach ($agency_groups_by_id as $group_id => $agency_group_name)
         {
-          echo "            <th><div>$agency_group</div></th>";
+          echo "            <th><div>$agency_group_name</div></th>";
         }
         echo <<<EOD
             <th><div>Comment</div></th>
@@ -310,6 +343,8 @@ EOD;
       $result = pg_query($curric_db, $query) or die("Query failed: " .
           pg_last_error($curric_db) . ' file ' .
           basename(__FILE__) . ' line ' . __LINE__);
+
+      //  Get all the events for the proposal
       while ($row = pg_fetch_assoc($result))
       {
         $event_query = <<<EOD
@@ -326,17 +361,16 @@ EOD;
         $event_result = pg_query($curric_db, $event_query) or die("Query failed: " .
           pg_last_error($curric_db) . ' file ' . basename(__FILE__) . ' line ' . __LINE__);
         $actions = array();
-        foreach ($agency_group_names as $agency_group)
+        foreach ($agency_groups_by_id as $agency_id => $agency_group_name)
         {
-          $actions[$agency_group] = '';
+          $actions[$agency_group_name] = '';
         }
         while ($event = pg_fetch_assoc($event_result))
         {
           $action = $event['agency'] . ' ' . $event['action'] . '<br />'
                   . $event['event_date'];
-          $actions[$agency_groups[$event['agency']]] = $action;
+          $actions[$agency_groups_by_agency[$event['agency']]] = $action;
         }
-
         $proposal_id = $row['proposal_id'];
         echo <<<EOD
         <tr>
@@ -348,9 +382,9 @@ EOD;
           <td><div>{$row['proposal_type']}</div></td>
 
 EOD;
-        foreach ($agency_group_names as $group_name)
+        foreach ($agency_groups_by_id as $agency_id => $agency_group_name)
         {
-          echo "      <td><div>{$actions[$group_name]}</div></td>\n";
+          echo "      <td><div>{$actions[$agency_group_name]}</div></td>\n";
         }
         echo <<<EOD
           <td>
@@ -405,9 +439,10 @@ EOD;
         $review_link
       </nav>
       <nav>
-        <a href='.'>Admin</a>
+        <a href='.'>Admin Home</a>
         <a href='event_editor.php' class='current-page'>Event Editor</a>
         <a href='review_status.php'>Review Status</a>
+        <a href='proposal_status.php'>Proposal Status</a>
         <a href='need_revision.php'>Pending Revision</a>
       </nav>
     </div>

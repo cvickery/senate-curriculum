@@ -170,6 +170,7 @@ SELECT    p.id                                    AS proposal_id,
 FROM      proposals p, proposal_types t
 WHERE     p.id > 160
 AND       p.submitted_date IS NOT NULL
+AND       p.closed_date IS NULL
 AND       t.id = p.type_id
 AND       p.agency_id = (SELECT id FROM agencies WHERE abbr = 'GEAC')
 AND       p.id NOT IN (SELECT proposal_id FROM reviews)
@@ -247,6 +248,7 @@ EOD;
         <a href='.'>Admin</a>
         <a href='event_editor.php'>Event Editor</a>
         <a href='review_status.php' class='current-page'>Review Status</a>
+        <a href='proposal_status.php'>Proposal Status</a>
         <a href='need_revision.php'>Pending Revision</a>
       </nav>
     </div>

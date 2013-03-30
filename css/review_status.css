@@ -39,7 +39,7 @@ input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 
 #need-javascript { font-family: Helvetica, Candara, Arial, Sans-Serif; font-size: 1.2em; text-align: center; color: #661111; }
 
-#status-bar { width: 850px; padding: 10px 10px 2.5px 10px; background-color: #eeeeee; position: fixed; top: 0; left: 10px; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
+#status-bar { width: 850px; margin: 0; padding: 10px 10px 2.5px 10px; background-color: #eeeeee; position: fixed; top: 0; left: 10px; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
 
 #show-hide-instructions-button { float: left; margin: 0 10px; }
 

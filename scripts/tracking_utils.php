@@ -16,37 +16,123 @@ class Event
   }
 
   //  By returning the date, agency, and action as a string in that order, an array of
-  //  events can be sorted chronologically. Used by generate_row().
+  //  events can be sorted chronologically. Used by generate_table_row().
   public function __toString()
   {
     return $this->event_date . ' ' . $this->agency . ' ' . $this->action;
   }
 }
 
-//  generate_row()
+//  generate_table_headings()
+//  -------------------------------------------------------------------------------------
+/*  Generate the appropriate table columns and initialize the $csv string
+ */
+  function generate_table_headings($types)
+  {
+    global $proposal_type_abbr2type_id,
+           $proposal_type_id2agency_id,
+           $agency_ids;
+
+    //  Gather list of agencies. All proposals are submitted to one of the following:
+    $agencies = array('GEAC'      => false,
+                      'WSC'       => false,
+                      'AQRAC'     => false,
+                      'UCC'       => false,
+                      'GCC'       => false,
+                      'Registrar' => false);
+    foreach ($types as $type_abbr)
+    {
+      $type_id    = $proposal_type_abbr2type_id[$type_abbr];
+      $agency_id  = $proposal_type_id2agency_id[$type_id];
+      $agency_abbr = array_search($agency_id, $agency_ids);
+      $agencies[$agency_abbr] = true;
+    }
+    //  Columns to include
+    $columns = array('Proposal ID', 'Proposal Type', 'Course',
+                     'Submitted Date', 'Submitted By',
+                     'Subcommittee', 'Committee', 'Senate', 'CCRC', 'OAA');
+    $csv = '';
+    echo "<table class='summary'><tr>";
+    foreach ($columns as $column)
+    {
+      echo "<th>$column</th>";
+      if ($csv !== '') $csv .= ',';
+      if ($column === 'Course')
+      {
+        //  Separate the Course into discipline and number columns for CSV
+        $csv .= 'Discipline, Number';
+      }
+      else if ($column === 'Subcommittee')
+      {
+        $csv .= 'Subcommittee Action,Subcommittee Date,Subcommittee Name';
+      }
+      else if ($column === 'Committee')
+      {
+        $csv .= 'Committee Action,Committee Date,Committee Name';
+      }
+      else if ($column === 'Senate')
+      {
+        $csv .= 'Senate Action,Senate Date';
+      }
+      else if ($column === 'CCRC')
+      {
+        $csv .= 'CCRC Action,CCRC Date';
+      }
+      else if ($column === 'OAA')
+      {
+        $csv .= 'OAA Action,OAA Date';
+      }
+      else
+      {
+        $csv .= $column;
+      }
+    }
+    echo "</tr>\n";
+    $csv .= "\r\n";
+    return $csv;
+  }
+
+//  generate_table_row()
 //  -------------------------------------------------------------------------------------
 /*  Emit a table row based on events for a proposal.
  */
-  function generate_row($current_id,
-                        $course,
-                        $type,
-                        $class,
-                        $submitted_date,
-                        $submitter_name,
-                        $events)
+  function generate_table_row($current_id,
+                              $course,
+                              $type,
+                              $class,
+                              $submitted_date,
+                              $submitter_name,
+                              $events)
   {
     global $past_tense;
-
+    if (preg_match('/test/', getcwd()))
+    {
+      echo "<!-- id: $current_id -->\n";
+      echo "<!-- course: $course -->\n";
+      echo "<!-- type: $type -->\n";
+      echo "<!-- class: $class -->\n";
+      echo "<!-- submitted: $submitted_date -->\n";
+    }
     //  Figure out the column contents based on the events for this proposal.
     //  sort($events);
-    $subcommittee = $committee = $senate = $ccrc = '';
+    $subcommittee = $committee = $senate = $ccrc = $oaa = '';
     foreach ($events as $event)
     {
       if (isset($past_tense[$event->action]))
       {
         $event->action = $past_tense[$event->action];
       }
-      if ($event->action === 'Submitted') $event->action = 'Received';
+      
+      //  Departments submit proposals, which are received by a (sub-)committee
+      //  But the college submits proposals to the CCRC
+      //  So in the hopes of being clear, submissions other than those going to
+      //  the CCRC are marked as Received
+      if (($event->agency !== 'CCRC') &&
+          ($event->action === 'Submitted'))
+      {
+        $event->action = 'Received';
+      }
+
       echo "<!-- $event -->\n";
       switch ($event->agency)
       {
@@ -55,13 +141,13 @@ class Event
         case 'GEAC':
           //$subcommittee = $event->toString();
           $subcommittee = $event->action . ' ' . $event->event_date . ' ' . $event->agency;
-          if ($event->action === 'Approve') $ucc = 'Pending';
+          if ($event->action === 'Approved') $ucc = 'Pending';
           break;
         case 'UCC':
         case 'GCC':
         case 'Registrar':
           $committee = $event->action . ' ' . $event->event_date . ' ' . $event->agency;
-          if ($event->action === 'Approve') $senate = 'Pending';
+          if ($event->action === 'Approved') $senate = 'Pending';
           if ($class === 'Course') $subcommittee = 'N/A';
           if ($type === 'FIX')
           {
@@ -71,7 +157,7 @@ class Event
           break;
         case 'Senate':
           $senate = $event->action . ' ' . $event->event_date;
-          if (($event->action === 'Approve') && ($class === 'CUNY'))
+          if (($event->action === 'Approved') && ($class === 'CUNY'))
           {
             $ccrc = 'Pending';
           }
@@ -79,6 +165,9 @@ class Event
           break;
         case 'CCRC':
           $ccrc = $event->action . ' ' . $event->event_date;
+          break;
+        case 'OAA':
+          $oaa = $event->action . ' ' . $event->event_date;
           break;
       }
     }
@@ -100,6 +189,7 @@ class Event
   <td>$committee</td>
   <td>$senate</td>
   <td>$ccrc</td>
+  <td>$oaa</td>
 </tr>
 
 EOD;
@@ -120,7 +210,7 @@ EOD;
     }
     else
     {
-      $csv .= ',,';
+      $csv .= ',,,';
     }
     //  Separate committee fields: action-date-agency
     $committee_fields = explode(' ', $committee);
@@ -132,7 +222,7 @@ EOD;
     }
     else
     {
-      $csv .= ',,';
+      $csv .= ',,,';
     }
     //  Separate senate fields: action-date
     $senate_fields = explode(' ', $senate);
@@ -143,7 +233,7 @@ EOD;
     }
     else
     {
-      $csv .= ',';
+      $csv .= ',,';
     }
     //  Separate CCRC fields: action-date
     $ccrc_fields = explode(' ', $ccrc);
@@ -154,7 +244,18 @@ EOD;
     }
     else
     {
-      $csv .= ',';
+      $csv .= ',,';
+    }
+    //  Separate OAA fields: action-date
+    $oaa_fields = explode(' ', $oaa);
+    if (2 === count($oaa_fields))
+    {
+      $csv .= "\"$oaa_fields[0]\",";
+      $csv .= "\"$oaa_fields[1]\",";
+    }
+    else
+    {
+      $csv .= ',,';
     }
     return $csv . "\r\n";
   }
@@ -180,7 +281,14 @@ EOD;
     global  $curric_db, $agency_ids,
             $proposal_type_abbr2type_id,
             $proposal_type_id2agency_id;
-    $csv = '';
+
+    //  Generate closed clause
+    //  ----------------------
+    $closed_clause = 'AND       p.closed_date IS NULL';
+    if ($include_closed)
+    {
+      $closed_clause = '';
+    }
 
     //  Generate types clause
     //  ---------------------
@@ -202,10 +310,6 @@ OR  p.type_id IN (SELECT id FROM proposal_types WHERE abbr = '{$types[$i]}')
 EOD;
       }
     }
-    //  Generate closed clause
-    //  ----------------------
-    if ($include_closed) $close_clause = '';
-    else $closed_clause = "        AND closed_date IS NULL\n";
 
     //  The Query
     $query = <<<EOD
@@ -227,6 +331,7 @@ FROM        proposals p LEFT JOIN events e
           agencies g,
           proposal_classes c
 WHERE     ({$types_clause})
+$closed_clause
 AND       t.id  = p.type_id
 AND       c.id = (SELECT class_id FROM proposal_types WHERE id = p.type_id)
 AND       p.submitted_date IS NOT NULL
@@ -247,70 +352,17 @@ EOD;
     {
       /*  Columns depend on agency(ies) associated with the proposal type(s) requested.
        *
-       *  subcom:     submit -> subcom -> UCC -> Sen -> CCCRC
+       *  subcom:     submit -> subcom -> UCC -> Sen -> CCCRC (-> OAA if appeal)
        *  UCC:        submit           -> UCC -> Sen -> BOT
        *  GCC:        submit           -> GCC -> Sen -> BOT
        *  Registrar:  submit           (->xCC)       -> Registrar
        *
        *  That is, omit the subcommittee if the agency is UCC, GCC, or Registrar.
        *  Registrar proposals have to be reviewed by the appropriate curriculum
-       *  committee before going to the Registrar. (Curriculum committees may convert FIX
-       *  proposals to REV-x proposals.)
+       *  committee before going to the Registrar.
+       *  TODO: Curriculum committees may convert FIX proposals to REV-x proposals.
        */
-
-      //  Gather list of agencies. All proposals are submitted to one of the following:
-      $agencies = array('GEAC'      => false,
-                        'WSC'       => false,
-                        'AQRAC'     => false,
-                        'UCC'       => false,
-                        'GCC'       => false,
-                        'Registrar' => false);
-      foreach ($types as $type_abbr)
-      {
-        $type_id    = $proposal_type_abbr2type_id[$type_abbr];
-        $agency_id  = $proposal_type_id2agency_id[$type_id];
-        $agency_abbr = array_search($agency_id, $agency_ids);
-        $agencies[$agency_abbr] = true;
-      }
-      //  Columns to include
-      $columns = array('Proposal ID', 'Proposal Type', 'Course',
-                       'Submitted Date', 'Submitted By',
-                       'Subcommittee', 'Committee', 'Senate', 'CCRC');
-
-      echo "<table class='summary'><tr>";
-      foreach ($columns as $column)
-      {
-        echo "<th>$column</th>";
-        if ($csv !== '') $csv .= ',';
-        if ($column === 'Course')
-        {
-          //  Separate the Course into discipline and number columns for CSV
-          $csv .= 'Discipline, Number';
-        }
-        else if ($column === 'Subcommittee')
-        {
-          $csv .= 'Subcommittee Action,Subcommittee Date,Subcommittee Name';
-        }
-        else if ($column === 'Committee')
-        {
-          $csv .= 'Committee Action,Committee Date,Committee Name';
-        }
-        else if ($column === 'Senate')
-        {
-          $csv .= 'Senate Action,Senate Date';
-        }
-        else if ($column === 'CCRC')
-        {
-          $csv .= 'CCRC Action,CCRC Date';
-        }
-        else
-        {
-          $csv .= $column;
-        }
-      }
-      echo "</tr>\n";
-      $csv .= "\r\n";
-
+      $csv = generate_table_headings($types);
       $current_id = 0;
       while ($row = pg_fetch_assoc($result))
       {
@@ -321,13 +373,13 @@ EOD;
           if ($current_id !== 0)
           {
             //  Display current proposal before starting new one
-            $csv .= generate_row( $current_id,
-                                  $course,
-                                  $type,
-                                  $class,
-                                  $submitted_date,
-                                  $submitter_name,
-                                  $events);
+            $csv .= generate_table_row( $current_id,
+                                        $course,
+                                        $type,
+                                        $class,
+                                        $submitted_date,
+                                        $submitter_name,
+                                        $events);
           }
           $current_id = $proposal_id;
           $events = array();
@@ -344,13 +396,13 @@ EOD;
         $events[] = new Event($agency, $event_date, $action);
       }
       //  Last proposal
-      $csv .= generate_row( $current_id,
-                            $course,
-                            $type,
-                            $class,
-                            $submitted_date,
-                            $submitter_name,
-                            $events);
+      $csv .= generate_table_row( $current_id,
+                                  $course,
+                                  $type,
+                                  $class,
+                                  $submitted_date,
+                                  $submitter_name,
+                                  $events);
       echo <<<EOD
       </table>
 

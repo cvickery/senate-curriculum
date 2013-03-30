@@ -8,3 +8,5 @@ Pathways/
 Syllabi/
 *.swp
 debug.log
+.project
+.setings/

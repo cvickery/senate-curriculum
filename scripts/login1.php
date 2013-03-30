@@ -10,6 +10,9 @@
  *  Users who login through the 856 table get added to the curric.people table for use
  *  during future logins.
  *
+ *  Version 2: No way to bypass the password requirement for some pages and not others.
+ *  the person session variable is set only if the user is completely logged in, and not
+ *  otherwise. Use pending_person for person whose department has not been resolved yet.
  */
 
 //  add_to_curric()
@@ -35,55 +38,40 @@ EOD;
         pg_last_error($curric_db) . ' at ' . basename(__FILE__) . ' ' . __LINE__);
   }
 
-  //  Process the login process
+  //  Manage the login process
   //  ==================================================================================
   /*  It's complicated. There are two different forms in this module: login-form
    *  gets a user name or email address, which gets looked up in the curric.people table
    *  and, if that fails, the octsims.erp856 table. The 856 table can return multiple hits
-   *  (departments), which get disambibuated by login-which-dept. See also need_password.
+   *  (departments), which get disambiguated by the which-dept form.
    *
-   *  Algorithm:
-   *  + Process form data. Set SESSION[person] if user/dept have been identified. Set
-   *    SESSION[password] if one is entered correctly. Update person's password if new one
-   *    is given.
-   *  + Display the appropriate form, or none if the user is logged in and either doesn't
-   *    need a password or has already provided one.
-   *  + User has supplied a preferred_dept_index or an email address that is in the
-   *    curric.people table or and email address that matches a single entry in the 856
-   *    table: complete the login process.
-   *  + User has supplied an email address that matches multiple entries in the 856
-   *    table: display a disambiguation form.
-   *  + User has displayed an invalid email address or one that is in neither the
-   *    curric.people nor the 856 table: set an error message.
-   *  + Display either the login-which-department form, the login-form, or nothing
-   *    depending on
+   *  Structure:
    *
-   *    SESSION variables
-   *      session_state:        ss_is_logged_in or ss_not_logged_in
-   *      person:               Either unset or a serialized Person object
+   *  + Process form data, if any.
+   *    POST variables:
+   *      form_name
+   *       =login-form
+   *          qc_email [ type = text ]
+   *          password [ type = password ]
+   *       =login-which-department
+   *          pending_person [ type = hidden ] serialized Person object
+   *          preferred_dept_index [ type = text ] must be numeric (why?)
+   *
+   *  + If global variable $person is set, do a sanity check to be sure it’s a Person
+   *    object and that it matches $_SESSION[person].
+   *    Else generate username/password form
+   *
+   *    SESSION
+   *      person:               A serialized Person object with an array of depts
    *                              carries array of depts and index of preferred one
-   *      need_password:        If set
-   *                              if true
-   *                                invoking page requires a password and none or wrong
-   *                                one entered
-   *                              else
-   *                                password required and correct one has been entered
-   *                            Else
-   *                              no password needed
    *      login_error_msg:      Error message (if any) to display in login form
-   *    POST variables
-   *      qc_email
-   *      password (maybe)
-   *      preferred_dept_index
-   *      remember_me           (not implemented)
-   *    form_name
-   *      login-which-department
-   *      login-form
+   *
    *
    */
 
-  //  Globals for this module
+  //  Globals
   $login_error_msg = '';
+
   //  Process login-which-department form
   //  -----------------------------------------------------------------------------------
   if ($form_name === 'login-which-department')
@@ -365,63 +353,24 @@ EOD;
       $login_error_msg = "<p class='error'>{$login_error_msg}</p>";
 
       if (!isset($email)) $email = '';
-      if (isset($_SESSION[need_password]) && $_SESSION[need_password])
-      {
-        $password_part = <<<EOD
-      <fieldset class='password-fieldset'><legend>Enter/Change Password</legend>
-        <p>
-          This page requires you to provide your password. You can also change your
-          password here if you wish. You will have to contact $webmaster_email if you have
-          forgotten your password.
-        </p>
-        <label for='password'>Password:</label>
-        <input type='password' name='password' id='password' tabindex='2' />
-        <div class='instructions'>
-          <p>
-            <strong>New password rules:</strong> None. But leading and trailing blanks
-            will be ignored.
-          </p>
-        </div>
-        <label for='new_password'>New password: (<em>optional</em>)</label>
-        <input type='password' name='new_password' id='new_password' tabindex='4' />
-        <label for='repeat_new'>Repeat new password:</label>
-        <input type='password' name='repeat_new' id='repeat_new' />
-      </fieldset>
-EOD;
-      }
-      else
-      {
-        $value = '';
-        $password_part = <<<EOD
-      <input type='hidden' name='password' value='' />
-      <input type='hidden' name='new_password' value='' />
-      <input type='hidden' name='repeat_new' value='' />
-
-EOD;
-      }
       echo <<<EOD
     <form id='login-form' action='.' method='post'>
-      <fieldset><legend>Enter Email Address</legend>
+      <fieldset><legend>Sign In</legend>
         <input type='hidden' name='form-name' value='login-form' />
         <div class='instructions'>
           <p>
-            To use this site, you must provide your Queens College email address, which must
-            be on record with CUNYfirst. Contact the Academic Senate if you are unable to
-            sign in.
+            Much of this site is open to the public with no neeed to sign in. For other
+            parts, such as managing your proposals, you must provide your Queens College email
+            address, which must be on record with CUNYfirst. Contact $webmaster_email if
+            you are unable to sign in.
           </p>
           <p>
-            The site does not use passwords. Instead, you have to “activate” your work by
-            responding to an email sent to your official QC address.
+            If your Queens College email address is in the standard format
+            (<em>First.Last@qc.cuny.edu</em>), you may simply enter your name.
           </p>
           <p>
-            If your Queens College email address is in the standard format, you may simply
-            enter your name.
-          </p>
-          <p>
-            If the college has you listed in multiple departments, you will be prompted to
-            select the one you want to use. In the future, we may prevent people from
-            submitting proposals for disciplines other than their own, but that restriction
-            is not implemented at this time.
+            If CUNYfirst has you listed in multiple departments, you will be prompted to
+            select the one you want to use. You will only have to do that once.
           </p>
         </div>
         $login_error_msg
@@ -433,17 +382,49 @@ EOD;
                   tabindex='1'
                   class='triple-wide'
                   value='$email' />
-          $password_part
-          <button type='submit' tabindex='3'>Sign in</button>
+          <fieldset><legend>Enter/Change Password (see instructions)</legend>
+          <div class='instructions'>
+EOD;
+      if (isset($_SESSION[need_password]) && $_SESSION[need_password])
+      {
+        echo <<<EOD
+          <p>
+            You need to enter your password to proceed. You may also change it here if you
+            want to do so.
+          </p>
+
+EOD;
+      }
+      else
+      {
+        echo <<<EOD
+          <p>
+            Most parts of this site do not use passwords, so you can simply leave the
+            fields below empty. This is secure because we verify that anyone submitting
+            a proposal actually owns the Queens College email address they used for
+            signing in.
+          </p>
+          <p>
+            But for members of the curriculum committees and their subcommittees, certain
+            additional features become available only if you log in using a password,
+            which should be entered below. You can also change your password by entering a
+            new one where indicated.
+          </p>
+
+EOD;
+      }
+      echo <<<EOD
+            </div>
+            <label for='password'>Password:</label>
+            <input type='password' name='password' id='password' tabindex='1' />
+            <label for='new_password'>New password:<br />(if you want to change it)</label>
+            <input type='password' name='new_password' id='new_password' tabindex='3'/>
+            <label for='repeat_new'>Repeat new password:</label>
+            <input type='password' name='repeat_new' id='repeat_new' />
+          </fieldset>
+
+          <button type='submit' tabindex='2'>Sign in</button>
         </div>
-        <!--
-        <div>
-          <input type='checkbox' name='remember-me' id='remember-me' disabled='disabled' />
-          <label for='remember-me'>Remember Me</label>
-          (<em>Do not check if using a public computer.</em>)
-          ((<span class='warning'>TODO</span>))
-        </div>
-        -->
       </fieldset>
     </form>
 

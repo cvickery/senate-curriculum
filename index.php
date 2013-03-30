@@ -1,49 +1,12 @@
 <?php
 //  Curriculum/index.php
 
-  //  Force HTTPS connection if not already in place and not coming from localhost
-  if ( !isset($_SERVER['HTTPS']) &&
-       !(isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost') )
-  {
-    header("Location: https://{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}");
-    exit;
-  }
+set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() .  '/scripts' );
+require_once('init_session1.php');
 
-//  Modules used by all pages ... tailored for being up one directory level.
+
+//  Generate site index page
 //  -------------------------------------------------------------------------------------
-  date_default_timezone_set('America/New_York');
-  session_start();
-  require_once('credentials.inc');
-  require_once('include/atoms.inc');
-  require_once('scripts/assertions.php');
-  require_once('scripts/classes.php');
-  require_once('scripts/utils.php');
-  $form_name = '';
-  if ( isset($_POST[form_name])) $form_name = sanitize($_POST[form_name]);
-
-  //  Handle the logout form if it was submitted.
-  //  -----------------------------------------------------------------------------------
-  $home_dir = 'Curriculum';
-  if (strstr($_SERVER['REQUEST_URI'], 'test'))
-  {
-    $home_dir = 'test_Curriculum';
-  }
-
-  if ($form_name === 'logout')
-  {
-    //  Clear all session variables
-    $keys = array_keys($_SESSION);
-    foreach ($keys as $key)
-    {
-      unset($_SESSION[$key]);
-    }
-    //  Set the session_state
-    $_SESSION['session_state'] = ss_not_logged_in;
-    //  And redirect to site index page
-    header("Location: https://{$_SERVER['SERVER_NAME']}/$home_dir");
-    exit;
-  }
-
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -100,6 +63,13 @@ EOD;
 }
  ?>
     <h1>Queens College Curriculum</h1>
+<?php
+  echo $dump_if_testing;
+  if (isset($_SESSION['login_error_msg']))
+  {
+    echo "    <h3 class='error'>{$_SESSION['login_error_msg']}</h3>\n";
+  }
+?>
     <div>
       <h3>Responsibilities of the Academic Senate</h3>
       <p>

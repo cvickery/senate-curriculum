@@ -46,7 +46,7 @@ if (! isset($curric_db))
   class Person
   {
     public $name, $email, $dept_names, $dept_name, $affiliations,
-           $last_login_time, $last_login_ip, $has_reviews;
+           $last_login_time, $last_login_ip, $has_reviews, $roles;
 
     //  __construct()
     //  ---------------------------------------------------------------------------------
@@ -60,6 +60,7 @@ if (! isset($curric_db))
       $this->last_login_time  = null;
       $this->last_login_ip    = null;
       $this->has_reviews      = null;
+      $this->roles            = array();
     }
 
     //  set_name()
@@ -141,6 +142,21 @@ EOD;
         $result = pg_query($curric_db, $query) or die("Review query failed: " .
           pg_last_error($curric_db) . ' at ' . basename( __FILE__) . ' ' . __LINE__);
         $this->has_reviews = (pg_num_rows($result) > 0);
+        
+        //  Roles, if any
+        $query = <<<EOD
+select role_abbr
+from roles
+where id in ( select role_id from person_role_mappings
+              where lower(qc_email) = lower('{$this->email}'))
+
+EOD;
+        $result = pg_query($curric_db, $query) or die("Role query faile: " .
+            pg_last_error($curric_db) . ' at ' . basename(__FILE__) . ' ' . __LINE__);
+        while ($row = pg_fetch_assoc($result))
+        {
+          $this->roles[] = $row['role_abbr'];
+        }
 
         //  Set login audit info
         $ip = 'Unknown';
@@ -186,7 +202,7 @@ EOD;
             $type_abbr, $class_abbr,
             $guid,
             $dept_approval_date, $dept_approval_name,
-            $opened_date, $activated_date, $closed_date,
+            $created_date, $saved_date, $submitted_date, $closed_date,
             $agency_id,
             $discipline, $course_number,
             $submitter_name, $submitter_email,
@@ -206,9 +222,22 @@ EOD;
      *  (cur_catalog and new_catalog) and the Justifications array come from there. But
      *  for new proposals, these fields have to be initialized.
      *
-     *  TODO: The rules for initializing instances of this class need to be rethought:
-     *  they work, but they're too messy. Note that the activated_date field (and db
-     *  column) are obsolete and should be deleted. The submitted_date replaced it.
+     *  Dates in the proposals table:
+     *    created   Date the proposal was created.
+     *              Note: the person who creates a proposal is the only one who can edit
+     *              and/or submit it. Thus, the column/field names submitter_name and
+     *              submitter_email could also have been named creator_name and
+     *              creator_email or editor_name and editor_email.
+     *    submitted Timestamp when the proposal was first submitted. This never changes.
+     *              However, proposal_histories records have a submitted_date field that
+     *              indicate when _that_ version of the proposal was submitted.  There is
+     *              an event each time a proposal is submitted or resubmitted, and the
+     *              event_date matches the history records' submitted_date.
+     *    saved     Timestamp of the most recent save. If this is later than the most
+     *              recent history record, the proposal needs to be resubmitted in order
+     *              for anyone to see the changes.
+     *    closed    Date the proposal was withdrawn, received final approval, final
+     *              rejection, or (for proposals of type FIX) CUNYfirst was fixed.
      *
      *  Throws:
      *    "Invalid type" If proposal_type abbr is missing
@@ -289,7 +318,7 @@ EOD;
 
         default:
           //  If you get here, a programming error has allowed multiple proposals of the
-          //  same type for the same course, to be open and not yet activated in the
+          //  same type for the same course, to be open and not yet submitted in the
           //  proposals table.
           die("Bad switch ($num): " . basename(__FILE__) . ' ' . __LINE__);
           break;
@@ -309,8 +338,8 @@ EOD;
       $this->guid               = trim(`uuidgen`);
       $this->dept_approval_date = 'default';
       $this->dept_approval_name = 'default';
-      $this->opened_date        = date('Y-m-d');
-      $this->activated_date     = 'default';
+      $this->created_date        = date('Y-m-d');
+      $this->submitted_date     = 'default';
       $this->closed_date        = 'default';
       $this->discipline         = $discipline;
       $this->course_number      = $course_number;
@@ -371,8 +400,7 @@ EOD;
               '{$this->guid}',                -- guid
               '{$this->dept_approval_date}',  -- dept_approval_date
               '{$this->dept_approval_name}',  -- dept_approval_name
-               now(),                         -- opened_date
-               NULL,                          -- activated_date
+               now(),                         -- created_date
                NULL,                          -- closed_date
                {$this->agency_id},             -- agency_id
               '{$this->discipline}',          -- discipline
@@ -384,7 +412,8 @@ EOD;
               '$cur_catalog',                 -- cur_catalog
               '$new_catalog',                 -- new_catalog
               '$justifications',              -- justifications
-              now())                          -- saved_date
+              now(),                          -- saved_date
+              NULL                            -- submitted_date)
     RETURNING id
 EOD;
         $result = pg_query($curric_db, $query) or die('Save failed: ' .

@@ -84,6 +84,7 @@ EOD;
     <nav id='admin-nav'>
       <a href='./event_editor.php'>Event Editor</a>
       <a href='./review_status.php'>Review Status</a>
+      <a href='./proposal_status.php'>Proposal Status</a>
       <a href='./need_revision.php'>Proposals Pending Revision</a>
     </nav>
 
@@ -119,9 +120,10 @@ EOD;
         $review_link
       </nav>
       <nav>
-        <a href='.' class='current-page'>Admin</a>
+        <a href='.' class='current-page'>Admin Home</a>
         <a href='event_editor.php'>Event Editor</a>
         <a href='review_status.php'>Review Status</a>
+        <a href='proposal_status.php'>Proposal Status</a>
         <a href='need_revision.php'>Pending Revision</a>
       </nav>
     </div>
