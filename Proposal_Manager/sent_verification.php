@@ -1,9 +1,11 @@
 <?php  /* Proposal/sent_verification.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+set_include_path(get_include_path() 
+    . PATH_SEPARATOR . '../include'
+    . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
 
-require_once('include/atoms.inc');
+require_once('proosal_magager.inc');
 
 if ( ! (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in))
 {

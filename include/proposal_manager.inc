@@ -1,10 +1,13 @@
 <?php
 
-//  General string atoms
-//  ======================================================================================
-/*  If you are careful to use the following defines instead of the corresponding strings,
- *  you can get the compiler to tell you if the strings are spelled wrong.  Common theme:
- *  HTML and CSS (classes and ids) use hyphens; PHP everything else uses underscores.
+//  Atoms used only by Proposal Manager
+//  =====================================================================================
+/*  Use the following defines instead of the corresponding strings.
+ *  The compiler will report if the strings are spelled wrong, and the actual string
+ *  values can be managed from this file.
+ *
+ *  Convention:
+ *    HTML and CSS (classes and ids) use hyphens; PHP everything else uses underscores.
  */
 
   //  Proposal Form names

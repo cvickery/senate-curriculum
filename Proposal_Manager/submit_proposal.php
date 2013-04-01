@@ -1,9 +1,11 @@
 <?php  /* Proposal/submit_proposal.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+set_include_path(get_include_path() 
+    . PATH_SEPARATOR . '../include'
+    . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
 
-require_once('include/atoms.inc');
+require_once('proosal_magager.inc');
 require_once('simple_diff.php');
 require_once('mail_setup.php');
 

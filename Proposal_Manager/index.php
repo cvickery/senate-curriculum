@@ -1,10 +1,12 @@
 <?php  /* Proposal_Manager/index.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+set_include_path(get_include_path() 
+    . PATH_SEPARATOR . '../include'
+    . PATH_SEPARATOR . '../scripts' );
 require_once('init_session.php');
 require_once('syllabus_utils.php');
 
-require_once('include/atoms.inc');
+require_once('proposal_manager.inc');
 
 //  Global Variables
 //  --------------------------------------------------------------------------------------
