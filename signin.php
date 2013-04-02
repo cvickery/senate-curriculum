@@ -34,11 +34,11 @@ $referer_title  = 'Curriculum Home Page';
 <!DOCTYPE html>
 <html <?php echo $html_attributes;?>>
   <head>
-    <title>QC Curriculum Login</title>
+    <title>QC Curriculum Sign In</title>
     <link rel="stylesheet" type="text/css" href="css/curriculum.css" />
   </head>
   <body>
-    <h1>Login</h1>
+    <h1>Sign In</h1>
 <?php
   echo "    <h2>Or <a href='$referer'>return to $referer_title</a></h2>\n";
   require_once('login1.php');
