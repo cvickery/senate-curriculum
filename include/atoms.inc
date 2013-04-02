@@ -21,33 +21,17 @@
  */
   define('course_str_re', '/^\s*([a-z]{2,6})\s*\-?\s*0*([1-9]\d{0,3}[wh]?)\s*$/i');
 
+//  Logged in person, for non-login pages
+if (!defined('person')) define('person', 'person');
+
 //  Course->toHTML optional arguments
   define('with_approvals',         true);
   define('without_approvals',      false);
   define('with_radio',             true);
   define('without_radio',          false);
 
-
 //  Form name index
 define('form_name',             'form-name');
-
-//  Login state
-define('session_state',         'session_state');
-define('ss_is_logged_in',       'ss_is_logged_in');
-define('ss_not_logged_in',      'ss_not_logged_in');
-define('remember_me',           'remember_me');
-define('need_password',         'need_password');
-define('password',              'password');
-define('new_password',          'new_password');
-define('repeat_new',            'repeat_new');
-
-//  Person and his/her department choice
-define('person',                'person');
-define('preferred_dept_index',  'preferred_dept_index');
-
-//  Error messages
-define('bad_email',             'Unrecognized email address');
-define('no_dept',               'Unknown department affiliation');
 
 //  Catalog information (class Proposal)
 define('course_title',          'course_title');

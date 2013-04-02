@@ -39,19 +39,12 @@ require_once('init_session1.php');
 
 //  Handle the logging in/out situation here
 $instructions_button = '';
-$status_msg          = 'Not signed in';
-$sign_out_button     = '';
-require_once('scripts/login.php');
-if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
+'Not signed in';
+$sign_out_button     = "";
+$status_msg          = "<a href='./signin.php'>Sign in</a>\n";
+
+if (isset($person))
 {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Invalid login state</h1></body></html>\n");
-    }
     $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
     $sign_out_button = <<<EOD
 

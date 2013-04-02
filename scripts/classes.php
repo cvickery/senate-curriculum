@@ -45,7 +45,7 @@ if (! isset($curric_db))
  */
   class Person
   {
-    public $name, $email, $dept_names, $dept_name, $affiliations,
+    public $name, $email, $dept_name, $affiliations,
            $last_login_time, $last_login_ip, $has_reviews, $roles;
 
     //  __construct()
@@ -55,7 +55,6 @@ if (! isset($curric_db))
       $this->email            = $email;
       $this->name             = null;
       $this->dept_name        = null;
-      $this->dept_names       = array();
       $this->affiliations     = array();
       $this->last_login_time  = null;
       $this->last_login_ip    = null;
@@ -68,16 +67,6 @@ if (! isset($curric_db))
     function set_name($name)
     {
       $this->name = $name;
-    }
-
-    //  append_dept()
-    //  ---------------------------------------------------------------------------------
-    function append_dept($dept)
-    {
-      if (! in_array($dept, $this->dept_names) )
-      {
-        $this->dept_names[] = $dept;
-      }
     }
 
     //  set_dept()
