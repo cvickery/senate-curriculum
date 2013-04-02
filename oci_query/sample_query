@@ -1,0 +1,2 @@
+SELECT orig_hire_dt, fname, miname, lname, nameprefix, namesuffix, dept_descr, descr, job_function, cu_email_addr_c1, cu_email_addr_c2, cu_email_addr_c3, cu_email_addr_c4 FROM octsims.erp856 WHERE REGEXP_LIKE(cu_email_addr_c1, 'vickery', 'i') OR REGEXP_LIKE(cu_email_addr_c2, 'vickery', 'i') OR REGEXP_LIKE(cu_email_addr_c3, 'vickery', 'i') OR REGEXP_LIKE(cu_email_addr_c4, 'vickery', 'i')
+

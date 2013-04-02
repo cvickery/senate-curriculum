@@ -1,0 +1,30 @@
+The OCI Project is a C program (oci_query) that reads an SQL query string from
+stdin, and writes the result set for the query to stdout as a JSON-encoded
+array of object.
+
+  The rationale is to provide a mechanism for making queries against an Oracle
+  database from interpreted languages that do not have Oracle support compiled
+  into them. In particular, the version of PHP distributed by Apple with OS X Lion
+  has Postgres, but not Oracle, drivers compiled in. Rather than build my own
+  version of PHP as I have in the past (when Apple supplied neither Postgres nor
+  Oracle drivers), I decided to extract the necessary functionality for Oracle here.
+
+  To compile, the ocilib and json-c libraries must be installed, and the Oracle
+  client SDK headers must be in the include path. I copied them into the local
+  includes directory for this project.
+
+  To run, DYLD_LIBRARY_PATH must include the directory containing the Oracle
+  client libraries, in my case /opt/oracle/instantclient.
+
+TODO
+  Returns an array of objects, but would arguably match coding conventions
+  better if it returned an array of hashes.
+
+SAMPLE USE (PHP code):
+  $qs = "SELECT ... FROM ... WHERE ...";
+  $obj = json_decode(exec("(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; echo \"$qs\"|scripts/oci_query)"));
+  var_dump($obj);
+
+Christopher Vickery
+August 29, 2011
+
