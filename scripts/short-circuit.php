@@ -7,6 +7,5 @@ if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
   $person->set_dept('Computer Science');
   $person->finish_login();
   $_SESSION[person] = serialize($person);
-  $_SESSION[session_state] = ss_is_logged_in;
 }
 ?>
