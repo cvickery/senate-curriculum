@@ -1,6 +1,7 @@
 <?php
 
 include ('login.inc');
+error_log("form_name is '$form_name'");
 
 //  Manage Login (Signin) Process
 //  ======================================================================================
@@ -53,6 +54,7 @@ EOD;
  */
   function login_form()
   {
+    error_log('in login_form()');
     global $login_error_msg, $webmaster_email, $email;
 
     echo <<<EOD
@@ -403,6 +405,7 @@ EOD;
     }
   }
 
+error_log("person is $person");
 if (!isset($person))login_form();
 
  ?>

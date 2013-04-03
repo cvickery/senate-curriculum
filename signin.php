@@ -6,10 +6,10 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session1.php');
 
-$referer        = 'https://senate.qc.cuny.edu/Curriculum';
-$referer_title  = 'Curriculum Home Page';
+$referer        = $site_home_url;
+$referer_title  = $site_home_title;
 
-//  Generate generic login page
+//  Generic signin page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
@@ -40,8 +40,22 @@ $referer_title  = 'Curriculum Home Page';
   <body>
     <h1>Sign In</h1>
 <?php
-  echo "    <h2>Or <a href='$referer'>return to $referer_title</a></h2>\n";
-  require_once('login1.php');
+  if (isset($person))
+  {
+    echo <<<EOD
+    <form id='logout-form' action='.' method='post'>
+      <input type='hidden' name='form-name' value='logout' />
+      <p>You are already logged in as $person. You may either:</p>
+      <button type='submit'>Sign Out</button>
+      <p>or <a href='$referer'> return to $referer_title</a></p>
+    </form>
+
+EOD;
+  }
+  else
+  {
+    require_once('login1.php');
+  }
 ?>
   </body>
 </html>

@@ -10,8 +10,9 @@
  *
  *  Postconditions: global variables set
  *
- *    $site_home_url will be a string suitable for redirecting to the site home directory,
- *    namely one of the following:
+ *    $site_home_url:   string for redirecting to site home page
+ *    $site_home_title: string with title of site home page
+ *    URL will be one of the following:
  *      https://senate.qc.cuny.edu/Curriculum
  *      https://senate.qc.cuny.edu/test_Curriculum
  *      http://localhost/senate.qc.cuny.edu/test_Curriculum
@@ -30,18 +31,22 @@
   $http_host      = 'senate.qc.cuny.edu';
   $home_dir       = 'Curriculum';
 
+error_log("init_session1 http_host: {$_SERVER['HTTP_HOST']}");
+error_log("init_session1 request_uri: {$_SERVER['REQUEST_URI']}");
   //  Force HTTPS connection if not already in place and not coming from localhost
   if ( !isset($_SERVER['HTTPS']))
   {
     if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
     {
+error_log('init_session1: not redirecting');
       $http_protocol  = 'http';  // Exception for off-site development
       $http_host      = 'localhost/senate.qc.cuny.edu';
     }
     else
     {
       //  Force https connection
-      header("Location: https://{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}");
+error_log('init_session1: https redirect');
+      header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
       exit;
     }
   }
@@ -53,6 +58,7 @@
   require_once('credentials.inc');
   require_once('nav_functions.php');
   require_once('atoms.inc');
+  require_once('page_title.inc');
   require_once('assertions.php');
   require_once('classes.php');
   require_once('utils.php');
@@ -90,8 +96,10 @@
     ob_end_clean();
   }
 
-  //  Final $site_home_url
+  //  Final $site_home_url and page title
   $site_home_url = "$http_protocol://$http_host/$home_dir";
+  $site_home_title = get_title($site_home_url);
+
   //  Global form_name: which form, if any, was submitted.
   $form_name = '';
   if ( isset($_POST[form_name])) $form_name = sanitize($_POST[form_name]);
@@ -107,9 +115,11 @@
       unset($_SESSION[$key]);
     }
     //  And redirect to site index page
+error_log("init_session1: logged out and redirecting to $site_home_url");
     header("Location: $site_home_url");
     exit;
   }
+error_log('init_session1: not redirecting because logout form not submitted');
 
   //  Set login state
   //  ----------------------------------------------------------------------------------

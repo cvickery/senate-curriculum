@@ -6,6 +6,8 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session1.php');
 
+error_log('Curriculum/index.php: after init_session1');
+
 //  Generate site index page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";

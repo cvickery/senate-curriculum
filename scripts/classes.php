@@ -165,18 +165,19 @@ EOD;
           pg_last_error($curric_db) . ' at ' . __FILE__ . ' ' . __LINE__);
       }
 
-    //  to_string()
+    //  __toString()
     //  -----------------------------------------------------------------------
     /*  There is always an email; there might be a name.
      */
     function __toString()
     {
+error_log('to string');
       $returnVal = $this->email;
       if ($this->name)
       {
-        $returnVal = $this->name . "($returnVal)";
+        $returnVal = $this->name . " ($returnVal)";
       }
-      return $returnVal;
+      return trim($returnVal);
     }
   }
 
