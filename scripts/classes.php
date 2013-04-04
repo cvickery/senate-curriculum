@@ -131,7 +131,7 @@ EOD;
         $result = pg_query($curric_db, $query) or die("Review query failed: " .
           pg_last_error($curric_db) . ' at ' . basename( __FILE__) . ' ' . __LINE__);
         $this->has_reviews = (pg_num_rows($result) > 0);
-        
+
         //  Roles, if any
         $query = <<<EOD
 select role_abbr
@@ -171,7 +171,6 @@ EOD;
      */
     function __toString()
     {
-error_log('to string');
       $returnVal = $this->email;
       if ($this->name)
       {

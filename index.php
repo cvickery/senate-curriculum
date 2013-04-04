@@ -1,12 +1,10 @@
 <?php
 //  Curriculum/index.php
-
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() .  '/scripts' 
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session1.php');
 
-error_log('Curriculum/index.php: after init_session1');
 
 //  Generate site index page
 //  -------------------------------------------------------------------------------------
@@ -40,8 +38,6 @@ error_log('Curriculum/index.php: after init_session1');
 <?php
 
 //  Handle the logging in/out situation here
-$instructions_button = '';
-'Not signed in';
 $sign_out_button     = "";
 $status_msg          = "<a href='./signin.php'>Sign in</a>\n";
 
@@ -99,13 +95,21 @@ EOD;
       <dd>
         Create, edit, submit, or delete your course and designation proposals.
         <br/>
-        <em>Requires a valid Queens College email address.</em>
+        <em>Access requires a valid Queens College email address.</em>
       </dd>
 
-      <dt><a href="Reviews">Reviews</a></dt>
+      <dt><a href='Syllabi'>Syllabi</a></dt>
       <dd>
-        View subcommittee or curriculum committee reviewers’ comments and
-        recommendations for proposals.
+        Review course syllabi stored on this site.
+        <br/>
+        <em>All syllabi are Copyright © Queens College of CUNY unless otherwise
+        indicated.</em>
+      </dd>
+
+      <dt><a href="Reviews">GEAC Reviews</a></dt>
+      <dd>
+        View individual comments from General Education Advisory Committee (GEAC)
+        recommendations.
         <br/>
         <em>Requires a valid Queens College email address.</em>
       </dd>
@@ -128,28 +132,14 @@ EOD;
 
     <!-- Status Bar -->
 <?php
-    $review_link = '';
-    if (isset($person) && $person->has_reviews)
-    {
-      $review_link = "<a href='./Review_Editor'>Edit Reviews</a>";
-    }
-
+    $nav_bar = site_nav();
     echo <<<EOD
     <div id='status-bar'>
-      $instructions_button
       $sign_out_button
       <div id='status-msg'>
         $status_msg
       </div>
-      <!-- Navigation Row-->
-      <nav>
-        <a href='./Proposals'>Track Proposals</a>
-        <a href='./Model_Proposals'>Guidelines</a>
-        <a href='./Proposal_Manager'>Manage Proposals</a>
-        <a href='./Syllabi'>Syllabi</a>
-        <a href='./Reviews'>Reviews</a>
-        $review_link;
-      </nav>
+      $nav_bar
     </div>
 
 EOD;

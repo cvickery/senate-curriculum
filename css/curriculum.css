@@ -66,6 +66,3 @@ dt { margin: 1em 10px 0.5em 10px; font-weight: bold; }
 table { border-collapse: collapse; }
 table td, table th { border: 1px solid black; }
 table.summary { background-color: white; }
-
-/* No login required for this page */
-#login-form, #login-which-department { display: none; }

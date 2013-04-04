@@ -2,7 +2,7 @@
 //  .../[test_]Curriculum/scripts/init_session.php
 
 /*  Common setup for all pages:
- *    set_include_path(get_include_path() 
+ *    set_include_path(get_include_path()
  *      . PATH_SEPARATOR . [path_to_this_dir]
  *      . PATH_SEPARATOR . [ path_path_to_include_dir ]);
  *    require this
@@ -31,21 +31,17 @@
   $http_host      = 'senate.qc.cuny.edu';
   $home_dir       = 'Curriculum';
 
-error_log("init_session1 http_host: {$_SERVER['HTTP_HOST']}");
-error_log("init_session1 request_uri: {$_SERVER['REQUEST_URI']}");
   //  Force HTTPS connection if not already in place and not coming from localhost
   if ( !isset($_SERVER['HTTPS']))
   {
     if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
     {
-error_log('init_session1: not redirecting');
       $http_protocol  = 'http';  // Exception for off-site development
       $http_host      = 'localhost/senate.qc.cuny.edu';
     }
     else
     {
       //  Force https connection
-error_log('init_session1: https redirect');
       header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
       exit;
     }
@@ -96,9 +92,8 @@ error_log('init_session1: https redirect');
     ob_end_clean();
   }
 
-  //  Final $site_home_url and page title
+  //  Final site_home_url
   $site_home_url = "$http_protocol://$http_host/$home_dir";
-  $site_home_title = get_title($site_home_url);
 
   //  Global form_name: which form, if any, was submitted.
   $form_name = '';
@@ -115,11 +110,9 @@ error_log('init_session1: https redirect');
       unset($_SESSION[$key]);
     }
     //  And redirect to site index page
-error_log("init_session1: logged out and redirecting to $site_home_url");
     header("Location: $site_home_url");
     exit;
   }
-error_log('init_session1: not redirecting because logout form not submitted');
 
   //  Set login state
   //  ----------------------------------------------------------------------------------
@@ -140,4 +133,9 @@ error_log('init_session1: not redirecting because logout form not submitted');
     unset($person);
     unset($pending_person);
   }
+
+  //  URL of refering page, if any
+  $referer_url = '';
+  if (isset($_SERVER['HTTP_REFERER'])) $referer_url = $_SERVER['HTTP_REFERER'];
+
 ?>
