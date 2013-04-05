@@ -22,8 +22,13 @@ define('password',                      'password');
 define('new_password',                  'new_password');
 define('repeat_new',                    'repeat_new');
 
-//  Error messages
+//  Error Handling
+//  -------------------------------------------------------------------------------------
+//  When restricted area redirects to site index
+define('login_error_msg',               'login-error-msg'); // $_SESSION index
+define('access_denied',                 'Access denied');
+
+//  Within login module
 define('bad_email',                     'Unrecognized email address');
+define('bad_pass',                      'Unrecognized email/password');
 define('no_dept',                       'Unknown email or department affiliation');
-
-

@@ -22,6 +22,14 @@ include ('login.inc');
  *  resolved yet.
  */
 
+//  Global Variables
+//  -----------------------------------------------------------------------------------
+//    (The global $person object is evaluated after form processing.)
+if (! isset($login_error_message)) $login_error_message = '';
+$email = '';
+
+error_log("login1.php: '$login_error_message' at line " . __LINE__);
+
 //  add_to_curric()
 //  --------------------------------------------------------------------------------------
 /*  Function for adding a person who had to be looked up in octsims.erp856 to
@@ -53,10 +61,12 @@ EOD;
  */
   function login_form()
   {
-    global $login_error_msg, $webmaster_email, $email;
+    global $login_error_message, $webmaster_email, $email;
 
+error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
+    $request_uri = $_SERVER['REQUEST_URI'];
     echo <<<EOD
-    <form id='login-form' action='.' method='post'>
+    <form id='login-form' action='$request_uri' method='post'>
       <fieldset><legend>Sign In</legend>
         <input type='hidden' name='form-name' value='login-form' />
         <div class='instructions'>
@@ -74,7 +84,7 @@ EOD;
             select the one you want to use. You will only have to do that once.
           </p>
         </div>
-        $login_error_msg
+        $login_error_message
         <p>
           <label for='qc-email'>Your Queens College email address:</label>
           <input  id='qc-email'
@@ -146,17 +156,12 @@ EOD;
  *
  *    SESSION
  *      person:               A serialized Person object when a user is logged in.
- *      login_error_msg:      Error message (if any) to display in login form. May
+ *      login_error_message:      Error message (if any) to display in login form. May
  *                            be displayed by the index page in the case of an attempt
  *                            to access an admin page by someone who is not (yet) logged
  *                            in as an administrator.
  *
  */
-  //  Global Variables
-  //  -----------------------------------------------------------------------------------
-  //    (The global $person object is evaluated after form processing.)
-  if (! isset($login_error_message)) $login_error_msg = '';
-  $email = '';
 
   //  Process login-which-department form
   //  -----------------------------------------------------------------------------------
@@ -198,6 +203,7 @@ EOD;
    */
   if ($form_name === login_form)
   {
+error_log("login1.php: '$login_error_message' in process login-form line " . __LINE__);
     //  Sanity check
     if (! isset($_POST[qc_email]))
     {
@@ -213,7 +219,7 @@ EOD;
       if ($email && !strpos($email, '@')) $email .= '@qc.cuny.edu';
       if (!preg_match('/^(\w+[\.\-]?\w+)+@[\w\.]*cuny.edu$/i', $email))
       {
-        $login_error_msg = bad_email;
+        $login_error_message = bad_email;
       }
       else
       {
@@ -225,12 +231,20 @@ EOD;
         {
           //  Found user in curric.people: check password
           $row = pg_fetch_assoc($result);
-
-          $person = new Person($email);
-          $person->set_name($row['name']);
-          $person->set_dept($row['department']);
-          $person->finish_login();
-          $_SESSION[person] = serialize($person);
+          $post_password = sanitize($_POST[password]);
+          if (crypt($post_password, $row[password]) === $row[password])
+          {
+            $person = new Person($email);
+            $person->set_name($row['name']);
+            $person->set_dept($row['department']);
+            $person->finish_login();
+            $_SESSION[person] = serialize($person);
+          }
+          else
+          {
+            $login_error_message = "Email/password error";
+            login_form();
+          }
         }
         else
         {
@@ -273,7 +287,7 @@ EOD;
             $num_depts = count($departments_list);
             if ($num_depts === 0)
             {
-              $login_error_msg = no_dept;
+              $login_error_message = no_dept;
               login_form();
             }
             else if ($num_depts === 1)
@@ -328,7 +342,7 @@ EOD;
           }
           else
           {
-            $login_error_msg = "'{$_POST[qc_email]}': " . bad_email;
+            $login_error_message = "'{$_POST[qc_email]}': " . bad_email;
           }
         }
       }
@@ -393,7 +407,7 @@ EOD;
         else
         {
           //  new and repeat differ: present login form again.
-          $login_error_msg = "Unable to change password: New and Repeat differ.";
+          $login_error_message = "Unable to change password: New and Repeat differ.";
           login_form();
         }
       }
@@ -401,7 +415,7 @@ EOD;
     else
     {
       //  wrong password entered: require email address again too.
-      $login_error_msg = "Wrong password.";
+      $login_error_message = "Wrong password.";
       $email = '';
       login_form();
     }

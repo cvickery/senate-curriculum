@@ -38,13 +38,13 @@ require_once('init_session1.php');
 <?php
 
 //  Handle the logging in/out situation here
-$sign_out_button     = "";
-$status_msg          = "<a href='./signin.php'>Sign in</a>\n";
+$status_text    = ''; // The presence of the Sign In link is the message.
+$status_action  = "<a id='signin-link' href='./signin.php'>Sign In</a>";
 
 if (isset($person))
 {
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $sign_out_button = <<<EOD
+    $status_text = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
+    $status_action = <<<EOD
 
     <form id='logout-form' action='.' method='post'>
       <input type='hidden' name='form-name' value='logout' />
@@ -53,6 +53,20 @@ if (isset($person))
 
 EOD;
 }
+
+    $nav_bar = site_nav();
+    echo <<<EOD
+    <!-- Status Bar -->
+    <div id='status-bar'>
+      <div id='status-msg'>
+        $status_text
+        $status_action
+      </div>
+      $nav_bar
+    </div>
+
+EOD;
+
  ?>
     <h1>Queens College Curriculum</h1>
 <?php
@@ -129,20 +143,5 @@ EOD;
       <dd>QC Curriculum material extracted from CURs. (not current)</dd>
 
     </dl>
-
-    <!-- Status Bar -->
-<?php
-    $nav_bar = site_nav();
-    echo <<<EOD
-    <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg'>
-        $status_msg
-      </div>
-      $nav_bar
-    </div>
-
-EOD;
- ?>
   </body>
 </html>
