@@ -143,7 +143,26 @@ input[type="password"] {
   }
 
 #show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
-#status-msg                             { float:right; margin: $half-gutter $gutter 0; }
+#status-msg { 
+  float:right; 
+  margin: $half-gutter $gutter 0; 
+  a {
+      display: inline-block;
+      width:$col;
+      margin-left: 1em;
+      padding:0.3em 1em 0.2em;
+      background-color: $link-background;
+      color: $link-color;
+      border:1px solid $border-color;
+      border-radius:0.25em;
+      text-decoration: none;
+      text-align: center;
+    }
+  a:hover {
+    background-color: $link-color;
+    color: $link-background;
+    }
+  }
 #logout-form                            { float:right; margin: 0 $gutter; }
 #logout-form button                     { width:$col; }
 

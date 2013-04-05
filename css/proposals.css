@@ -45,6 +45,8 @@ input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 #show-hide-instructions-button { float: left; margin: 0 10px; }
 
 #status-msg { float: right; margin: 5px 10px 0; }
+#status-msg a { display: inline-block; width: 80px; margin-left: 1em; padding: 0.3em 1em 0.2em; background-color: #eeeeee; color: #330000; border: 1px solid black; border-radius: 0.25em; text-decoration: none; text-align: center; }
+#status-msg a:hover { background-color: #330000; color: #eeeeee; }
 
 #logout-form { float: right; margin: 0 10px; }
 
