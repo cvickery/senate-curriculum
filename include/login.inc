@@ -4,16 +4,11 @@
 //  Constants used by the login module.
 //  -------------------------------------------------------------------------------------
 
-//  person
-//  -------------------------------------------------------------------------------------
-if (!defined('person')) define('person', 'person');
-
 //  Forms
 define('login_which_department',        'login-which-department');
 define('login_form',                    'login-form');
 
 //  login-which-departments fields
-define('pending_person',                'pending-person');
 define('dept_name',                     'dept-name');
 
 //  login-form fields
@@ -28,7 +23,14 @@ define('repeat_new',                    'repeat_new');
 define('login_error_msg',               'login-error-msg'); // $_SESSION index
 define('access_denied',                 'Access denied');
 
-//  Within login module
+//  Error messages within login module
+define('blank_email',                   'Missing email address');
 define('bad_email',                     'Unrecognized email address');
 define('bad_pass',                      'Unrecognized email/password');
 define('no_dept',                       'Unknown email or department affiliation');
+define('new_repeat_mismatch',           'New and repeated passwords don’t match');
+define('password_changed',              'Password changed');
+
+//  $_SESSION keys
+//  -------------------------------------------------------------------------------------
+define('saved_referer_uri',             'SAVED_REFERER_URI');

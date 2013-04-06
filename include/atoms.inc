@@ -22,7 +22,8 @@
   define('course_str_re', '/^\s*([a-z]{2,6})\s*\-?\s*0*([1-9]\d{0,3}[wh]?)\s*$/i');
 
 //  Logged in person, for non-login pages
-if (!defined('person')) define('person', 'person');
+define('person', 'person');
+define('pending_person', 'pending-person');
 
 //  Course->toHTML optional arguments
   define('with_approvals',         true);

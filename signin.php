@@ -5,8 +5,27 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() .  '/scripts'
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session1.php');
+require_once('login.inc');
 
-//  Generic signin page
+/*  There are three scenarios to deal with
+ *    1.  Another page noted that the user is not logged in, and displayed a link to this
+ *    one. In that case $_SESSION[person] is not set and $_SERVER[REFERER_URI] is set. We
+ *    capture the referer uri in $_SESSION[saved_referer_uri] and include login.php, which
+ *    will display the login form and reload this page when the user submits the form.
+ *    2.  If $_SESSION[person] is set, it means the user is now logged in and we redirect
+ *    to $_SESSION[saved_referer_uri].
+ *    3.  The user bookmarked this page and comes here with $_SESSION[saved_referer_uri]
+ *    not set. In that case we supply an explanation and things to click on, including a
+ *    signout button.
+ */
+
+//  Save referer link, if available and not already saved
+if ( !isset($_SESSION[saved_referer_uri]) && isset($_SERVER['HTTP_REFERER']))
+{
+  $_SESSION[saved_referer_uri] = $_SERVER['HTTP_REFERER'];
+}
+
+//  Generate the signin page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
@@ -47,41 +66,48 @@ require_once('init_session1.php');
       $nav_bar
     </div>
     <h1>Queens College Curriculum</h1>
-
+    $dump_if_testing
 EOD;
+  require_once('login1.php');
   if (isset($person))
   {
-    echo <<<EOD
-    <h2>Sign in</h2>
-    <form action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <p>
-        You are already logged in as $person.
-      </p>
-      <p>
-        You may go to one of the links at the top of this page or <button
-        type='submit'>Sign Out</button>
-      </p>
-
-EOD;
-    if (! empty($referer_url))
+    $return_option = '';
+    if (! empty($_SESSION[saved_referer_uri]))
     {
-      //  The following should never appear because nobody should generate a link to this
-      //  page if the person is already signed in. They should get here only from a saved
-      //  URL.
-      echo <<<EOD
-      <p>
-        The back button will return you to <a href='$referer_url'>$referer_url</a>
-      </p>
+      $referer_uri = $_SESSION[saved_referer_uri];
+      unset($_SESSION[saved_referer_uri]);
+      $return_option = <<<EOD
+      <li>
+        Return to <a href='$referer_uri'>$referer_uri</a>
+      </li>
 
 EOD;
     }
-    echo "      </form>\n";
+    if ( isset($login_error_message) && $login_error_message !== '')
+    {
+      assert('$login_error_message === password_changed');
+      $password_message = "<div class='error'>Password Changed</div>\n";
+    }
+    else
+    {
+      $password_message = '';
+    }
+    echo <<<EOD
+    <h2>You are signed in as $person</h2>
+    $password_message
+    <form action='.' method='post'>
+      <input type='hidden' name='form-name' value='logout' />
+      <p>
+        You may:
+      </p>
+      <ul>
+        $return_option
+        <li>Go to one of the links at the top of this page</li>
+        <li>Or: <button type='submit'>Sign Out</button></li>
+      </ul>
+    </form>
 
-  }
-  else
-  {
-    require_once('login1.php');
+EOD;
   }
 ?>
   </body>

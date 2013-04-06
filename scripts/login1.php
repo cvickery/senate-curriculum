@@ -1,6 +1,6 @@
 <?php
 
-include ('login.inc');
+require_once('login.inc');
 
 //  Manage Login (Signin) Process
 //  ======================================================================================
@@ -26,9 +26,7 @@ include ('login.inc');
 //  -----------------------------------------------------------------------------------
 //    (The global $person object is evaluated after form processing.)
 if (! isset($login_error_message)) $login_error_message = '';
-$email = '';
-
-error_log("login1.php: '$login_error_message' at line " . __LINE__);
+$qc_email = '';
 
 //  add_to_curric()
 //  --------------------------------------------------------------------------------------
@@ -53,6 +51,61 @@ EOD;
         pg_last_error($curric_db) . ' at ' . basename(__FILE__) . ' ' . __LINE__);
   }
 
+//  update_password()
+//  -------------------------------------------------------------------------------------
+/*  If new_passwd and repeat_new are the same and the person is in the curric db, update
+ *  the user's password.
+ *
+ *  Note: $new_passwd and $repeat_new must be _raw_ POST data so the user can type spaces
+ *  to generate a blank password. They get sanitized here.
+ *
+ *  Returns a string indicating success or failure.
+ */
+  function update_password($person, $new_passwd, $repeat_new)
+  {
+    global $curric_db;
+    assert('"Person" === get_class($person)') or die("<h1 class='error'>Non-person at " .
+        basename(__FILE__) . ' ' . __LINE__ . "</h1></body></html>\n");
+
+    //  No-op if new and repeat are blank.
+    if ($new_passwd === '' && $repeat_new === '') return '';
+
+    //  Get primary key for people table
+    $qc_email = $person->email;
+
+    //  New and repeat passwords must match except for leading and trailing spaces
+    $new_passwd = sanitize($new_passwd);
+    $repeat_new = sanitize($repeat_new);
+    if ($new_passwd === $repeat_new)
+    {
+      //  Use 16-character date/time as salt for CRYPT_SHA512
+      $pwd = crypt($new_passwd, '$6$' . date('Y-m-d H:i'));
+      $query = <<<EOD
+ BEGIN;
+ UPDATE people
+    SET password = '$pwd'
+  WHERE lower(qc_email) = lower('$qc_email')
+
+EOD;
+      $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: " .
+                pg_last_error($curric_db) . " at " .
+                basename(__FILE__) .  ' ' . __LINE__ . "</h1></body></html>\n");
+      $num = pg_affected_rows($result);
+      if ($num === 1)
+      {
+        pg_query($curric_db, "COMMIT");
+        return password_changed;
+      }
+      else
+      {
+        //  Neither zero nor multiple rows should ever be affected.
+        pg_query($curric_db, 'ROLLBACK');
+        die ("<h1 class='error'>Attempt to change password for $num " .
+            "people</h1></body></html>\n");
+      }
+    }
+    return new_repeat_mismatch;
+  }
 
 //  login_form()
 //  -------------------------------------------------------------------------------------
@@ -61,9 +114,8 @@ EOD;
  */
   function login_form()
   {
-    global $login_error_message, $webmaster_email, $email;
+    global $login_error_message, $webmaster_email, $qc_email;
 
-error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
     $request_uri = $_SERVER['REQUEST_URI'];
     echo <<<EOD
     <form id='login-form' action='$request_uri' method='post'>
@@ -84,7 +136,7 @@ error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
             select the one you want to use. You will only have to do that once.
           </p>
         </div>
-        $login_error_message
+        <div class='error'>$login_error_message</div>
         <p>
           <label for='qc-email'>Your Queens College email address:</label>
           <input  id='qc-email'
@@ -92,7 +144,7 @@ error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
                   name='qc-email'
                   tabindex='1'
                   class='triple-wide'
-                  value='$email' />
+                  value='$qc_email' />
         </p>
         <fieldset><legend>Enter/Change Password</legend>
           <div class='instructions'>
@@ -102,13 +154,13 @@ error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
             </p>
             <p>
               If you want to create a password or change your current one, enter your
-              current password, your new password, and repeat the new password below.
+              current password, your new password, and repeat it in the boxes below.
             </p>
             <p>
               <strong>Password Rules:</strong> Passwords may be any length and may contain
               any characters, except that spaces at the beginning and end will be removed.
               That means you can revert to a blank password by typing a space in the new and
-              repeated boxes.
+              repeat boxes.
             </p>
             <p>
               Passwords are highly encrypted before being stored. Still, the usual safe
@@ -118,11 +170,11 @@ error_log("login1.php: '$login_error_message' at login_form line " . __LINE__);
             </p>
           </div>
           <label for='password'>Password:</label>
-          <input type='password' name='password' id='password' />
+          <input type='password' name='password' id='password' tabindex='2' />
           <label for='new_password'>New password:<br />(if you want to change it)</label>
           <input type='password' name='new_password' id='new_password' tabindex='3'/>
           <label for='repeat_new'>Repeat new password:</label>
-          <input type='password' name='repeat_new' id='repeat_new' />
+          <input type='password' name='repeat_new' id='repeat_new' tabindex='4' />
         </fieldset>
         <button type='submit' tabindex='2'>Sign in</button>
     </fieldset>
@@ -186,8 +238,14 @@ EOD;
       //  Complete the person object and add to curric db with blank password.
       $pending_person->set_dept();
       add_to_curric($pending_person);
-      $email = $pending_person->email;
-      login_form();
+      $_SESSION[person] = serialize($pending_person);
+      $person = unserialize($_SESSION[person]);
+
+      // The following were passed as hidden elements by login-form.
+      $new_passwd = $_POST[new_password];
+      $repeat_new = $_POST[repeat_new];
+      $login_error_message = 
+          update_password($person, $new_passwd, $repeat_new);
     }
     else
     {
@@ -197,34 +255,35 @@ EOD;
 
   //  Process login-form form
   //  -----------------------------------------------------------------------------------
-  /*  The form accepts the user's qc-email address. It may also contain a section for
-   *  password entry and management, which can be processed only once the user's email
-   *  address has been determined.
+  /*    The form has fields for the user’s email, password, and new/repeat passwords.
    */
   if ($form_name === login_form)
   {
-error_log("login1.php: '$login_error_message' in process login-form line " . __LINE__);
     //  Sanity check
     if (! isset($_POST[qc_email]))
     {
       die("<h1 class='error'>Error: email address not set.</h1></body></html>\n");
     }
 
-    //  Get rid of blanks and invalid characters
-    $email = str_replace(' ', '.', trim(sanitize($_POST[qc_email])));
+    //  Extract form data
+    $qc_email = str_replace(' ', '.', trim(sanitize($_POST[qc_email])));
+    $password = sanitize($_POST[password]);
+    $new_passwd = $_POST[new_password];
+    $repeat_new = $_POST[repeat_new];
+
     //  Ignore empty input, finger slips, and phishing trips
-    if (strlen($email) > 2)
+    if (strlen($qc_email) > 2)
     {
-      //  Supply default domain if none provided
-      if ($email && !strpos($email, '@')) $email .= '@qc.cuny.edu';
-      if (!preg_match('/^(\w+[\.\-]?\w+)+@[\w\.]*cuny.edu$/i', $email))
+      //  Supply default email domain if none provided
+      if ($qc_email && !strpos($qc_email, '@')) $qc_email .= '@qc.cuny.edu';
+      if (!preg_match('/^(\w+[\.\-]?\w+)+@[\w\.]*cuny.edu$/i', $qc_email))
       {
         $login_error_message = bad_email;
       }
       else
       {
         //  Have valid email address: try looking it up in the curric db
-        $login_query = "SELECT * FROM people WHERE lower(qc_email) = lower('$email')";
+        $login_query = "SELECT * FROM people WHERE lower(qc_email) = lower('$qc_email')";
         $result = pg_query($curric_db, $login_query) or die('Unable to access people:' .
             basename(__FILE__) . ' ' . __LINE__ . ' ' . $login_query);
         if ($result && pg_num_rows($result) === 1)
@@ -234,16 +293,17 @@ error_log("login1.php: '$login_error_message' in process login-form line " . __L
           $post_password = sanitize($_POST[password]);
           if (crypt($post_password, $row[password]) === $row[password])
           {
-            $person = new Person($email);
+            $person = new Person($qc_email);
             $person->set_name($row['name']);
             $person->set_dept($row['department']);
             $person->finish_login();
             $_SESSION[person] = serialize($person);
+            $login_error_message = 
+                update_password($person, $new_passwd, $repeat_new);
           }
           else
           {
-            $login_error_message = "Email/password error";
-            login_form();
+            $login_error_message = bad_pass;
           }
         }
         else
@@ -257,10 +317,10 @@ error_log("login1.php: '$login_error_message' in process login-form line " . __L
           $login_query =
               "SELECT fname, miname, lname, nameprefix, namesuffix, dept_descr "
             . "FROM octsims.erp856 "
-            . "WHERE REGEXP_LIKE(cu_email_addr_c1, '$email', 'i') OR "
-            . "      REGEXP_LIKE(cu_email_addr_c2, '$email', 'i') OR "
-            . "      REGEXP_LIKE(cu_email_addr_c3, '$email', 'i') OR "
-            . "      REGEXP_LIKE(cu_email_addr_c4, '$email', 'i')    ";
+            . "WHERE REGEXP_LIKE(cu_email_addr_c1, '$qc_email', 'i') OR "
+            . "      REGEXP_LIKE(cu_email_addr_c2, '$qc_email', 'i') OR "
+            . "      REGEXP_LIKE(cu_email_addr_c3, '$qc_email', 'i') OR "
+            . "      REGEXP_LIKE(cu_email_addr_c4, '$qc_email', 'i')    ";
           //  Use oci_query to run the query.
           $result = json_decode(exec(
                 "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "
@@ -269,7 +329,7 @@ error_log("login1.php: '$login_error_message' in process login-form line " . __L
           if (is_array($result) && count($result) !== 0)
           {
             //  OCT lookup succeeded, now build Person object
-            $pending_person = new Person($email);
+            $pending_person = new Person($qc_email);
             foreach($result as $row)
             {
               $prefix = trim($row->NAMEPREFIX);
@@ -296,8 +356,11 @@ error_log("login1.php: '$login_error_message' in process login-form line " . __L
               $pending_person->set_dept($departments_list[0]);
               $pending_person->finish_login();
               add_to_curric($pending_person);
-              add_to_cuddrric($pending_person);
               $_SESSION[person] = serialize($pending_person);
+              $person = unserialize($_SESSION[person]);
+              //  User might set initial passwd using the new/repeat fields
+              $login_error_message = 
+                  update_passwd($person, $new_passwd, $repeat_new);
             }
             else
             {
@@ -308,6 +371,9 @@ error_log("login1.php: '$login_error_message' in process login-form line " . __L
       <fieldset><legend>Select Department</legend>
         <input type='hidden' name='form-name' value='login-which-department' />
         <input type='hidden' name='pending-person' value='$serialized_pp' />
+        <input type='hidden' name='password' value='$password' />
+        <input type='hidden' name='new_password' value='$new_passwd' />
+        <input type='hidden' name='repeat_new' value='$repeat_new' />
         <p>{$pending_person->name}: Please select which department to use:</p>
 
 EOD;
@@ -342,87 +408,20 @@ EOD;
           }
           else
           {
+            //  In neither curric nor 856
             $login_error_message = "'{$_POST[qc_email]}': " . bad_email;
           }
-        }
-      }
-    }
-    //  Sanity check before processing password
-    if (strstr($email, '@') === FALSE)
-    {
-      die("<h1 class='error'>Error: bad qc_email at " . __FILE__ . " line " . __LINE__ .
-          "</h1></body></html>\n");
-    }
-    $password     = sanitize($_POST[password]);
-    $new_password = sanitize($_POST[new_password]);
-    $repeat_new   = sanitize($_POST[repeat_new]);
-    $query = <<<EOD
-SELECT password
-  FROM people
- WHERE lower(qc_email) = lower('$email')
-
-EOD;
-    $result = pg_query($curric_db, $query) or die("Query failed: " .
-        pg_last_error($curric_db) . " at " . __FILE__ . " line " . __LINE__);
-    $num = pg_num_rows($result);
-    if (1 !== $num)
-    {
-      die("<h1 class='error'>Error: password lookup for $email failed ($num)</h1.\n" .
-          "</body></html>\n");
-    }
-    $salt = date('Y-m-d H:i');
-    $row = pg_fetch_assoc($result);
-    if (crypt($password, $row['password']) === $row['password']) 
-    {
-      //  Correct password ...
-      if ( ($new_password !== '') && ($new_password !== $password) )
-      {
-        //  User wants to change passwords
-        if ($new_password === $repeat_new)
-        {
-          $pwd = crypt($new_password, '$6$' . $salt);
-          $query = <<<EOD
- BEGIN;
- UPDATE people
-    SET password = '$pwd'
-  WHERE lower(qc_email) = lower('$email')
-
-EOD;
-          $result = pg_query($curric_db, $query) or die("<h1 class='error'>Error: " .
-              " query failed: " . pg_last_error($curric_db) . " at " . __FILE__ .
-              " line " . __LINE__);
-          $num = pg_affected_rows($result);
-          if ($num === 1)
-          {
-            pg_query($curric_db, "COMMIT");
-            $password_change = "Password Changed";
-          }
-          else
-          {
-            pg_query($curric_db, "ROLLBACK");
-            die("<h1 class='error'>Password change failed: attempted to change $num " .
-                "passwords</h1></body></html>\n");
-          }
-        }
-        else
-        {
-          //  new and repeat differ: present login form again.
-          $login_error_message = "Unable to change password: New and Repeat differ.";
-          login_form();
-        }
-      }
-    }
+        }   //  if in 856
+      }     //  if in curric
+    }       //  if non-blank qc_email
     else
     {
-      //  wrong password entered: require email address again too.
-      $login_error_message = "Wrong password.";
-      $email = '';
-      login_form();
+      $login_error_message = blank_email;
     }
-  }
+  }         //  if login-form
 
-  //  Any form submitted has been process. If not yet logged in, present the form.
-  //  ----------------------------------------------------------------------------
+  //  Any form submitted has been processed. If not yet logged in, present the form.
+  //  ------------------------------------------------------------------------------
   if ( empty($person) )
   {
     login_form();

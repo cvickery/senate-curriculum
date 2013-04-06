@@ -125,7 +125,7 @@ EOD;
         View individual comments from General Education Advisory Committee (GEAC)
         recommendations.
         <br/>
-        <em>Requires a valid Queens College email address.</em>
+        <em>Access requires a valid Queens College email address.</em>
       </dd>
 
       <dt><a href="Pathways">Senate Ad Hoc Committee on Pathways</a></dt>

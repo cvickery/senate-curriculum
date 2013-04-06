@@ -118,14 +118,14 @@
   //  ----------------------------------------------------------------------------------
   $person         = '';
   $pending_person = '';
-  if (isset($_SESSION['person']))
+  if (isset($_SESSION[person]))
   {
-    $person = unserialize($_SESSION['person']);
+    $person = unserialize($_SESSION[person]);
     unset($pending_person);
   }
-  else if (isset($_SESSION['pending_person']))
+  else if (isset($_SESSION[pending_person]))
   {
-    $pending_person = unserialize($_SESSION['pending_person']);
+    $pending_person = unserialize($_SESSION[pending_person]);
     unset($person);
   }
   else
