@@ -23,6 +23,9 @@ define('repeat_new',                    'repeat_new');
 define('login_error_msg',               'login-error-msg'); // $_SESSION index
 define('access_denied',                 'Access denied');
 
+//  When a page requires user to be logged in
+define('login_required',                'Signin required');
+
 //  Error messages within login module
 define('blank_email',                   'Missing email address');
 define('bad_email',                     'Unrecognized email address');
@@ -34,3 +37,21 @@ define('password_changed',              'Password changed');
 //  $_SESSION keys
 //  -------------------------------------------------------------------------------------
 define('saved_referer_uri',             'SAVED_REFERER_URI');
+
+//  require_login()
+//  -------------------------------------------------------------------------------------
+/*  Save current location and redirect to /signin.php if user is not logged in.
+ */
+  function require_login()
+  {
+    if ( !isset($person) )
+    {
+      if ( isset($_SERVER['HTTP_REFERER']) )
+      {
+        $_SESSION[saved_referer_uri] = $_SERVER['HTTP_REFERER'];
+      }
+      $_SESSION[login_error_msg] = login_required;
+      header("Location: $site_home_uri/signin.php");
+      exit;
+    }
+  }
