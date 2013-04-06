@@ -53,7 +53,7 @@ input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 #logout-form button { width: 80px; }
 
 nav { clear: both; text-align: center; padding: 0.5em 0.5em 0 0; }
-nav a { display: inline-block; width: 120px; padding: 0.25em; font-size: 1em; text-align: center; text-decoration: none; color: #330000; border: 1px solid #330000; border-radius: 0.25em; }
+nav a { display: inline-block; width: 100px; padding: 0.25em; font-size: 0.95em; text-align: center; text-decoration: none; color: #330000; border: 1px solid #330000; border-radius: 0.25em; }
 nav a:hover { text-decoration: none; color: #eeeeee; background-color: #330000; }
 nav a.current-page, nav a.current-page:hover { color: #330000; background-color: #dddddd; cursor: default; }
 nav + nav { margin: 0.25em 0; border-bottom: none; }

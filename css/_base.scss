@@ -172,9 +172,9 @@ nav {
   padding: 0.5em 0.5em 0 0;
   a {
     display: inline-block;
-    width: 2 * $grid;
+    width: 2 * $grid - 2 * $gutter;
     padding: 0.25em;
-    font-size: 1em;
+    font-size: 0.95em; //  Small enough for all elements to be 1 line
     text-align: center;
     text-decoration: none;
     color: $link-color;
