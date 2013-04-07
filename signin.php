@@ -4,7 +4,7 @@
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() .  '/scripts'
     . PATH_SEPARATOR . getcwd() . '/include');
-require_once('init_session1.php');
+require_once('init_session.php');
 require_once('login.inc');
 
 /*  There are three scenarios to deal with
@@ -77,7 +77,7 @@ else if ( isset($_SERVER['HTTP_REFERER']) )
   $nav_bar = site_nav();
   echo <<<EOD
     <div id='status-bar'>
-      <button id='show-hide-instructions-button'>Hide Instructions</button>
+      $instructions_button
       $login_status
       $nav_bar
     </div>

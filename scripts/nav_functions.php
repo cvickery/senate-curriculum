@@ -21,7 +21,7 @@
   //  Admin
   //  ------------------------------------------------------
   define('event_editor_label',      'Event Editor');
-  define('review_status_label',     'GEAC Review Status');
+  define('review_status_label',     'Review Status');
   define('proposal_status_label',   'Update Statuses');
   define('need_revision_label',     'Pending Revision');
   define('roles_label',             'Manage Roles');

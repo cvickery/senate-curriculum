@@ -1,9 +1,9 @@
 <?php
 //  Curriculum/index.php
 set_include_path(get_include_path()
-    . PATH_SEPARATOR . getcwd() .  '/scripts' 
+    . PATH_SEPARATOR . getcwd() . '/scripts' 
     . PATH_SEPARATOR . getcwd() . '/include');
-require_once('init_session1.php');
+require_once('init_session.php');
 
 //  Generate site index page
 //  -------------------------------------------------------------------------------------
@@ -31,47 +31,33 @@ require_once('init_session1.php');
 <html <?php echo $html_attributes;?>>
   <head>
     <title>QC Curriculum</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/site_ui.js"></script>
     <link rel="stylesheet" type="text/css" href="css/curriculum.css" />
   </head>
   <body>
 <?php
 
-//  Handle the logging in/out situation here
-$status_text    = ''; // The presence of the Sign In link is the message.
-$status_action  = "<a id='signin-link' href='./signin.php'>Sign In</a>";
-
-if (isset($person))
-{
-    $status_text = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $status_action = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
-
-EOD;
-}
-    $status_msg = login_status();
-    $nav_bar    = site_nav();
-    echo <<<EOD
-    <!-- Status Bar -->
-    <div id='status-bar'>
-      $status_msg
-      $nav_bar
-    </div>
+  //  Status Bar and H1 element
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  
+  echo <<<EOD
+  <div id='status-bar'>
+    $instructions_button
+    $status_msg
+    $nav_bar
+  </div>
+  <h1>Queens College Curriculum</h1>
 
 EOD;
 
- ?>
-    <h1>Queens College Curriculum</h1>
-<?php
   echo $dump_if_testing;
   //  May have been redirected here by attempt of non-administrator to access Admin
   //  section.
   if (isset($_SESSION[login_error_msg]))
   {
-    echo "    <h3 class='error'>{$_SESSION[login_error_msg]}</h3>\n";
+    echo "    <h2 class='error'>{$_SESSION[login_error_msg]}</h2>\n";
     unset($_SESSION[login_error_msg]);
   }
 ?>
