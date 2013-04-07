@@ -35,6 +35,8 @@ $login_status = login_status();
     <title>Review Status</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_status.css" />
+    <script type="application/javascript" src='../js/jquery.min.js'></script>
+    <script type="application/javascript" src='../js/site_ui.js'></script>
   </head>
   <body>
 <?php
