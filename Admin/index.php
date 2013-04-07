@@ -1,7 +1,10 @@
 <?php  /* Admin/index.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
-require_once('init_session.php');
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() .  '/../scripts' 
+    . PATH_SEPARATOR . getcwd() . '/../include');
+require_once('init_session1.php');
+require_once('admin.inc');  // Must be logged in as an administrator
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -33,100 +36,45 @@ require_once('init_session.php');
     <link rel="stylesheet" type="text/css" href="../css/admin.css" />
   </head>
   <body>
-    <h1>Administration</h1>
 <?php
-  echo $dump_if_testing;
-
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $sign_out_button  = '';
-  $person           = '';
-  $password_change  = '';
-  require_once('short-circuit.php');
-  if ( ! isset($_SESSION[need_password]) )
-  {
-    $_SESSION[need_password] = true;
-  }
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Edit Events: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
     $last_login = 'First login';
     if ($person->last_login_time)
     {
       $last_login   = "Last login at ";
       $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
     }
-    $sign_out_button = <<<EOD
+
+    $status_text = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
+    $status_action = <<<EOD
 
     <form id='logout-form' action='.' method='post'>
       <input type='hidden' name='form-name' value='logout' />
       <button type='submit'>Sign Out</button>
     </form>
+    <div>$last_login</div>
 
 EOD;
 
-    //  Admin pages
-    //  =================================================================================
-    if ($person && ! $_SESSION[need_password])
-    {
-      echo <<<EOD
-    <nav id='admin-nav'>
-      <a href='./event_editor.php'>Event Editor</a>
-      <a href='./review_status.php'>Review Status</a>
-      <a href='./proposal_status.php'>Proposal Status</a>
-      <a href='./need_revision.php'>Proposals Pending Revision</a>
-    </nav>
-
-EOD;
-    }
-  }
-
-  //  Status/Nav Bars
-  //  =================================================================================
-  /*  Generated here, after login status is determined, but displayed up top by the
-   *  wonders of CSS.
-   */
-  //  First row link to Review Editor depends on the user having something to review
-  $review_link = '';
-  if (isset($person) && $person && $person->has_reviews)
-  {
-    $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-  }
-  echo <<<EOD
+    $nav_bar = site_nav();
+    $admin_nav = admin_nav();
+    echo <<<EOD
+    <!-- Status Bar -->
     <div id='status-bar'>
-      <div class='warning' id='password-msg'>$password_change</div>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
+      <div id='status-msg'>
+        $status_text
+        $status_action
       </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-      <nav>
-        <a href='.' class='current-page'>Admin Home</a>
-        <a href='event_editor.php'>Event Editor</a>
-        <a href='review_status.php'>Review Status</a>
-        <a href='proposal_status.php'>Proposal Status</a>
-        <a href='need_revision.php'>Pending Revision</a>
-      </nav>
+      $nav_bar
+      $admin_nav
     </div>
+    <h1>Administration</h1>
+    $dump_if_testing
+    <p>
+      Live long and prosper.
+    </p>
+    <p>
+      <em>You may also select one of the links above.</em>
+    </p>
 
 EOD;
 

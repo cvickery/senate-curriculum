@@ -19,8 +19,19 @@ require_once('login.inc');
  *    signout button.
  */
 
-//  Save referer link, if available and not already saved
-if ( !isset($_SESSION[saved_referer_uri]) && isset($_SERVER['HTTP_REFERER']))
+//  Redirect if user is already logged in and there is a saved referer.
+if ( isset($_SESSION[saved_referer_uri]) )
+{
+  if ( isset($person) )
+  {
+    //  Logged in with a saved uri: clear the saved uri and redirect to it.
+    $saved_uri = $_SESSION[saved_referer_uri];
+    unset($_SESSION[saved_referer_uri]);
+    header("Location: $saved_uri");
+    exit;
+  }
+}
+else if ( isset($_SERVER['HTTP_REFERER']) )
 {
   $_SESSION[saved_referer_uri] = $_SERVER['HTTP_REFERER'];
 }
@@ -57,18 +68,23 @@ if ( !isset($_SESSION[saved_referer_uri]) && isset($_SERVER['HTTP_REFERER']))
   </head>
   <body>
 
-
 <?php
+  ob_start();
+  require_once('login1.php');
+  $login_output = ob_get_contents();
+  ob_end_clean();
+  $login_status = login_status();
   $nav_bar = site_nav();
   echo <<<EOD
     <div id='status-bar'>
       <button id='show-hide-instructions-button'>Hide Instructions</button>
+      $login_status
       $nav_bar
     </div>
-    <h1>Queens College Curriculum</h1>
+    <h1>Queens College Curriculum Sign In</h1>
     $dump_if_testing
+    $login_output
 EOD;
-  require_once('login1.php');
   if (isset($person))
   {
     $return_option = '';

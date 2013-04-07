@@ -271,7 +271,7 @@ EOD;
     $new_passwd = $_POST[new_password];
     $repeat_new = $_POST[repeat_new];
 
-    //  Ignore empty input, finger slips, and phishing trips
+    //  Require 3+ characters for user’s name
     if (strlen($qc_email) > 2)
     {
       //  Supply default email domain if none provided
@@ -422,6 +422,10 @@ EOD;
 
   //  Any form submitted has been processed. If not yet logged in, present the form.
   //  ------------------------------------------------------------------------------
+  $login_status_msg = <<<EOD
+  
+
+EOD;
   if ( empty($person) )
   {
     login_form();

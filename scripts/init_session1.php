@@ -52,6 +52,7 @@
   date_default_timezone_set('America/New_York');
   session_start();
   require_once('credentials.inc');
+  require_once('login.inc');
   require_once('nav_functions.php');
   require_once('atoms.inc');
   require_once('page_title.inc');

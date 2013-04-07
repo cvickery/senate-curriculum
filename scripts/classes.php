@@ -166,7 +166,7 @@ EOD;
       }
 
     //  __toString()
-    //  -----------------------------------------------------------------------
+    //  ---------------------------------------------------------------------------------
     /*  There is always an email; there might be a name.
      */
     function __toString()
@@ -178,11 +178,26 @@ EOD;
       }
       return trim($returnVal);
     }
+    //  last_login_info()
+    //  ---------------------------------------------------------------------------------
+    /*  Return string with last login info.
+     */
+      function last_login_info()
+      {
+        if ($this->last_login_time)
+        {
+          return "Last login from {$this->last_login_ip} at {$this->last_login_time}";
+        }
+        else
+        {
+          return 'First login';
+        }
+      }
   }
 
 
 //  Class Proposal
-//  ===========================================================================
+//  =====================================================================================
 /*  In-memory copy of current record from proposals table.
  */
   class Proposal

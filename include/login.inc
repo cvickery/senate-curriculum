@@ -38,6 +38,7 @@ define('password_changed',              'Password changed');
 //  -------------------------------------------------------------------------------------
 define('saved_referer_uri',             'SAVED_REFERER_URI');
 
+
 //  require_login()
 //  -------------------------------------------------------------------------------------
 /*  Save current location and redirect to /signin.php if user is not logged in.
@@ -55,3 +56,30 @@ define('saved_referer_uri',             'SAVED_REFERER_URI');
       exit;
     }
   }
+
+//  login_status()
+//  -------------------------------------------------------------------------------------
+/*  Generate and return the status-msg div, initialized with user’s current login status.
+ */
+  function login_status()
+  {
+    global $person;
+    $returnVal = "<div id='status-msg'>";
+    if ( isset($person) )
+    {
+      $returnVal .= <<<EOD
+    <form id='logout-form' action='.' method='post'>
+      <input type='hidden' name='form-name' value='logout' />
+      <button type='submit'>Sign Out</button>
+    </form>
+
+EOD;
+      $returnVal .= "<div>$person<div>" . $person->last_login_info() . "</div></div>";
+    }
+    else
+    {
+      $returnVal .= "<a id='signin-link' href='./signin.php'>Sign In</a>";
+    }
+    return $returnVal . "</div>\n";;
+  }
+

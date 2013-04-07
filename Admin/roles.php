@@ -4,19 +4,7 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts' 
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session1.php');
-require_once('login1.php');
-
-  $can_view = false;
-  $can_edit = false;
-  if ($person && in_array('admin_change', $person->roles)) $can_edit = true;
-  else if ($person && in_array('admin_view', $person->roles)) $can_view = true;
-  if (! ($can_view || $can_edit))
-  {
-    //  No admin privileges: redirect to Curriculum home page
-    $_SESSION['login_error_msg'] = 'Access denied';
-    header("Location: $site_home_url");
-    exit;
-  }
+require_once('admin.inc');  // Must be logged in as an administrator
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------

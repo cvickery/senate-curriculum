@@ -5,7 +5,6 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session1.php');
 
-
 //  Generate site index page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -53,15 +52,12 @@ if (isset($person))
 
 EOD;
 }
-
-    $nav_bar = site_nav();
+    $status_msg = login_status();
+    $nav_bar    = site_nav();
     echo <<<EOD
     <!-- Status Bar -->
     <div id='status-bar'>
-      <div id='status-msg'>
-        $status_text
-        $status_action
-      </div>
+      $status_msg
       $nav_bar
     </div>
 
@@ -71,9 +67,12 @@ EOD;
     <h1>Queens College Curriculum</h1>
 <?php
   echo $dump_if_testing;
-  if (isset($_SESSION['login_error_msg']))
+  //  May have been redirected here by attempt of non-administrator to access Admin
+  //  section.
+  if (isset($_SESSION[login_error_msg]))
   {
-    echo "    <h3 class='error'>{$_SESSION['login_error_msg']}</h3>\n";
+    echo "    <h3 class='error'>{$_SESSION[login_error_msg]}</h3>\n";
+    unset($_SESSION[login_error_msg]);
   }
 ?>
     <div>
