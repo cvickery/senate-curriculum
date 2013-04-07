@@ -7,6 +7,9 @@ $(function()
   //  Get rid of the "need JS" message
   $('#need-javascript').hide();
 
+  //  Put focus on first input element in tab sequence, if there is one
+  $('[tabindex="1"]').first().focus();
+
   //  Check whether browser supports localStorage
   if (typeof window.localStorage === 'undefined')
   {
