@@ -143,9 +143,11 @@ input[type="password"] {
   }
 
 #show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
-#status-msg { 
+#status-msg {
+  width:6 * $col;
   float:right; 
   margin: $half-gutter $gutter 0; 
+  a, form, form+div { float:right; }
   a {
       display: inline-block;
       width:$col;
