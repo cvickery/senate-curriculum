@@ -70,7 +70,7 @@ else if ( isset($_SERVER['HTTP_REFERER']) )
 
 <?php
   ob_start();
-  require_once('login1.php');
+  require_once('login.php');
   $login_output = ob_get_contents();
   ob_end_clean();
   $login_status = login_status();
