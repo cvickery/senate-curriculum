@@ -1,7 +1,11 @@
 <?php  /* Admin/need_revision.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() .  '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
+require_once('admin.inc');                       // Must be logged in as an administrator
+$login_status = login_status();
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -31,56 +35,30 @@ require_once('init_session.php');
     <title>Need Revision</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/need_revision.css" />
+    <script type="application/javascript" src='../js/jquery.min.js'></script>
+    <script type="application/javascript" src='../js/site_ui.js'></script>
   </head>
   <body>
-    <h1>Proposals Pending Revision</h1>
 <?php
-  echo $dump_if_testing;
-
-  //  Handle the logging in/out situation here
-  //  TODO: because this is not the index page, users will be taken to that if
-  //  this page finds they need to login.
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $sign_out_button  = '';
-  $person           = '';
-  $password_change  = '';
-  require_once('short-circuit.php');
-  if ( ! isset($_SESSION[need_password]) )
-  {
-    $_SESSION[need_password] = true;
-  }
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Need Revisions: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
+  //  Generate Status Bar and Page Content
+  $nav_bar = site_nav();
+  $admin_nav = admin_nav();
+  echo <<<EOD
+  <!-- Status Bar -->
+  <div id='status-bar'>
+    $instructions_button
+    $login_status
+    $nav_bar
+    $admin_nav
+  </div>
+  <h1>Proposals Pending Revision</h1>
+  $dump_if_testing
 
 EOD;
 
 
   //  List proposals reviewed but the review is not 'Accept'
-    $query = <<<EOD
+  $query = <<<EOD
 
 SELECT    p.id                                AS id,
           t.abbr                              AS type,
@@ -216,48 +194,6 @@ EOD;
 EOD;
     $_SESSION['csv'] = $csv;
     $_SESSION['csv_name'] = 'need_revision';
-  }
-
-  //  Status/Nav Bars
-  //  =================================================================================
-  /*  Generated here, after login status is determined, but displayed up top by the
-   *  wonders of CSS.
-   */
-  //  First row link to Review Editor depends on the user having something to review
-  $review_link = '';
-  if (isset($person) && $person && $person->has_reviews)
-  {
-    $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-  }
-  echo <<<EOD
-    <div id='status-bar'>
-      <div class='warning' id='password-msg'>
-        $password_change
-        $num_proposals proposals need revision.
-      </div>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-      <nav>
-        <a href='.'>Admin Home</a>
-        <a href='event_editor.php'>Event Editor</a>
-        <a href='review_status.php'>Review Status</a>
-        <a href='proposal_status.php'>Proposal Status</a>
-        <a href='need_revision.php' class='current-page'>Pending Revision</a>
-      </nav>
-    </div>
-
-EOD;
 
 ?>
   </body>

@@ -1,8 +1,11 @@
 <?php  /* Admin/proposal_status.php */
 
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() .  '/../scripts' 
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
-
+require_once('admin.inc');                       // Must be logged in as an administrator
+$login_status = login_status();
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -32,50 +35,25 @@ require_once('init_session.php');
     <title>Update Proposal Statuses</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_status.css" />
-    <script type="application/javascript" src='js/jquery-1.8.3.min.js'></script>
+    <script type="application/javascript" src='../js/jquery.min.js'></script>
+    <script type="application/javascript" src="../js/site_ui.js"></script>
     <script type="application/javascript" src='js/update_statuses.js'></script>
   </head>
   <body>
-    <h1>Update Proposal Statuses</h1>
 <?php
-  echo $dump_if_testing;
-
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $sign_out_button  = '';
-  $person           = '';
-  $password_change  = '';
-  require_once('short-circuit.php');
-  if ( ! isset($_SESSION[need_password]) )
-  {
-    $_SESSION[need_password] = true;
-  }
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Review Status: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
+  //  Generate Status Bar and Page Content
+  $nav_bar = site_nav();
+  $admin_nav = admin_nav();
+  echo <<<EOD
+  <!-- Status Bar -->
+  <div id='status-bar'>
+    $instructions_button
+    $login_status
+    $nav_bar
+    $admin_nav
+  </div>
+  <h1>Update Statuses</h1>
+  $dump_if_testing
 
 EOD;
 
@@ -89,7 +67,6 @@ EOD;
     $or_list = '';
     $event_ids = unserialize($_SESSION['event_ids']);
     unset($_SESSION['event_ids']);
-//    echo "<pre>\n";var_dump($_SESSION);var_dump($event_ids);echo "</pre>\n";
     foreach ($event_ids as $event_id)
     {
       if ($or_list === '') $or_list = "id = $event_id";
@@ -805,36 +782,6 @@ EOD;
       </h2>
 
 EOD;
-
-  //  Status/Nav Bars
-  //  =================================================================================
-  /*  Generated here, after login status is determined, but displayed up top by the
-   *  wonders of CSS.
-   */
-  //  First row link to Review Editor depends on the user having something to review
-  $review_link = '';
-  if (isset($person) && $person && $person->has_reviews)
-  {
-    $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-  }
-  $site_nav  = site_nav();
-  $admin_nav = admin_nav();
-  echo <<<EOD
-    <div id='status-bar'>
-      <div class='warning' id='password-msg'>
-        $password_change
-      </div>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-			$site_nav
-			$admin_nav
-    </div>
-
-EOD;
-  }
 
 ?>
   </body>

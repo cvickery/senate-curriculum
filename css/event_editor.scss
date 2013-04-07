@@ -3,32 +3,14 @@
 @import 'base';
 
 body { width: 13 * $col; }
-#password-msg {
-  float:left;
-  font-weight:bolder;
-  font-size:1.3em;
-  color:black;
-  letter-spacing: 0.1em;
-  border: 1px solid $border-color;
-  border-radius:0.25em;
-  padding:0.25em;
-  background-color: white;
-  }
 
 #status-bar {
-  width: 13 * $col; 
-	box-shadow: none; 
+  width: 13 * $col;
+	box-shadow: none;
 	border-bottom: 1px solid $border-color;
 	}
 
 nav:nth-of-type(2) { padding-bottom: 1.25em; }
-
-#login-form {
-  position: fixed;
-	top: 2 * $col;
-	background-color:$body-background;
-	padding: $gutter;
-	}
 
 table	{
 	font-size: 0.8em;
@@ -37,17 +19,16 @@ table	{
 	}
 
 #action-table {
+  margin-left: -$gutter;
   background-color:$status-background;
   width:13 * $col;
   padding: $gutter $gutter $gutter $gutter;
-  position:fixed;
-  top: 3 * $gutter + $col;
-  left:$gutter;
   }
 
-#proposal-list {
-  margin-top: 3 * $gutter + 2 * $col;
-  tr:first-of-type { position:fixed; top: 3 * $gutter + 2 * $col; left: 2.0 * $gutter; }
+#proposal-table {
+  width: 13*$col;
+  thead, tbody { display: block; }
+  tbody {height: 800px; overflow: auto;}
   th:nth-of-type(1) div, td:nth-of-type(1) div {width: 0.7 * $col; } //  Select
   th:nth-of-type(2) div, td:nth-of-type(2) div {width: 0.5 * $col; } //  ID
   th:nth-of-type(3) div, td:nth-of-type(3) div {width: 0.7 * $col; } //  Course

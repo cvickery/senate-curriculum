@@ -66,7 +66,11 @@ body {
 
 h1, h2, h3 { font-family: $sans-serif; }
 
-h1 { text-align:center;  font-size:1.4em; padding-top:2em;}
+h1 {
+  text-align:center;
+  font-size:1.4em;
+  margin-top: 1em;
+  }
 
 h2 {
   margin:$gutter 0;padding:0.25em;
@@ -129,12 +133,9 @@ input[type="password"] {
 
 #status-bar {
   width:$twelve-col;
-	margin:0;
+	margin: 0 0 0 (-$gutter); /* without the parens, third 0 merges with last val */
   padding: $gutter $gutter $quarter-gutter $gutter;
   background-color:$status-background;
-  position:fixed;
-  top:0;
-  left:$gutter;
   border-radius:$quarter-gutter;
   box-shadow:$shadow-color $quarter-gutter $quarter-gutter $quarter-gutter;
   font-family: $sans-serif;
@@ -145,8 +146,8 @@ input[type="password"] {
 #show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
 #status-msg {
   width:6 * $col;
-  float:right; 
-  margin: $half-gutter $gutter 0; 
+  float:right;
+  margin: $half-gutter $gutter 0;
   a, form, form+div { float:right; }
   a {
       display: inline-block;

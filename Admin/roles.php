@@ -1,10 +1,11 @@
 <?php  /* Admin/manage_roles.php */
 
-set_include_path(get_include_path() 
-    . PATH_SEPARATOR . getcwd() . '/../scripts' 
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() .  '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
-require_once('init_session1.php');
-require_once('admin.inc');  // Must be logged in as an administrator
+require_once('init_session.php');
+require_once('admin.inc');                       // Must be logged in as an administrator
+$login_status = login_status();
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -34,14 +35,44 @@ require_once('admin.inc');  // Must be logged in as an administrator
     <title>Update Proposal Statuses</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_status.css" />
-    <script type="application/javascript" src='js/jquery-1.8.3.min.js'></script>
-    <script type="application/javascript" src='js/update_statuses.js'></script>
+    <script type="application/javascript" src='../js/jquery.min.js'></script>
+    <script type="application/javascript" src='../js/site_ui.js'></script>
   </head>
   <body>
-    <h1>Manage Roles</h1>
 <?php
-  echo $dump_if_testing;
-  
+  //  Generate Status Bar and Page Content
+  $nav_bar = site_nav();
+  $admin_nav = admin_nav();
+  echo <<<EOD
+  <!-- Status Bar -->
+  <div id='status-bar'>
+    $instructions_button
+    $login_status
+    $nav_bar
+    $admin_nav
+  </div>
+  <h1>Manage Roles</h1>
+  $dump_if_testing
+  <p>
+    This is where you can view/change who can view or change people’s administrative
+    access to the system.
+  </p>
+  <p>
+    If you see checkboxes, that means you can make changes in the Admin section of the
+    site. At this point, you can click on the checkboxes and the checkmarks will come and
+    go. But nothing else will happen.
+  </p>
+  <p>
+    If you see x’s, that means you have view-only access to the Admin section of the
+    site. Scratching your left ear and clicking on the x’s will have the same effect on
+    this page.
+  </p>
+  <p>
+    Other than that, this page is good to go.
+  </p>
+
+EOD;
+
     echo "    <table><tr><th>Email</th><th>View</th><th>Change</th></tr>\n";
     $query = <<<EOD
 select * from person_roles

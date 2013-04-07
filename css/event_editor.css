@@ -5,7 +5,7 @@ body { width: 850px; margin: 10px; padding: 10px; background-color: #eeeeee; col
 
 h1, h2, h3 { font-family: Helvetica, Candara, Arial, Sans-Serif; }
 
-h1 { text-align: center; font-size: 1.4em; padding-top: 2em; }
+h1 { text-align: center; font-size: 1.4em; margin-top: 1em; }
 
 h2 { margin: 10px 0; padding: 0.25em; font-weight: normal; font-size: 1em; background-color: #cccccc; border-radius: 5px; border: 2px outset #333333; }
 
@@ -39,7 +39,7 @@ input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 
 #need-javascript { font-family: Helvetica, Candara, Arial, Sans-Serif; font-size: 1.2em; text-align: center; color: #661111; }
 
-#status-bar { width: 850px; margin: 0; padding: 10px 10px 2.5px 10px; background-color: #eeeeee; position: fixed; top: 0; left: 10px; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
+#status-bar { width: 850px; margin: 0 0 0 -10px; /* without the parens, third 0 merges with last val */ padding: 10px 10px 2.5px 10px; background-color: #eeeeee; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
 
 #show-hide-instructions-button { float: left; margin: 0 10px; }
 
@@ -70,30 +70,27 @@ table.summary { background-color: white; }
 
 body { width: 1040px; }
 
-#password-msg { float: left; font-weight: bolder; font-size: 1.3em; color: black; letter-spacing: 0.1em; border: 1px solid black; border-radius: 0.25em; padding: 0.25em; background-color: white; }
-
 #status-bar { width: 1040px; box-shadow: none; border-bottom: 1px solid black; }
 
 nav:nth-of-type(2) { padding-bottom: 1.25em; }
-
-#login-form { position: fixed; top: 160px; background-color: #eeeeee; padding: 10px; }
 
 table { font-size: 0.8em; }
 table td { background-color: white; }
 table th { background-color: #cccccc; }
 
-#action-table { background-color: #eeeeee; width: 1040px; padding: 10px 10px 10px 10px; position: fixed; top: 110px; left: 10px; }
+#action-table { margin-left: -10px; background-color: #eeeeee; width: 1040px; padding: 10px 10px 10px 10px; }
 
-#proposal-list { margin-top: 190px; }
-#proposal-list tr:first-of-type { position: fixed; top: 190px; left: 20px; }
-#proposal-list th:nth-of-type(1) div, #proposal-list td:nth-of-type(1) div { width: 56px; }
-#proposal-list th:nth-of-type(2) div, #proposal-list td:nth-of-type(2) div { width: 40px; }
-#proposal-list th:nth-of-type(3) div, #proposal-list td:nth-of-type(3) div { width: 56px; }
-#proposal-list th:nth-of-type(4) div, #proposal-list td:nth-of-type(4) div { width: 56px; }
-#proposal-list th:nth-of-type(5) div, #proposal-list td:nth-of-type(5) div { width: 112px; }
-#proposal-list th:nth-of-type(6) div, #proposal-list td:nth-of-type(6) div { width: 112px; }
-#proposal-list th:nth-of-type(7) div, #proposal-list td:nth-of-type(7) div { width: 120px; }
-#proposal-list th:nth-of-type(8) div, #proposal-list td:nth-of-type(8) div { width: 128px; }
-#proposal-list th:nth-of-type(9) div, #proposal-list td:nth-of-type(9) div { width: 144px; }
-#proposal-list th:nth-of-type(10) div, #proposal-list td:nth-of-type(10) div { width: 144px; }
-#proposal-list input[type="text"] { width: 95%; }
+#proposal-table { width: 1040px; }
+#proposal-table thead, #proposal-table tbody { display: block; }
+#proposal-table tbody { height: 800px; overflow: auto; }
+#proposal-table th:nth-of-type(1) div, #proposal-table td:nth-of-type(1) div { width: 56px; }
+#proposal-table th:nth-of-type(2) div, #proposal-table td:nth-of-type(2) div { width: 40px; }
+#proposal-table th:nth-of-type(3) div, #proposal-table td:nth-of-type(3) div { width: 56px; }
+#proposal-table th:nth-of-type(4) div, #proposal-table td:nth-of-type(4) div { width: 56px; }
+#proposal-table th:nth-of-type(5) div, #proposal-table td:nth-of-type(5) div { width: 112px; }
+#proposal-table th:nth-of-type(6) div, #proposal-table td:nth-of-type(6) div { width: 112px; }
+#proposal-table th:nth-of-type(7) div, #proposal-table td:nth-of-type(7) div { width: 120px; }
+#proposal-table th:nth-of-type(8) div, #proposal-table td:nth-of-type(8) div { width: 128px; }
+#proposal-table th:nth-of-type(9) div, #proposal-table td:nth-of-type(9) div { width: 144px; }
+#proposal-table th:nth-of-type(10) div, #proposal-table td:nth-of-type(10) div { width: 144px; }
+#proposal-table input[type="text"] { width: 95%; }

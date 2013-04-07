@@ -3,8 +3,9 @@
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() .  '/../scripts' 
     . PATH_SEPARATOR . getcwd() . '/../include');
-require_once('init_session1.php');
-require_once('admin.inc');  // Must be logged in as an administrator
+require_once('init_session.php');
+require_once('admin.inc');                       // Must be logged in as an administrator
+$login_status = login_status();
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -34,41 +35,25 @@ require_once('admin.inc');  // Must be logged in as an administrator
     <title>Event Editor</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/admin.css" />
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/site_ui.js"></script>
   </head>
   <body>
 <?php
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
 
-    $status_text = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $status_action = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
-    <div>$last_login</div>
-
-EOD;
-
-    $nav_bar = site_nav();
-    $admin_nav = admin_nav();
-    echo <<<EOD
-    <!-- Status Bar -->
-    <div id='status-bar'>
-      <div id='status-msg'>
-        $status_text
-        $status_action
-      </div>
-      $nav_bar
-      $admin_nav
-    </div>
-    <h1>Administration</h1>
-    $dump_if_testing
+  //  Generate Status Bar and Page Content
+  $nav_bar = site_nav();
+  $admin_nav = admin_nav();
+  echo <<<EOD
+  <!-- Status Bar -->
+  <div id='status-bar'>
+    $instructions_button
+    $login_status
+    $nav_bar
+    $admin_nav
+  </div>
+  <h1>Administration</h1>
+  $dump_if_testing
     <p>
       Live long and prosper.
     </p>
