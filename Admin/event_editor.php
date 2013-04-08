@@ -7,6 +7,9 @@ require_once('init_session.php');
 require_once('admin.inc');                       // Must be logged in as an administrator
 $login_status = login_status();
 
+$disabled = " disabled='disabled'";
+if ( $can_edit ) $disabled = '';
+
 //  The actions array
 $actions = array();
 $result = pg_query($curric_db, 'SELECT * FROM actions ORDER BY display_order')
@@ -207,7 +210,7 @@ EOD;
   echo <<<EOD
     <!-- Status Bar -->
     <div id='status-bar'>
-      $events_message // Instead of instructions button
+      $events_message
       $login_status
       $nav_bar
       $admin_nav
@@ -268,7 +271,7 @@ EOD;
               </td>
             </tr>
           </table>
-          <button type='submit'>Submit</button>
+          <button type='submit'$disabled>Submit</button>
         </div>
         <!-- Proposal Table -->
         <table id='proposal-table'>
@@ -350,7 +353,9 @@ EOD;
   echo <<<EOD
         <tr>
           <td>
-            <div><input type='checkbox' name='select-{$row['proposal_id']}' /></div>
+            <div>
+              <input type='checkbox' name='select-{$row['proposal_id']}'$disabled />
+            </div>
           </td>
           <td><div><a href='../Proposals?id=$proposal_id'>$proposal_id</a></div></td>
           <td><div>{$row['discipline']} {$row['course_number']}</div></td>
