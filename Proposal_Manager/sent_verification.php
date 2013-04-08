@@ -1,20 +1,18 @@
-<?php  /* Proposal/sent_verification.php */
-
-set_include_path(get_include_path() 
-    . PATH_SEPARATOR . '../include'
-    . PATH_SEPARATOR . '../scripts' );
+<?php
+// Proposal_Manager/sent_verification.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
+require_once('proposal_manager.inc');
 
-require_once('proosal_magager.inc');
-
-if ( ! (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in))
+if ( !(isset($person) && isset($_SESSION[proposal])) )
 {
-  //  Attempt to access this page while not logged in.
-  die('Confguration error ' . __LINE__);
+  //  Attempt to access this page while not logged in or no proposal to verify
+  $_SESSION[login_error_msg] = 'No proposal submitted';
+  header("LOcation: $site_home_url");
+  exit;
 }
-$person = unserialize($_SESSION['person']);
-$email = $person->email;
-$pwd = basename(getcwd());
 
 //  At this point, the user's session loses the current proposal
 unset($_SESSION[proposal]);
@@ -46,82 +44,33 @@ unset($_SESSION[proposal]);
     <title>Sent Verification Link</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/proposal_editor.css" />
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/site_ui.js"></script>
   </head>
   <body>
-    <h1>Check Your Email</h1>
-    <?php
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $person           = '';
-  $sign_out_button  = '';
-  $review_link      = '';
-  require_once('short-circuit.php');
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-      if ($person->has_reviews)
-      {
-        $review_link = "<a href='../Review_Editor'>Edit Reviews</a>\n";
-      }
-    }
-    else
-    {
-      die("<h1 class='error'>Review Course Proposal: " .
-          "Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' .
-                  sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-      <form id='logout-form' action='.' method='post'>
-        <input type='hidden' name='form-name' value='logout' />
-        <button type='submit'>Sign Out</button>
-      </form>
-
-EOD;
-  }
-
-    echo <<<EOD
-    <p>
-      A message containing a link for submitting your proposal has been sent to <em>$email</em>.
-    </p>
-    <p>
-      The proposal will not be acted upon until you click on the link in that message. The link
-      will remain active for a month.
-    </p>
-EOD;
-
-    //  Status Bar
-    echo <<<EOD
+<?php
+  //  Status Bar and H1 element
+  //  --------------------------------------------------------------------------------
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  echo <<<EOD
     <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='.' class='current-page'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
+      $instructions_button
+      $status_msg
+      $nav_bar
     </div>
-    <h2><a href='.'>Return to Manage Proposals</a></h2>
-
+    <div>
+    <h1>Check Your Email</h1>
+    $dump_if_testing
+    <p>
+      A message containing a link for submitting your proposal has been sent to
+      <em>$person</em>.
+    </p>
+    <p>
+      The proposal will not be acted upon until you click on the link in that message.
+      The link will remain active for a month.
+    </p>
 EOD;
-    ?>
+?>
   </body>
 </html>

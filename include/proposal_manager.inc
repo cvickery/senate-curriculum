@@ -11,7 +11,6 @@
  */
 
   //  Proposal Form names
-  define('logout',                'logout');
   define('select_proposal',       'select-proposal');
   define('create_proposal',       'create-proposal');
   define('select_one_course',     'select-one-course');

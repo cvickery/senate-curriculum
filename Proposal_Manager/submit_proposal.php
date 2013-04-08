@@ -1,13 +1,20 @@
-<?php  /* Proposal/submit_proposal.php */
-
-set_include_path(get_include_path() 
-    . PATH_SEPARATOR . '../include'
-    . PATH_SEPARATOR . '../scripts' );
+<?php
+// Proposal_Manager/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
-
-require_once('proosal_magager.inc');
-require_once('simple_diff.php');
+require_once('proposal_manager.inc');
 require_once('mail_setup.php');
+
+//  Check the email link was the origin
+if ( !isset($_GET['token']) )
+{
+  $_SESSION[login_error_msg] = 'Invalid Access';
+  header("Location: $site_home_url");
+  exit;
+}
+$guid = sanitize($_GET['token']);
 
 //  Here beginneth the web page
 //  ================================================================================
@@ -37,15 +44,25 @@ require_once('mail_setup.php');
     <title>Submit Proposal</title>
     <link rel="icon" href="../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/proposal_editor.css" />
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/site_ui.js"></script>
     <style type='text/css'>
-      h1 { color: #300; }
     </style>
   </head>
   <body>
-  <?php
-    $base_dir = basename(dirname(getcwd()));
-    isset($_GET['token']) or die('Configuration error');
-    $guid = sanitize($_GET['token']);
+<?php
+  $status_msg = login_status();
+  $site_nav = site_nav();
+  echo <<<EOD
+    <div id='status-bar'>
+      $instructions_button
+      $status_msg
+      $site_nav
+    </div>
+    <h1>Submit Proposal</h1>
+    $dump_if_testing
+
+EOD;
 
     //  Check information about this proposal
     $query = <<<EOD

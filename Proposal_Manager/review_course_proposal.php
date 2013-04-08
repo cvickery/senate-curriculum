@@ -1,20 +1,21 @@
-<?php  /* Curriculum/review_course_proposal.php */
-
-set_include_path(get_include_path() 
-    . PATH_SEPARATOR . '../include'
-    . PATH_SEPARATOR . '../scripts' );
+<?php
+// Proposal_Manager/review_course_proposal.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
-require_once('proosal_magager.inc');
+if ( !isset($person) )
+{
+  //  Attempt to access this page while not logged in.
+  $_SESSION[login_error_msg] = 'Sign-in Required';
+  header("Location: $site_home_url");
+}
+
+require_once('proposal_manager.inc');
 require_once('syllabus_utils.php');
 require_once('simple_diff.php');
 require_once('mail_setup.php');
-
-if ( ! (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in))
-{
-  //  Attempt to access this page while not logged in.
-  die('Confguration error ' . __LINE__);
-}
 
 /*  Display the course proposal for the submitter to review. Submitting the do-it form at
  *  the bottom of the page confirms that the proposal is ready to send out for
@@ -227,7 +228,9 @@ EOD;
   <head>
     <title>Review Course Changes</title>
     <link rel="icon" href="../../favicon.ico" />
-    <link rel='stylesheet' type='text/css' href='../css/curriculum.css' />
+    <link rel='stylesheet' type='text/css' href='../css/proposal_editor.css' />
+    <script type="application/javascript" src="../js/jquery.min.js"></script>
+    <script type="application/javascript" src="../js/site_ui.js"></script>
     <style type="text/css">
      ins {text-decoration:underline;}
      del {text-decoration:line-through;}
@@ -235,48 +238,48 @@ EOD;
   </head>
   <body>
 <?php
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
 
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $person           = '';
-  $sign_out_button  = '';
-  $review_link      = '';
-  require_once('../scripts/short-circuit.php');
-  require_once('../scripts/login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
+  //  Navigation row for this page
+  if (isset($_SESSION['proposal']))
   {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-      if ($person->has_reviews)
-      {
-        $review_link = "<a href='../Review_Editor'>Edit Reviews</a>\n";
-      }
-    }
-    else
-    {
-      die("<h1 class='error'>Review Course Proposal: " .
-          "Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' .
-                  sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-      <form id='logout-form' action='.' method='post'>
-        <input type='hidden' name='form-name' value='logout' />
-        <button type='submit'>Sign Out</button>
-      </form>
-
+    $editor_nav = <<<EOD
+    <nav>
+      <a class='nav-button' href='index.php'>Return to Editor</a>
+    </nav>
 EOD;
   }
+  else
+  {
+    die("<h1 class='error'>Error: access to submit proposal page with no proposal " .
+      "active at " . basename(__FILE__) . ' line ' . __LINE__ . "</h1></body></html>");
+  }
+
+  echo <<<EOD
+    <div id='status-bar'>
+      $instructions_button
+      $status_msg
+      $nav_bar
+      $editor_nav
+    </div>
+    <div>
+    <h1>
+      Final Review Before Submission of Proposal #$proposal_id:<br />
+      $type_name for $discipline $course_number<br />
+      <span class='error'>
+        You still need to click the Submit Proposal button at the bottom of this page
+      </span>
+    </h1>
+    $dump_if_testing
+    <div class='instructions'>
+      Check this summary of your proposal, and if everything seems to be in order,
+      click the “Submit Proposal” button at the bottom of the page. You will then
+      need to respond to an email message we will send to $person to complete the
+      submission process.
+    </div>
+
+EOD;
 
   $syllabus_pathnames = get_syllabi("$discipline $course_number");
   $syllabus_info = <<<EOD
@@ -304,12 +307,7 @@ EOD;
     $syllabus_info .= "  </ul>\n";
   }
 
-  echo <<<EOD
-    <h1>
-      Review Course Proposal #$proposal_id for $discipline $course_number<br/>$type_name
-    </h1>
-    $syllabus_info
-EOD;
+  echo $syllabus_info;
   if ($new_catalog->course_id !== 0)
   {
     echo "<h2>Current Catalog Information</h2>\n"  . $cur_catalog->toHTML();
@@ -342,7 +340,7 @@ EOD;
   else if ( in_array($type_abbr, $require_dept_approval) &&
             ( $dept_approval_date == 'Enter approval date') )
   {
-    echo "<h1 class='error'>Invalid Department Approval Date</h1>\n";
+    echo "<h1 class='error'>Invalid or missing Department Approval Date</h1>\n";
   }
   else
   {
@@ -366,7 +364,7 @@ EOD;
     //  Form for submitting the proposal
     //  ----------------------------------------------------------------------------------
     echo <<<EOD
-<h2>Send Verification Email</h2>
+<h2>Submit Proposal</h2>
 <form method='post' action='{$_SERVER['SCRIPT_NAME']}'>
 <fieldset>
   <input type='hidden' name='form-name' value='do-it' />
@@ -382,45 +380,26 @@ EOD;
   </p>
   <ol>
     <li>
-      Verify that you are who you say you are by clicking the “Send Verification Email”
+      Verify that you are who you say you are by clicking the “Submit Proposal”
       button below, which will send a message to you at $submitter_email.
     </li>
     <li>
-      When you receive the email message, it will include a link for you to click on,
-      which will finally submit the proposal and notify the $agency_name. $copies_text
+      <strong>The email message will include a link that you must click</strong>
+      to <em>finally-finally</em> submit the proposal and notify the $agency_name.
+      $copies_text
     </li>
   </ol>
     <div>
       <input type='hidden' name='agent-id' value='{$proposal->agent_id}' />
-      <button type='submit' class='centered-button'>Send Verification Email</button>
+      <button type='submit' class='centered-button call-to-action'>
+        Submit Proposal
+      </button>
     </div>
   </fieldset>
 </form>
 EOD;
-
   }
-
-    echo <<<EOD
-    <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='.' class='current-page'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-    </div>
-    <h2><a href='.'>Return to Manage Proposals</a></h2>
-
-EOD;
-
-  ?>
+?>
+  </div>
   </body>
 </html>
-

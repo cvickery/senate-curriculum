@@ -1,26 +1,9 @@
-<?php  /* Proposal_Manager/index.php */
-
-set_include_path(get_include_path() 
-    . PATH_SEPARATOR . '../include'
-    . PATH_SEPARATOR . '../scripts' );
+<?php
+// Proposal_Manager/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
-require_once('syllabus_utils.php');
-
-require_once('proposal_manager.inc');
-
-//  Global Variables
-//  --------------------------------------------------------------------------------------
-/*  These variables are declared here to give them global scope. $person is manged in the
- *  login module; the others are set in the select_proposal module, and referenced in the
- *  Proposal and Syllabus modules.
- */
-  $person               = null; //  Object of class Person
-  $proposal             = null; //  Object of class Proposal
-  $cur_catalog          = null; //  Object of class Course
-  $new_catalog          = null; //  Object of class Course
-  $proposal_course_str  = '';
-  $proposal_type        = '';
-  $proposal_class       = '';
 
 //  Here beginnith the web page
 //  ---------------------------------------------------------------------------------------
@@ -50,20 +33,81 @@ require_once('proposal_manager.inc');
     <title>Manage Curriculum Proposals</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/proposal_editor.css" />
-    <script type="text/javascript" src="../../js/jquery-current.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
     <script type="text/javascript" src="js/select_proposal.js"></script>
     <script type="text/javascript" src="js/proposal_editor.js"></script>
   </head>
   <body>
 <?php
-  echo $dump_if_testing;
-  if (isset($_SESSION['login_error_msg']))
+//  Global Variables
+//  -----------------------------------------------------------------------------------
+/*  These variables are declared here to give them global scope.
+ *  They are set in the select_proposal module, and referenced in the Proposal and
+ *  Syllabus modules.
+ */
+  $proposal             = null; //  Object of class Proposal
+  $cur_catalog          = null; //  Object of class Course
+  $new_catalog          = null; //  Object of class Course
+  $proposal_course_str  = '';
+  $proposal_type        = '';
+  $proposal_class       = '';
+  require_once('syllabus_utils.php');
+  require_once('proposal_manager.inc');
+
+  //  Status Bar and H1 element
+  //  --------------------------------------------------------------------------------
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+    //  Navigation row for Proposal Manager
+  $editor_nav = <<<EOD
+    <nav>
+      <button class='nav-button' id='select-proposal-section-nav'>
+        Create Proposal
+      </button>
+
+EOD;
+  if (isset($_SESSION['proposal']))
   {
-    echo "<h3 class='error'>{$_SESSION['login_error_msg']}</h3>\n";
+    $editor_nav .= <<<EOD
+      <button class='nav-button' id='catalog-info-section-nav'>Catalog Info</button>
+      <button class='nav-button' id='edit-proposal-section-nav'>Edit Proposal</button>
+      <button id='save-changes-nav' disabled='disabled'>Save Changes</button>
+      <button id='submit-proposal-nav'>
+        Submit Proposal
+     </button>
+
+EOD;
   }
-?>
+
+  $editor_nav .= <<<EOD
+      <button class='nav-button' id='upload-syllabus-section-nav'>
+        Upload Syllabus
+      </button>
+    </nav>
+
+EOD;
+
+  //  User must sign in to be able to access this page
+  //  ------------------------------------------------------------------------------------
+  ob_start();
+  require_once('login.php');    //  Generate login form if needed
+  $login_form = ob_get_clean();
+  if (isset($person))
+  {
+    echo <<<EOD
+    <div id='status-bar'>
+      $instructions_button
+      $status_msg
+      $nav_bar
+      $editor_nav
+    </div>
+    <div>
     <h1>Manage Proposals</h1>
+    $dump_if_testing
+
+EOD;
+?>
     <div class='warning overview'>
       <ul>
         <li>
@@ -260,141 +304,57 @@ require_once('proposal_manager.inc');
       This site will not work unless you enable JavaScript. If you see this message, it
       means that JavaScript is not enabled.
     </p>
+<?php
+    //  Process necessary modules, depending on current editing state.
+    //  -------------------------------------------------------------------------------
 
-    <?php
+    //  Always provide the option to select a different proposal or start a new one.
+    require_once('scripts/select_proposal.php');
 
-    //  Handle the logging in/out situation here
-    $last_login = '';
-    require_once('../scripts/short-circuit.php');
-    if (isset($_SESSION[need_password])) unset($_SESSION[need_password]);
-    require_once('../scripts/login.php');
-    if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
+    //  Display catalog information and editor controls only if a proposal has been
+    //  selected for editing.
+    if (isset($_SESSION[proposal]))
     {
-      if (! $person)
-      {
-        if (isset($_SESSION[person]))
-        {
-          $person = unserialize($_SESSION[person]);
-        }
-        else
-        {
-          die("<h1 class='error'>Program Error: Invalid login state</h1></body></html>");
-        }
-      }
-      $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-      $last_login = 'First login';
-      if ($person->last_login_time)
-      {
-        $last_login   = "Last login at ";
-        $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-      }
-      $sign_out_button = <<<EOD
-
-      <form id='logout-form' action='.' method='post'>
-        <input type='hidden' name='form-name' value='logout' />
-        <button type='submit'>Sign Out</button>
-      </form>
-
-EOD;
-
-      //  Process necessary modules, depending on current editing state.
-      //  -------------------------------------------------------------------------------
-
-      //  Always provide the option to select a different proposal or start a new one.
-      require_once('scripts/select_proposal.php');
-
-      //  Display catalog information and editor controls only if a proposal has been
-      //  selected for editing.
-      if (isset($_SESSION[proposal]))
-      {
-        $proposal = unserialize($_SESSION[proposal]);
-        require_once('scripts/proposal_editor.php');
-      }
-      else
-      {
-        $proposal = null;
-        echo <<<EOD
-
-  <h2 id='editor-section'>Edit Proposal: No proposal open</h2>
-  <div> <!-- no content to show/hide --></div>
-
-EOD;
-
-      }
-
-      //  Always include the syllabus upload section.
-      require_once('scripts/syllabus.php');
+      $proposal = unserialize($_SESSION[proposal]);
+      require_once('scripts/proposal_editor.php');
     }
     else
     {
-      //  This page requires the user to be signed in.
-      $status_msg = 'Not signed in';
-      $sign_out_button = '';
+      $proposal = null;
+      echo <<<EOD
+  <h2 id='editor-section'>Edit Proposal: No proposal open</h2>
+  <div><!-- no content to show/hide --></div>
+
+EOD;
     }
-
-    //  Status/Nav Bars
-    //  =================================================================================
-    /*  Generated here, after login status is determined, but displayed up top by the
-     *  wonders of CSS.
-     */
-    //  First row link to Review Editor depends on the user having something to review
-    $review_link = '';
-    if ($person && $person->has_reviews)
+      //  Always include the syllabus upload section.
+      require_once('scripts/syllabus.php');
+  }
+  else
+  {
+    if ( isset($_SESSION[login_error_msg]) )
     {
-      $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
+      $login_status_msg = $_SESSION[login_error_msg];
+      unset($_SESSION[login_error_msg]);
     }
-
-    //  Second row (editor navigation) exists only if person is logged in. And then its
-    //  contents depend on what the user is doing.
-    $editor_nav = '';
-    if ($person)
+    else
     {
-      $editor_nav = <<<EOD
-    <nav>
-      <button class='nav-button' id='select-proposal-section-nav'>Create Proposal</button>
-
-EOD;
-      if (isset($_SESSION['proposal']))
-      {
-        $editor_nav .= <<<EOD
-      <button class='nav-button' id='catalog-info-section-nav'>Catalog Info</button>
-      <button class='nav-button' id='edit-proposal-section-nav'>Edit Proposal</button>
-      <button id='save-changes-nav' disabled='disabled'>Save Changes</button>
-      <button id='submit-proposal-nav'>
-        Submit Proposal
-     </button>
-
-EOD;
-      }
-
-      $editor_nav .= <<<EOD
-      <button class='nav-button' id='upload-syllabus-section-nav'>Upload Syllabus</button>
-    </nav>
-
-EOD;
+      $login_status_msg = 'You must sign in to access the Proposal Manager';
     }
     echo <<<EOD
     <div id='status-bar'>
-      <button id='show-hide-instructions-button'>
-        Hide Instructions
-      </button>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='.' class='current-page'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-      $editor_nav
+      $instructions_button
+      $status_msg
+      $nav_bar
     </div>
+    <h1>Manage Proposals</h1>
+    $dump_if_testing
+    <h2 class='error'>$login_status_msg</h2>
+    $login_form
 
 EOD;
+  }
   ?>
+    </div>
   </body>
 </html>
