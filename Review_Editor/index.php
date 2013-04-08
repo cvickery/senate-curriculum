@@ -1,5 +1,5 @@
 <?php
-//  Curriculum/index.php
+//  Review_Editor/index.php
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
@@ -37,7 +37,8 @@ $one_hour = new DateInterval('PT1H');
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_editor.css" />
     <script type='application/javascript' src='../js/jquery.min.js'></script>
-    <script type='application/javascript' src='js/review_editor.js'></script>
+    <script type='application/javascript' src="../js/site_ui.js"></script>
+    <script type='application/javascript' src='../js/review_editor.js'></script>
     <style type="text/css">
       td, th {font-size: 0.9em;}
     </style>

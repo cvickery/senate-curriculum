@@ -1,8 +1,25 @@
-<?php  /* Reviews/index.php */
-
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+<?php
+//  Reviews/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
+if ( !isset($person) )
+{
+  $_SESSION[login_error_msg] = 'Invalid Access';
+  header("Location: $site_home_url");
+  exit;
+}
+$is_geac = false;
+$public_comments_th  = '<th>Reviewer Comments</th>';
+$private_comments_th = '';
+if ( array_key_exists('GEAC', $person->affiliations) )
+{
+  $is_geac = true;
+  $public_comments_th  = '<th>Public Comments</th>';
+  $private_comments_th = '<th>Confidential Comments</th>';
+}
 //  Here beginneth the web page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -31,61 +48,23 @@ require_once('init_session.php');
     <title>Proposal Reviews</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/reviews.css" />
+    <script type='application/javascript' src='../js/jquery.min.js'></script>
+    <script type='application/javascript' src="../js/site_ui.js"></script>
   </head>
   <body>
+<?php
+  //  Status Bar and H1 element
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  echo <<<EOD
+  <div id='status-bar'>
+    $instructions_button
+    $status_msg
+    $nav_bar
+  </div>
+  <div>
     <h1>Proposal Reviews</h1>
-<?php
-  echo $dump_if_testing;
-
-  //  Handle the logging in/out situation here
-  $last_login           = '';
-  $status_msg           = 'Not signed in';
-  $person               = '';
-  $sign_out_button      = '';
-  $is_geac              = FALSE;
-  $public_comments_th   = "<th>Comments</th>\n";
-  $private_comments_th  = '';
-  require_once('short-circuit.php');
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-      if (isset($person->affiliations['GEAC']))
-      {
-        $is_geac              = true;
-        $public_comments_th   = "<th>Public Comments</th>\n";
-        $private_comments_th  = "<th>Private Comments</th>\n";
-      }
-    }
-    else
-    {
-      die("<h1 class='error'>Reviews: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
-
-EOD;
-  }
-  ?>
-<?php
-    if ($person)
-    {
-
-      echo <<<EOD
+    $dump_if_testing
     <h2>All Reviews</h2>
     <div>
 
@@ -103,47 +82,47 @@ EOD;
      AND proposal_types.id    = proposals.type_id
 ORDER BY proposal_id
 EOD;
-        $result = pg_query($curric_db, $query) or
-          die("<p class='error'>Query Failed at: " .
-            __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
-        $this_id = '';
-        $alphabet = 'ABCDEFGHIJKLNOPQRSTUVWXYZ';
-        while ($row = pg_fetch_assoc($result))
-        {
-          $proposal_id = $row['proposal_id'];
-          $target = '';
-          if ($proposal_id !== $this_id)
-          {
-            $this_id = $proposal_id;
-            $reviewer_count = 0;
-            $target = " id='$this_id'";
-          }
-          $reviewer = 'GEAC-' . $alphabet[$reviewer_count++];
-          if ($is_geac)
-          {
-            $reviewer_str = $row['reviewer_email'];
-            $initial = strtoupper($reviewer_str[0]);
-            $lname =
-              substr( $reviewer_str,
-                      strpos($reviewer_str, '.') + 1,
-                      strpos($reviewer_str, '@') - 1 - strpos($reviewer_str, '.'));
-            $lname[0] = strtoupper($lname[0]);
-            $reviewer = $initial . '. ' . $lname;
-          }
-          $recommendation_date = 'Not yet';
-          if ($row['submitted_date'] !== null)
-          {
-            $recommendation_date = substr($row['submitted_date'], 0, 10);
-          }
-          $course = "{$row['discipline']} {$row['course_number']}";
-          $designation = $row['designation'];
-          $recommendation = $row['recommendation'];
-          $private_comments_td = '';
-          if ($is_geac)
-          {
-            $private_comments_td = "<td>{$row['private_comments']}</td>\n";
-          }
-          $proposal = <<<EOD
+    $result = pg_query($curric_db, $query) or
+      die("<p class='error'>Query Failed at: " .
+        __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
+    $this_id = '';
+    $alphabet = 'ABCDEFGHIJKLNOPQRSTUVWXYZ';
+    while ($row = pg_fetch_assoc($result))
+    {
+      $proposal_id = $row['proposal_id'];
+      $target = '';
+      if ($proposal_id !== $this_id)
+      {
+        $this_id = $proposal_id;
+        $reviewer_count = 0;
+        $target = " id='$this_id'";
+      }
+      $reviewer = 'GEAC-' . $alphabet[$reviewer_count++];
+      if ($is_geac)
+      {
+        $reviewer_str = $row['reviewer_email'];
+        $initial = strtoupper($reviewer_str[0]);
+        $lname =
+          substr( $reviewer_str,
+                  strpos($reviewer_str, '.') + 1,
+                  strpos($reviewer_str, '@') - 1 - strpos($reviewer_str, '.'));
+        $lname[0] = strtoupper($lname[0]);
+        $reviewer = $initial . '. ' . $lname;
+      }
+      $recommendation_date = 'Not yet';
+      if ($row['submitted_date'] !== null)
+      {
+        $recommendation_date = substr($row['submitted_date'], 0, 10);
+      }
+      $course = "{$row['discipline']} {$row['course_number']}";
+      $designation = $row['designation'];
+      $recommendation = $row['recommendation'];
+      $private_comments_td = '';
+      if ($is_geac)
+      {
+        $private_comments_td = "<td>{$row['private_comments']}</td>\n";
+      }
+      $proposal = <<<EOD
       <tr$target>
         <th><a href='../Proposals?id=$proposal_id'>$proposal_id</a></th>
         <td>$course</td>
@@ -158,11 +137,11 @@ EOD;
         $private_comments_td
       </tr>
 EOD;
-          $proposals[] = $proposal;
-        }
-      if (count($proposals) > 0)
-      {
-        echo <<<EOD
+      $proposals[] = $proposal;
+    }
+  if (count($proposals) > 0)
+  {
+    echo <<<EOD
       <form action='.' method='post'>
         <input type='hidden' name='form-name' value='update-reviews' />
         <table>
@@ -177,59 +156,28 @@ EOD;
           </tr>
 
 EOD;
-        foreach ($proposals as $proposal)
-        {
-          echo "$proposal\n";
-        }
-        echo <<<EOD
+      foreach ($proposals as $proposal)
+      {
+        echo "$proposal\n";
+      }
+      echo <<<EOD
         </table>
       </form>
     </div>
 
 EOD;
-      }
-      else
-      {
-        echo <<<EOD
+    }
+    else
+    {
+      echo <<<EOD
       <p>
         There are no reviews.
       </p>
     </div>
 
 EOD;
-      }
     }
-
-    //  Status/Nav Bars
-    //  =================================================================================
-    /*  Generated here, after login status is determined, but displayed up top by the
-     *  wonders of CSS.
-     */
-    //  First row link to Review Editor depends on the user having something to review
-    $review_link = '';
-    if ($person && $person->has_reviews)
-    {
-      $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-    }
-    echo <<<EOD
-    <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-    </div>
-
-EOD;
-
 ?>
+    </div>
   </body>
 </html>
