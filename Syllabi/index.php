@@ -47,12 +47,13 @@ require_once('syllabus_utils.php');
     $status_msg
     $nav_bar
   </div>
-  <h1>Course Syllabi</h1>
-  <h2>
-    All syllabi copyright © Queens College of CUNY all rights reserved unless otherwise
-    noted.
-  </h2>
-  $dump_if_testing
+  <div>
+    <h1>Course Syllabi</h1>
+    <h2>
+      All syllabi copyright © Queens College of CUNY all rights reserved unless otherwise
+      noted.
+    </h2>
+    $dump_if_testing
 
 EOD;
 
@@ -93,5 +94,6 @@ EOD;
 EOD;
   }
 ?>
+    </div>
   </body>
 </html>
