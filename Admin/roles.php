@@ -64,8 +64,8 @@ $login_status = login_status();
   </p>
   <p>
     If you see x’s, that means you have view-only access to the Admin section of the
-    site. Scratching your left ear and clicking on the x’s will have the same effect on
-    this page.
+    site. Scratching your left ear or clicking on the x’s will have equivalent effects
+    on this page.
   </p>
   <p>
     Other than that, this page is good to go.
