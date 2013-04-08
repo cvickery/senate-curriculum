@@ -61,6 +61,7 @@
       //  Person is not logged in
       unset($link_info[Proposal_Manager_label]);
       unset($link_info[Review_Editor_label]);
+      unset($link_info[Reviews_label]);
       unset($link_info[Admin_label]);
     }
     else
