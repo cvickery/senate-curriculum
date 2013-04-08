@@ -1,6 +1,8 @@
-<?php  /* Review_Editor/index.php */
-
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+<?php
+//  Curriculum/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
 //  For checking proposals updated after review.
@@ -34,57 +36,28 @@ $one_hour = new DateInterval('PT1H');
     <title>Proposal Review Editor</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_editor.css" />
-    <script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
-    <script src="js/review_editor.js" type="text/javascript"></script>
+    <script type='application/javascript' src='../js/jquery.min.js'></script>
+    <script type='application/javascript' src='js/review_editor.js'></script>
     <style type="text/css">
       td, th {font-size: 0.9em;}
     </style>
   </head>
   <body>
-    <h1>Proposal Review Editor</h1>
 <?php
-  echo $dump_if_testing;
-
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $signout_button   = '';
-  $person           = '';
-  $password_change  = '';
-  require_once('short-circuit.php');
-  if ( ! isset($_SESSION[need_password]) )
-  {
-    $_SESSION[need_password] = true;
-  }
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Edit Reviews: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
+  //  Status Bar and H1 element
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  echo <<<EOD
+  <div id='status-bar'>
+    $instructions_button
+    $status_msg
+    $nav_bar
+  </div>
+  <div>
+    <h1>Proposal Review Editor</h1>
+    $dump_if_testing
 
 EOD;
-  }
-
   if ($form_name === 'update-reviews')
   {
     //  Update db if new data were posted.
@@ -140,15 +113,15 @@ Assignments:
 
   -->
 <?php
-    if ($person && ! $_SESSION[need_password])
-    {
-      echo <<<EOD
+  if ($person)
+  {
+    echo <<<EOD
     <h2>Your Reviews</h2>
     <div>
 
 EOD;
-        $proposals = array();
-        $query = <<<EOD
+    $proposals = array();
+    $query = <<<EOD
   SELECT *
     FROM reviews
    WHERE lower(reviewer_email) = lower('{$person->email}')
@@ -159,13 +132,13 @@ EOD;
 
 ORDER BY proposal_id
 EOD;
-        $result = pg_query($curric_db, $query) or
-          die("<p class='error'>Query Failed at: " .
-            __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
-        while ($row = pg_fetch_assoc($result))
-        {
-          $proposal_id = $row['proposal_id'];
-          $proposal_query = <<<EOD
+    $result = pg_query($curric_db, $query) or
+      die("<p class='error'>Query Failed at: " .
+        __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
+    while ($row = pg_fetch_assoc($result))
+    {
+      $proposal_id = $row['proposal_id'];
+      $proposal_query = <<<EOD
   SELECT proposals.discipline||' '||proposals.course_number AS course,
          proposals.submitted_date,
          proposal_types.abbr
@@ -174,36 +147,36 @@ EOD;
      AND proposal_types.id = proposals.type_id
 
 EOD;
-          $proposal_result = pg_query($curric_db, $proposal_query) or
-          die("<p class='error'>Query Failed at: " .
-            __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
-          $proposal_row = pg_fetch_assoc($proposal_result);
-          $proposal_info = <<<EOD
+      $proposal_result = pg_query($curric_db, $proposal_query) or
+      die("<p class='error'>Query Failed at: " .
+        __FILE__ . ' ' . __LINE__ . "</p></div></body></html>\n");
+      $proposal_row = pg_fetch_assoc($proposal_result);
+      $proposal_info = <<<EOD
 <br />{$proposal_row['course']}<br />{$proposal_row['abbr']}
 
 EOD;
-          $proposal_submitted_date = new DateTime($proposal_row['submitted_date']);
-          $assigned_date = substr($row['assigned_date'], 0, 10);
-          $review_submitted_date = 'Not yet';
-          $need_review = " class='need-review'";
-          if ($row['submitted_date'] !== null)
-          {
-            $review_submitted_date = new DateTime($row['submitted_date']);
-            if ($review_submitted_date > $proposal_submitted_date->add($one_hour))
-            {
-              $need_review = "";
-            }
-            $review_submitted_date = $review_submitted_date->format('Y-m-d');
-          }
-          $proposal_submitted_date = $proposal_submitted_date->format('Y-m-d');
-          $selected = array(
-              'None'  => '',
-              'Accept' => '',
-              'Revise' => '',
-              'Reject' => ''
-              );
-          $selected[$row['recommendation']] = "selected='selected'";
-          $proposal = <<<EOD
+      $proposal_submitted_date = new DateTime($proposal_row['submitted_date']);
+      $assigned_date = substr($row['assigned_date'], 0, 10);
+      $review_submitted_date = 'Not yet';
+      $need_review = " class='need-review'";
+      if ($row['submitted_date'] !== null)
+      {
+        $review_submitted_date = new DateTime($row['submitted_date']);
+        if ($review_submitted_date > $proposal_submitted_date->add($one_hour))
+        {
+          $need_review = "";
+        }
+        $review_submitted_date = $review_submitted_date->format('Y-m-d');
+      }
+      $proposal_submitted_date = $proposal_submitted_date->format('Y-m-d');
+      $selected = array(
+          'None'  => '',
+          'Accept' => '',
+          'Revise' => '',
+          'Reject' => ''
+          );
+      $selected[$row['recommendation']] = "selected='selected'";
+      $proposal = <<<EOD
       <tr$need_review>
         <td>
           <a href='../Proposals?id=$proposal_id' target='new'>$proposal_id</a>
@@ -231,11 +204,11 @@ EOD;
         </td>
       </tr>
 EOD;
-          $proposals[] = $proposal;
-        }
-      if (count($proposals) > 0)
-      {
-        echo <<<EOD
+      $proposals[] = $proposal;
+    }
+    if (count($proposals) > 0)
+    {
+      echo <<<EOD
       <form action='.' method='post'>
         <input type='hidden' name='form-name' value='update-reviews' />
         <table>
@@ -251,61 +224,30 @@ EOD;
           </tr>
 
 EOD;
-        foreach ($proposals as $proposal)
-        {
-          echo "$proposal\n";
-        }
-        echo <<<EOD
+      foreach ($proposals as $proposal)
+      {
+        echo "$proposal\n";
+      }
+      echo <<<EOD
         </table>
       </form>
     </div>
 
 EOD;
-      }
-      else
-      {
-        echo <<<EOD
+    }
+    else
+    {
+      echo <<<EOD
       <p>
         You have no proposals to review
       </p>
     </div>
 
 EOD;
-      }
     }
-
-    //  Status/Nav Bars
-    //  =================================================================================
-    /*  Generated here, after login status is determined, but displayed up top by the
-     *  wonders of CSS.
-     */
-    //  First row link to Review Editor depends on the user having something to review
-    $review_link = '';
-    if (isset($person) && $person && $person->has_reviews)
-    {
-      $review_link = "<a href='../Review_Editor' class='current-page'>Edit Reviews</a>";
-    }
-    echo <<<EOD
-    <div id='status-bar'>
-      <div class='warning' id='password-msg'>$password_change</div>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-    </div>
-
-EOD;
-
+  }
 ?>
+    </div>
   </body>
 </html>
 
