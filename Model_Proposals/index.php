@@ -47,8 +47,9 @@ require_once('init_session.php');
     $status_msg
     $nav_bar
   </div>
-  <h1>Guidelines and Model Proposals</h1>
-  $dump_if_testing
+  <div>
+    <h1>Guidelines and Model Proposals</h1>
+    $dump_if_testing
 
 EOD;
 ?>
@@ -325,6 +326,7 @@ EOD;
           </div>
         </section>
       </section>
+    </div>
     </div>
   </body>
 </html>
