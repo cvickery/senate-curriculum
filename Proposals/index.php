@@ -1,13 +1,10 @@
-<?php  /* Proposals/index.php */
-
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+<?php
+// Proposals/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
-require_once('syllabus_utils.php');
-require_once('simple_diff.php');
 require_once('tracking_utils.php');
-require_once('display_proposal.php');
-
-require_once('../include/atoms.inc');
 
 //  Set up page title
 $proposal_id    = '';
@@ -76,44 +73,23 @@ if (isset($_GET['id']))
     <title><?php echo $page_title; ?></title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/proposals.css" />
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/site_ui.js"></script>
   </head>
   <body>
 <?php
-  echo $dump_if_testing;
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $person           = '';
-  $sign_out_button  = '';
-  require_once('short-circuit.php');
-  require_once('login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Proposals: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
+  //  Status Bar and H1 element
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  echo <<<EOD
+  <div id='status-bar'>
+    $instructions_button
+    $status_msg
+    $nav_bar
+  </div>
+  $dump_if_testing
 
 EOD;
-  }
 
   //  Initialize display options.
   //  -----------------------------------------------------------------------------------
@@ -274,100 +250,7 @@ EOD;
 EOD;
     }
   }
-/*
-      $query = <<<EOD
-  SELECT proposals.*,
-         cf_academic_organizations.department_name  dept_name,
-         proposal_types.full_name                   proposal_type,
-         proposal_classes.abbr                      class_abbr,
-         proposal_classes.full_name                 class_name
-    FROM proposals, cf_academic_organizations, proposal_types, proposal_classes
-   WHERE proposals.type_id in (SELECT id FROM proposal_types where class_id = $class_id)
-     AND dept_id = cf_academic_organizations.id
-     AND type_id = proposal_types.id
-     AND proposal_classes.id = (SELECT class_id FROM proposal_types WHERE id = type_id)
-     AND proposals.submitted_date IS NOT NULL
-ORDER BY discipline, lpad(course_number, 3), proposals.id
 
-EOD;
-
-      $result = pg_query($curric_db, $query)
-        or die('Unable to access proposals: ' . basename(__FILE__) . ' ' . __LINE__);
-      $n = pg_num_rows($result);
-      if ($n === 0)
-      {
-        echo "<h1>No Proposals</h1>\n";
-      }
-      else
-      {
-        $class_name = $proposal_classes[$class_id]['full_name'];
-        $class_abbr = $proposal_classes[$class_id]['abbr'];
-        $date_heading = 'Date Submitted';
-        if ($class_abbr === 'PLAS')
-        {
-          $date_heading = 'Senate Approved';
-          $instructions = <<<EOD
-  <p>
-    These are “housekeeping copies” of the Perspectives proposals previously approved by
-    the Senate.  The full records of actions on these proposals are at an <a
-    href='../../GEAC/Proposals'>earlier GEAC web site.</a>
-  </p>
-
-EOD;
-        }
-        else $instructions = '';
-        echo <<<EOD
-      <h1>$class_name Proposals</h1>
-      $instructions
-      <table class='summary'>
-        <tr>
-          <th>ID</th>
-          <th>Course</th>
-          <th>Type</th>
-          <th>$date_heading</th>
-          <th>Submitted By</th>
-        </tr>
-
-EOD;
-        while ($row = pg_fetch_assoc($result))
-        {
-          $proposal_id      = $row['id'];
-          $opened_date      = $row['opened_date'];
-          $submitted_date   = substr($row['submitted_date'], 0, 10);
-          $discipline       = $row['discipline'];
-          $course_number    = $row['course_number'];
-          $submitter_name   = $row['submitter_name'];
-          $submitter_email  = $row['submitter_email'];
-          $dept_name        = $row['dept_name'];
-          $proposal_type    = $row['proposal_type'];
-          $class_abbr       = $row['class_abbr'];
-          $class_name       = $row['class_name'];
-          $cur_catalog      = unserialize($row['cur_catalog']);
-          $new_catalog      = unserialize($row['new_catalog']);
-          $justifications   = unserialize($row['justifications']);
-          $id_link = "<a href='.?id=$proposal_id'>$proposal_id</a>";
-          if (!$submitted_date)
-          {
-            $submitted_date = 'not submitted yet';
-            $id_link        = $proposal_id;
-          }
-          if ($class_abbr === 'PLAS') $id_link = $proposal_id;
-          echo <<<EOD
-        <tr>
-          <td>$id_link</td>
-          <td>$discipline $course_number</td>
-          <td>$proposal_type</td>
-          <td>$submitted_date</td>
-          <td>$submitter_name</td>
-        </tr>
-
-EOD;
-        }
-        echo "    </table>\n";
-      }
-    }
-  }
- */
   else if (isset($_GET['type']))
   {
     //  Display By Type
@@ -533,21 +416,7 @@ EOD;
   <h1>Proposals for $discipline_name ($discp_abbr) Courses</h1>
 
 EOD;
-//      $query = <<<EOD
-//  SELECT proposals.*,
-//         cf_academic_organizations.department_name  dept_name,
-//         proposal_types.full_name                   proposal_type,
-//         proposal_classes.abbr                      class_abbr,
-//         proposal_classes.full_name                 class_name
-//    FROM proposals, cf_academic_organizations, proposal_types, proposal_classes
-//   WHERE proposals.discipline = '$discp_abbr'
-//     AND dept_id = cf_academic_organizations.id
-//     AND type_id = proposal_types.id
-//     AND proposal_classes.id = (SELECT class_id FROM proposal_types WHERE id = type_id)
-//     AND proposals.submitted_date IS NOT NULL
-//ORDER BY lpad(proposals.course_number, 3), proposal_classes.id
-//
-//EOD;
+
       $query = <<<EOD
 SELECT      p.id                                    AS proposal_id,
             t.abbr                                  AS type,
@@ -748,35 +617,6 @@ EOD;
     echo "    </table>\n";
   }
 
-  //  Status/Nav Bars
-  //  =================================================================================
-  /*  Generated here, after login status is determined, but displayed up top by the
-   *  wonders of CSS.
-   */
-  //  First row link to Review Editor depends on the user having something to review
-  $review_link = '';
-  if ($person && $person->has_reviews)
-  {
-    $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-  }
-  echo <<<EOD
-    <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='.' class='current-page'>Track Proposals</a>
-        <a href='../Model_Proposals'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-    </div>
-
-EOD;
 ?>
   </body>
 </html>
