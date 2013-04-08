@@ -5,9 +5,10 @@ CF_Queries/
 gened_offerings/
 cur_reports/
 Pathways/
-Syllabi/
 *.swp
 *.dSYM/
 debug.log
 .project
 .setings/
+Syllabi/*.pdf
+To_Convert/
