@@ -40,6 +40,7 @@ input[type="password"] { width: 290px; display: block; margin-bottom: 1em; }
 #need-javascript { font-family: Helvetica, Candara, Arial, Sans-Serif; font-size: 1.2em; text-align: center; color: #661111; }
 
 #status-bar { width: 850px; margin: 0 0 0 -10px; /* without the parens, third 0 merges with last val */ padding: 10px 10px 2.5px 10px; background-color: #eeeeee; border-radius: 2.5px; box-shadow: #333333 2.5px 2.5px 2.5px; font-family: Helvetica, Candara, Arial, Sans-Serif; font-weight: lighter; font-size: 12px; }
+#status-bar + div { margin-top: 1em; height: 800px; overflow: auto; }
 
 #show-hide-instructions-button { float: left; margin: 0 10px; }
 

@@ -4,6 +4,8 @@ $gutter:  10px;
 $grid:    60px;
 $col:     2 * $gutter + $grid;
 
+$scroll-height:  800px;
+
 $quarter-gutter:  $gutter / 4;
 $half-gutter:     $gutter / 2;
 $half-col:        ($grid / 2) + $gutter;
@@ -141,6 +143,8 @@ input[type="password"] {
   font-family: $sans-serif;
   font-weight: lighter;
   font-size: 12px;
+  +div {margin-top: 1em; height: $scroll-height; overflow:auto;}
+
   }
 
 #show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
