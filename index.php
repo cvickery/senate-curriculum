@@ -40,7 +40,6 @@ require_once('init_session.php');
   //  Status Bar and H1 element
   $status_msg = login_status();
   $nav_bar    = site_nav();
-
   echo <<<EOD
   <div id='status-bar'>
     $instructions_button
