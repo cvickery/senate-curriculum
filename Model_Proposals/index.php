@@ -1,6 +1,8 @@
-<?php  /* Model_Proposals/index.php */
-
-set_include_path(get_include_path() . PATH_SEPARATOR . '../scripts' );
+<?php
+//  Model_Proposals/index.php
+set_include_path(get_include_path()
+    . PATH_SEPARATOR . getcwd() . '/../scripts'
+    . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
 //  Here beginnith the web page
@@ -31,75 +33,25 @@ require_once('init_session.php');
     <title>Model Curriculum Proposals</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/model_proposals.css" />
-    <script type='text/javascript' src="../../js/jquery-current.js"></script>
+    <script type='text/javascript' src="../js/jquery.min.js"></script>
+    <script type='text/javascript' src="../js/site_ui.js"></script>
   </head>
   <body>
 <?php
-  //  Handle the logging in/out situation here
-  $last_login       = '';
-  $status_msg       = 'Not signed in';
-  $person           = '';
-  $sign_out_button  = '';
-  require_once('../scripts/short-circuit.php');
-  require_once('../scripts/login.php');
-  if (isset($_SESSION[session_state]) && $_SESSION[session_state] === ss_is_logged_in)
-  {
-    if (isset($_SESSION[person]))
-    {
-      $person = unserialize($_SESSION[person]);
-    }
-    else
-    {
-      die("<h1 class='error'>Model Proposals: Invalid login state</h1></body></html>");
-    }
-
-    $status_msg = sanitize($person->name) . ' / ' . sanitize($person->dept_name);
-    $last_login = 'First login';
-    if ($person->last_login_time)
-    {
-      $last_login   = "Last login at ";
-      $last_login  .= $person->last_login_time . ' from ' . $person->last_login_ip;
-    }
-    $sign_out_button = <<<EOD
-
-    <form id='logout-form' action='.' method='post'>
-      <input type='hidden' name='form-name' value='logout' />
-      <button type='submit'>Sign Out</button>
-    </form>
-
-EOD;
-  }
-    //  Status/Nav Bars
-    //  =================================================================================
-    /*  Generated here, after login status is determined, but displayed up top by the
-     *  wonders of CSS.
-     */
-    //  First row link to Review Editor depends on the user having something to review
-    $review_link = '';
-    if ($person && $person->has_reviews)
-    {
-      $review_link = "<a href='../Review_Editor'>Edit Reviews</a>";
-    }
-    echo <<<EOD
-    <div id='status-bar'>
-      $sign_out_button
-      <div id='status-msg' title='$last_login'>
-        $status_msg
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <a href='../Proposals'>Track Proposals</a>
-        <a href='../Model_Proposals' class='current-page'>Guidelines</a>
-        <a href='../Proposal_Manager'>Manage Proposals</a>
-        <a href='../Syllabi'>Syllabi</a>
-        <a href='../Reviews'>Reviews</a>
-        $review_link
-      </nav>
-    </div>
+  //  Status Bar and H1 element
+  $status_msg = login_status();
+  $nav_bar    = site_nav();
+  echo <<<EOD
+  <div id='status-bar'>
+    $instructions_button
+    $status_msg
+    $nav_bar
+  </div>
+  <h1>Guidelines and Model Proposals</h1>
+  $dump_if_testing
 
 EOD;
 ?>
-    <h1>Guidelines and Model Proposals</h1>
     <h2>Guidelines for CUNY Core and College Option Proposals and Syllabi</h2>
     <div>
       <p>
