@@ -1,11 +1,16 @@
-<?php  /* Admin/proposal_status.php */
-
+<?php
+//  Admin/update_statuses.php
 set_include_path(get_include_path()
-    . PATH_SEPARATOR . getcwd() .  '/../scripts' 
+    . PATH_SEPARATOR . getcwd() .  '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 require_once('admin.inc');                       // Must be logged in as an administrator
-$login_status = login_status();
+
+$is_disabled  = " disabled='disabled'";
+if ( $can_edit )
+{
+  $is_disabled  = '';
+}
 
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
@@ -42,6 +47,7 @@ $login_status = login_status();
   <body>
 <?php
   //  Generate Status Bar and Page Content
+  $login_status = login_status();
   $nav_bar = site_nav();
   $admin_nav = admin_nav();
   echo <<<EOD
@@ -59,7 +65,7 @@ EOD;
 
   //  Process Form Data
   //  ===================================================================================
-  
+
   //  Delete events if undo form is submitted
   //  ---------------------------------------
   if ($form_name === 'undo-form')
@@ -450,7 +456,7 @@ EOD;
     $suffix = ($num_events === 1) ? '' : 's';
     $_SESSION['event_ids'] = serialize($event_ids);
     echo <<<EOD
-      <form action='./proposal_status.php' method='post'>
+      <form action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='undo-form' />
         <button type='submit'>Undo $num_events event$suffix</button>
       </form>
@@ -479,7 +485,7 @@ EOD;
     $suffix = $num === 1 ? '' : 's';
     echo <<<EOD
       <h2>$num proposal$suffix to be marked 'Approved' by GEAC</h2>
-      <form name='geac-approved-form' action='./proposal_status.php' method='post'>
+      <form name='geac-approved-form' action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='geac-approved-form' />
         <table id='geac-approved-table'>
           <tr>
@@ -496,7 +502,9 @@ EOD;
         $id = $row['id'];
         echo <<<EOD
           <tr>
-            <td><input type='checkbox' name='geac-approved-id-$id' checked='checked' /></td>
+            <td>
+              <input type='checkbox' name='geac-approved-id-$id'$is_disabled />
+            </td>
             <td><a href='../Proposals?id=$id' target='_blank'>$id</a></td>
             <td>{$row['course']}</td>
             <td>{$row['type']}</td>
@@ -513,8 +521,8 @@ EOD;
                   name='geac-approved-date'
                   value='today'
                   id='geac-approved-date' />
-          <button type='submit' id='geac-approved-button'>
-            GEAC approved all Proposals
+          <button type='submit' id='geac-approved-button'$is_disabled>
+            GEAC approved no Proposals
           </button>
         </fieldset>
       </form>
@@ -546,7 +554,7 @@ EOD;
       <h2>
         $num proposal$suffix that $copula approved by {GEAC, WSC, AQRAC}, but not by UCC
       </h2>
-      <form name='ucc-approved-form' action='./proposal_status.php' method='post'>
+      <form name='ucc-approved-form' action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='ucc-approved-form' />
         <table id='ucc-approved-table'>
           <tr>
@@ -563,7 +571,9 @@ EOD;
       $id = $row['proposal_id'];
       echo <<<EOD
           <tr>
-            <td><input type='checkbox' name='ucc-approved-id-$id' checked='checked' /></td>
+            <td>
+              <input type='checkbox' name='ucc-approved-id-$id'$is_disabled />
+            </td>
             <td><a href='../Proposals?id=$id'>$id</a></td>
             <td>{$row['course']}</td>
             <td>{$row['type']}</td>
@@ -580,8 +590,8 @@ EOD;
                   name='ucc-approved-date'
                   value='today'
                   id='ucc-approved-date' />
-          <button type='submit' id='ucc-approved-button'>
-            The UCC approved all proposals
+          <button type='submit' id='ucc-approved-button'$is_disabled>
+            The UCC approved no proposals
           </button>
         </fieldset>
       </form>
@@ -592,7 +602,7 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        All proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
+        no proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
       </h2>
 
 EOD;
@@ -626,7 +636,7 @@ EOD;
   {
     echo <<<EOD
       <h2>$num proposal$suffix that $copula approved by UCC, but not by the Senate</h2>
-      <form name='senate-approved-form' action='./proposal_status.php' method='post'>
+      <form name='senate-approved-form' action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='senate-approved-form' />
         <table id='senate-approved-table'>
           <tr>
@@ -645,7 +655,7 @@ EOD;
       echo <<<EOD
           <tr>
             <td>
-              <input type='checkbox' name='senate-approved-id-$id' checked='checked' />
+              <input type='checkbox' name='senate-approved-id-$id'$is_disabled />
             </td>
             <td><a href='../Proposals?id=$id?'>$id</a></td>
             <td>{$row['course']}</td>
@@ -664,11 +674,16 @@ EOD;
                   name='senate-approved-date'
                   value='today'
                   id='senate-approved-date' />
-          <button type='submit' id='senate-approved-button'>
-            The Senate approved all proposals
+          <button type='submit' id='senate-approved-button'$is_disabled>
+            The Senate approved no proposals
           </button>
-          <button type='button' id='clear-all-senate-approved-button'>Clear All</button>
-          <button type='button' id='select-all-senate-approved-button' disabled='disabled'>
+          <button type='button'
+                  id='clear-all-senate-approved-button'
+                  disabled='disabled'>
+            Clear All
+          </button>
+          <button type='button'
+                  id='select-all-senate-approved-button'>
             Select All
           </button>
         </fieldset>
@@ -708,7 +723,7 @@ EOD;
         to the CCRC.
       </h2>
 
-      <form name='ccrc-submitted-form' action='./proposal_status.php' method='post'>
+      <form name='ccrc-submitted-form' action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='ccrc-submitted-form' />
         <table id='ccrc-submitted-table'>
           <tr>
@@ -726,7 +741,9 @@ EOD;
       $id = $row['proposal_id'];
       echo <<<EOD
           <tr>
-            <td><input type='checkbox' name='ccrc-submitted-id-$id' checked='checked' /></td>
+            <td>
+              <input type='checkbox' name='ccrc-submitted-id-$id'$is_disabled />
+            </td>
             <td><a href='../Proposals?id=$id'>$id</a></td>
             <td>{$row['course']}</td>
             <td>{$row['type']}</td>
@@ -744,11 +761,16 @@ EOD;
                   name='ccrc-submitted-date'
                   value='today'
                   id='ccrc-submitted-date' />
-          <button type='submit' id='ccrc-submitted-button'>
-            Submitted all proposals to the CCRC
+          <button type='submit' id='ccrc-submitted-button'$is_disabled>
+            Submitted no proposals to the CCRC
           </button>
-          <button type='button' id='clear-all-ccrc-submitted-button'>Clear All</button>
-          <button type='button' id='select-all-ccrc-submitted-button' disabled='disabled'>
+          <button type='button'
+                  id='clear-all-ccrc-submitted-button'
+                  disabled='disabled'>
+            Clear All
+          </button>
+          <button type='button'
+                  id='select-all-ccrc-submitted-button'>
             Select All
           </button>
         </fieldset>

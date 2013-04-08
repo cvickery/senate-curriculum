@@ -16,9 +16,10 @@ $().ready(function(e)
    */
     function update_submit_button(which_button, which_table, label)
     {
-      var num_elements = $(which_table + ' :checkbox').length;
-      var num_checked = $(which_table + ' :checked').length;
-      var new_text = num_checked + ' proposal' + (num_checked === 1 ? '' : 's');
+      var num_elements  = $(which_table + ' :checkbox').length;
+      var num_checked   = $(which_table + ' :checked').length;
+      var num_text      = num_checked === 0 ? 'no' : num_checked;
+      var new_text = num_text + ' proposal' + (num_checked === 1 ? '' : 's');
       $(which_button).text(label.replace('%', new_text));
       if (num_checked === 0)
       {
