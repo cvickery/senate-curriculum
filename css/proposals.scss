@@ -5,7 +5,6 @@
 /* No login required for this page */
 #login-form, #login-which-department { display: none; }
 
-h1 { padding-top:2.5em; }
 body, nav, #status-bar { width: 12 * $col; }
 
 body > p {
@@ -40,7 +39,7 @@ table {
 
 p a { display:      inline; }
 
-.checkboxes { 
+.checkboxes {
   border-left: 2px solid $border-color;
   border-right: 2px solid $border-color;
 	padding-right: 0.5em;

@@ -2,7 +2,7 @@
 
 @import "base";
 
-h1 { padding-top: 3.2em; }
+#status-bar+div {margin-top: 1em; height: 800px; overflow:auto;}
 
 .prereq                                 { font-style:italic;     }
 .line-one {
@@ -47,7 +47,6 @@ input[type='text'].quarter-wide         { width:$half-col; }
 input[type="radio"]:disabled + label    { color:$dimmed-color; }
 button[type='submit']                   { width:6 + $four-col;display:block; }
 textarea                                { display:block; width:$ten-col; margin:0 2em; height:10em;}
-
 
 legend { font-family:Helvetica, Arial, sans-serif; padding:$gutter; letter-spacing:0.1em; }
 label                                   { font-weight:bold; }
@@ -104,7 +103,16 @@ div>label:first-child {
   margin:$gutter $gutter $half-gutter $gutter;
   }
 
-.centered-button                        { margin:auto; }
+.centered-button {
+  display:block;
+  margin:auto;
+  }
+
+.call-to-action {
+  color: $dobre-color;
+  font-size: 1.5em;
+  }
+
 .pw-justification                       { display:none; }
 .requirement-radio                      { display:inline-block; width:$four-col; }
 

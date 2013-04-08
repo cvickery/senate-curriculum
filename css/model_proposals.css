@@ -68,9 +68,6 @@ table { border-collapse: collapse; }
 table td, table th { border: 1px solid black; }
 table.summary { background-color: white; }
 
-/* No login required for this page */
-#login-form, #login-which-department { display: none; }
-
 div > section { margin: 0.5em; padding: 0.5em; border: 1px solid black; border-radius: 0.25em; }
 div > section > a { font-size: 1.2em; font-weight: bold; }
 

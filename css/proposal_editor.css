@@ -68,7 +68,7 @@ table { border-collapse: collapse; }
 table td, table th { border: 1px solid black; }
 table.summary { background-color: white; }
 
-h1 { padding-top: 3.2em; }
+#status-bar + div { margin-top: 1em; height: 800px; overflow: auto; }
 
 .prereq { font-style: italic; }
 
@@ -128,7 +128,9 @@ div > label:first-child { display: inline-block; width: 210px; text-align: right
 
 #description-label { width: 150px; text-align: left; margin: 10px 10px 5px 10px; }
 
-.centered-button { margin: auto; }
+.centered-button { display: block; margin: auto; }
+
+.call-to-action { color: #006600; font-size: 1.5em; }
 
 .pw-justification { display: none; }
 

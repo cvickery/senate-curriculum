@@ -2,10 +2,7 @@
 
 @import 'base';
 
-/* No login required for this page */
-#login-form, #login-which-department { display: none; }
-
-div > section { 
+div > section {
   margin: 0.5em; padding: 0.5em;
 	border: 1px solid black;
 	border-radius: 0.25em;
@@ -14,7 +11,7 @@ div > section {
 	  font-weight: bold;
 	  }
 	}
-	
+
 section section {
   h1 {
     margin:0.5em 0; padding:0;
