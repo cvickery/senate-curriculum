@@ -4,6 +4,8 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
+require_once('display_proposal.php');
+require_once('syllabus_utils.php');
 require_once('tracking_utils.php');
 
 //  Set up page title
