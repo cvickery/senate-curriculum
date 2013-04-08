@@ -1,5 +1,5 @@
 <?php
-//  Curriculum/index.php
+//  /index.php
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/scripts'
     . PATH_SEPARATOR . getcwd() . '/include');
