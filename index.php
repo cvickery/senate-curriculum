@@ -1,7 +1,7 @@
 <?php
 //  Curriculum/index.php
 set_include_path(get_include_path()
-    . PATH_SEPARATOR . getcwd() . '/scripts' 
+    . PATH_SEPARATOR . getcwd() . '/scripts'
     . PATH_SEPARATOR . getcwd() . '/include');
 require_once('init_session.php');
 
@@ -37,22 +37,21 @@ require_once('init_session.php');
   </head>
   <body>
 <?php
-
   //  Status Bar and H1 element
   $status_msg = login_status();
   $nav_bar    = site_nav();
-  
+
   echo <<<EOD
   <div id='status-bar'>
     $instructions_button
     $status_msg
     $nav_bar
   </div>
-  <h1>Queens College Curriculum</h1>
+  <h1>Queens College Academic Senate<br />Curriculum</h1>
+  $dump_if_testing
 
 EOD;
 
-  echo $dump_if_testing;
   //  May have been redirected here by attempt of non-administrator to access Admin
   //  section.
   if (isset($_SESSION[login_error_msg]))
@@ -61,7 +60,7 @@ EOD;
     unset($_SESSION[login_error_msg]);
   }
 ?>
-    <div>
+    <div class='instructions'>
       <h3>Responsibilities of the Academic Senate</h3>
       <p>
         The Academic Senate of Queens College is responsible, subject to the CUNY Board of
@@ -77,7 +76,7 @@ EOD;
         through the approval process.
       </p>
     </div>
-
+    <h2>What’s Here</h2>
     <dl>
 
       <dt><a href="Proposals">Track Proposals</a></dt>
@@ -125,7 +124,7 @@ EOD;
       </dd>
 
       <dt><a href="cur_reports.php">Chancellor’s University Reports (CURs)</a></dt>
-      <dd>QC Curriculum material extracted from CURs. (not current)</dd>
+      <dd>QC Curriculum material extracted from CURs. (<em>not current</em>)</dd>
 
     </dl>
   </body>

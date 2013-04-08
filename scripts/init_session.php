@@ -1,5 +1,5 @@
 <?php
-//  .../[test_]Curriculum/scripts/init_session.php
+//  scripts/init_session.php
 
 /*  Common setup for all pages:
  *    set_include_path(get_include_path()
@@ -140,7 +140,7 @@
   if (isset($_SERVER['HTTP_REFERER'])) $referer_url = $_SERVER['HTTP_REFERER'];
 
   //  The show/hide instructions button
-  $instructions_button = 
+  $instructions_button =
       "<button id='show-hide-instructions-button'>Hide Instructions</button>";
 
 ?>

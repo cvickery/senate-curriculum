@@ -63,7 +63,7 @@ define('saved_referer_uri',             'SAVED_REFERER_URI');
  */
   function login_status()
   {
-    global $person;
+    global $person, $site_home_url;
     $returnVal = "<div id='status-msg'>";
     if ( isset($person) )
     {
@@ -78,7 +78,7 @@ EOD;
     }
     else
     {
-      $returnVal .= "<a id='signin-link' href='./signin.php'>Sign In</a>";
+      $returnVal .= "<a id='signin-link' href='$site_home_url/signin.php'>Sign In</a>";
     }
     return $returnVal . "</div>\n";;
   }
