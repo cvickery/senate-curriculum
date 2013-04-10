@@ -325,7 +325,7 @@ EOD;
           $result = json_decode(exec(
                 "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "
               . "export ORACLE_HOME=\$DYLD_LIBRARY; "
-              . "echo \"$login_query\"|../bin/oci_query)"));
+              . "echo \"$login_query\"|bin/oci_query)"));
           if (is_array($result) && count($result) !== 0)
           {
             //  OCT lookup succeeded, now build Person object
@@ -341,7 +341,7 @@ EOD;
               $suffix = trim($row->NAMESUFFIX);
               $name  = $fname . (strlen($miname) ? ' '. $miname . ' ' : ' ');
               $name  .= $lname . (strlen($suffix) ? ' ' . $lname : '');
-              $person->set_name($name);
+              $pending_person->set_name($name);
               $departments_list[] = $row->DEPT_DESCR;
             }
             $num_depts = count($departments_list);
@@ -366,8 +366,9 @@ EOD;
             {
               //  Multiple departments: display the login-which-department form
               $serialized_pp = serialize($pending_person);
+              $request_uri = $_SERVER['REQUEST_URI'];
               echo <<<EOD
-    <form id='login-which-department' action='.' method='post'>
+    <form id='login-which-department' action='$request_uri' method='post'>
       <fieldset><legend>Select Department</legend>
         <input type='hidden' name='form-name' value='login-which-department' />
         <input type='hidden' name='pending-person' value='$serialized_pp' />
@@ -388,7 +389,7 @@ EOD;
           <input  type='radio' 
                   id='dept-$n' 
                   value='$dept_name' 
-                  name="dept_name" $checked />
+                  name="dept-name" $checked />
           <label for='dept-$n'>{$dept_name}</label>
         </div>
 
@@ -426,7 +427,7 @@ EOD;
   
 
 EOD;
-  if ( empty($person) )
+  if ( empty($person) && empty($pending_person) )
   {
     login_form();
   }
