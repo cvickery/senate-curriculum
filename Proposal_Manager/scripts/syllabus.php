@@ -186,12 +186,13 @@ EOD;
     {
       $remote_ip = $_SERVER['REMOTE_ADDR'];
     }
+    $doc_type = substr($extension, 1);
     $query = <<<EOD
 INSERT INTO syllabus_uploads
-VALUES (now(),              -- saved_date
-        '$base_name',       -- file_name
-        '{$person->name}',  --  saved_by
-        '$remote_ip')
+VALUES (now(),                          -- saved_date
+        '$base_name'||' '||'$doc_type', -- file_name
+        '{$person->name}',              -- saved_by
+        '$remote_ip')                   -- saved_from
 
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Database error: " .
