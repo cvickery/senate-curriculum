@@ -64,7 +64,7 @@ EOD;
         $submitted_status_2 = '';
       }
       $course = new Course($new_catalog);
-      if ($proposal_abbr === 'REV-U' || 
+      if ($proposal_abbr === 'REV-U' ||
           $proposal_abbr === 'REV_G' ||
           $proposal_abbr === 'FIX')
       {
@@ -411,7 +411,8 @@ EOD;
             {
               $action = 'Received';
             }
-            if ($action === 'Resubmitted')
+            if (($action === 'Resubmitted') &&
+                ($agency_name !== 'Department or Program'))
             {
               $action = 'Received an updated version of';
             }
