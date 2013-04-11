@@ -100,8 +100,8 @@ EOD;
     }
     if ( isset($login_error_message) && $login_error_message !== '')
     {
-      assert('$login_error_message === password_changed');
-      $password_message = "<div class='error'>Password Changed</div>\n";
+      $password_message = "<div class='error'>$login_error_message</div>\n";
+      $login_error_message = '';
     }
     else
     {
