@@ -68,9 +68,9 @@ else if ( isset($_SERVER['HTTP_REFERER']) )
   <body>
 
 <?php
-  if ( !empty($_SESSION[login_error_message]) )
+  if ( !empty($_SESSION[login_error_msg]) )
   {
-    $instructions_button = "<div class='error'>{$_SESSION[login_error_message]}</div>";
+    $instructions_button = "<div class='error'>{$_SESSION[login_error_msg]}</div>";
   }
   ob_start();
   require_once('login.php');
