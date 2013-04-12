@@ -6,10 +6,32 @@ set_include_path(get_include_path()
 require_once('init_session.php');
 require_once('simple_diff.php');
 require_once('syllabus_utils.php');
+require_once('proposal_manager.inc');
 
+//  Person must be logged in to use this page
+if (! isset($person))
+{
+  $_SESSION[login_error_msg] = 'You must sign in before using the Proposal Manager';
+  header("Location: $site_home_url/signin.php");
+  exit;
+}
 
-//  Here beginnith the web page
-//  ---------------------------------------------------------------------------------------
+//  Global Variables
+//  ------------------------------------------------------------------------------------
+/*  These variables are declared here to give them global scope across the Proposal
+ *  Manager modules.
+ *  They are set in the select_proposal module, and referenced in the Proposal and
+ *  Syllabus modules.
+ */
+  $proposal             = null; //  Object of class Proposal
+  $cur_catalog          = null; //  Object of class Course
+  $new_catalog          = null; //  Object of class Course
+  $proposal_course_str  = '';
+  $proposal_type        = '';
+  $proposal_class       = '';
+
+//  Generate the web page
+//  ------------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -43,26 +65,13 @@ require_once('syllabus_utils.php');
   </head>
   <body>
 <?php
-//  Global Variables
-//  -----------------------------------------------------------------------------------
-/*  These variables are declared here to give them global scope.
- *  They are set in the select_proposal module, and referenced in the Proposal and
- *  Syllabus modules.
- */
-  $proposal             = null; //  Object of class Proposal
-  $cur_catalog          = null; //  Object of class Course
-  $new_catalog          = null; //  Object of class Course
-  $proposal_course_str  = '';
-  $proposal_type        = '';
-  $proposal_class       = '';
-  require_once('syllabus_utils.php');
-  require_once('proposal_manager.inc');
+
 
   //  Status Bar and H1 element
   //  --------------------------------------------------------------------------------
   $status_msg = login_status();
   $nav_bar    = site_nav();
-    //  Navigation row for Proposal Manager
+  //  Navigation row for Proposal Manager
   $editor_nav = <<<EOD
     <nav>
       <button class='nav-button' id='select-proposal-section-nav'>
@@ -91,14 +100,8 @@ EOD;
 
 EOD;
 
-  //  User must sign in to be able to access this page
-  //  ------------------------------------------------------------------------------------
-  ob_start();
-  require_once('login.php');    //  Generate login form if needed
-  $login_form = ob_get_clean();
-  if (isset($person))
-  {
-    echo <<<EOD
+
+  echo <<<EOD
     <div id='status-bar'>
       $instructions_button
       $status_msg
@@ -106,8 +109,8 @@ EOD;
       $editor_nav
     </div>
     <div>
-    <h1>Manage Proposals</h1>
-    $dump_if_testing
+      <h1>Manage Proposals</h1>
+      $dump_if_testing
 
 EOD;
 ?>
@@ -332,31 +335,7 @@ EOD;
     }
       //  Always include the syllabus upload section.
       require_once('scripts/syllabus.php');
-  }
-  else
-  {
-    if ( isset($_SESSION[login_error_msg]) )
-    {
-      $login_status_msg = $_SESSION[login_error_msg];
-      unset($_SESSION[login_error_msg]);
-    }
-    else
-    {
-      $login_status_msg = 'You must sign in to access the Proposal Manager';
-    }
-    echo <<<EOD
-    <div id='status-bar'>
-      $instructions_button
-      $status_msg
-      $nav_bar
-    </div>
-    <h1>Manage Proposals</h1>
-    $dump_if_testing
-    <h2 class='error'>$login_status_msg</h2>
-    $login_form
 
-EOD;
-  }
   ?>
     </div>
   </body>
