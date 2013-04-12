@@ -68,6 +68,10 @@ else if ( isset($_SERVER['HTTP_REFERER']) )
   <body>
 
 <?php
+  if ( !empty($_SESSION[login_error_message]) )
+  {
+    $instructions_button = "<div class='error'>$_SESSION[login_error_message]}</div>";
+  }
   ob_start();
   require_once('login.php');
   $login_output = ob_get_contents();
