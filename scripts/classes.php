@@ -1,7 +1,7 @@
 <?php
-//  .../Curriculum/scripts/classes.php
+//  /scripts/classes.php
 
-/*  Note: This module depends on .../Curriculum/include/atoms.inc
+/*  Note: This module depends on include/atoms.inc
  */
 
 if (! isset($curric_db))
