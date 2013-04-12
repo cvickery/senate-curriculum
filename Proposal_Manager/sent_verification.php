@@ -10,7 +10,7 @@ if ( !(isset($person) && isset($_SESSION[proposal])) )
 {
   //  Attempt to access this page while not logged in or no proposal to verify
   $_SESSION[login_error_msg] = 'No proposal submitted';
-  header("LOcation: $site_home_url");
+  header("Location: $site_home_url");
   exit;
 }
 
@@ -59,7 +59,6 @@ unset($_SESSION[proposal]);
       $status_msg
       $nav_bar
     </div>
-    <div>
     <h1>Check Your Email</h1>
     $dump_if_testing
     <p>
