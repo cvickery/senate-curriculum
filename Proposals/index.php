@@ -7,6 +7,7 @@ require_once('init_session.php');
 require_once('display_proposal.php');
 require_once('syllabus_utils.php');
 require_once('tracking_utils.php');
+require_once('simple_diff.php');
 
 //  Set up page title
 $proposal_id    = '';
