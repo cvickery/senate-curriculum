@@ -71,6 +71,7 @@ else if ( isset($_SERVER['HTTP_REFERER']) )
   if ( !empty($_SESSION[login_error_msg]) )
   {
     $instructions_button = "<div class='error'>{$_SESSION[login_error_msg]}</div>";
+    unset($_SESSION[login_error_msg]);
   }
   ob_start();
   require_once('login.php');
