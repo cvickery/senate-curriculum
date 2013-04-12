@@ -4,6 +4,9 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
+require_once('simple_diff.php');
+require_once('syllabus_utils.php');
+
 
 //  Here beginnith the web page
 //  ---------------------------------------------------------------------------------------
