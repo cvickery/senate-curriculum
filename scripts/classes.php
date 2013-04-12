@@ -404,7 +404,8 @@ EOD;
               '{$this->guid}',                -- guid
               '{$this->dept_approval_date}',  -- dept_approval_date
               '{$this->dept_approval_name}',  -- dept_approval_name
-               now(),                         -- created_date
+               now(),                         -- opened_date
+               now(),                         -- activated_date
                NULL,                          -- closed_date
                {$this->agency_id},             -- agency_id
               '{$this->discipline}',          -- discipline
