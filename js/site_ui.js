@@ -10,6 +10,9 @@ $(function()
   //  Put focus on first input element in tab sequence, if there is one
   $('[tabindex="1"]').first().focus();
 
+  //  Set height of scrollable section of page
+  $('#status-bar + div').height($(document));
+
   //  Check whether browser supports localStorage
   if (typeof window.localStorage === 'undefined')
   {
