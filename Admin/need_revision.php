@@ -51,8 +51,9 @@ $login_status = login_status();
     $nav_bar
     $admin_nav
   </div>
-  <h1>Proposals Pending Revision</h1>
-  $dump_if_testing
+  <div>
+    <h1>Proposals Pending Revision</h1>
+    $dump_if_testing
 
 EOD;
 
@@ -196,5 +197,6 @@ EOD;
     $_SESSION['csv_name'] = 'need_revision';
 
 ?>
+    </div>
   </body>
 </html>

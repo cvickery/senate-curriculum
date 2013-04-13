@@ -58,8 +58,9 @@ if ( $can_edit )
     $nav_bar
     $admin_nav
   </div>
-  <h1>Update Statuses</h1>
-  $dump_if_testing
+  <div>
+    <h1>Update Statuses</h1>
+    $dump_if_testing
 
 EOD;
 
@@ -806,6 +807,7 @@ EOD;
 EOD;
 
 ?>
+    </div>
   </body>
 </html>
 

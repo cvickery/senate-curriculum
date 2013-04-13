@@ -90,7 +90,8 @@ if (isset($_GET['id']))
     $status_msg
     $nav_bar
   </div>
-  $dump_if_testing
+  <div>
+    $dump_if_testing
 
 EOD;
 
@@ -621,5 +622,6 @@ EOD;
   }
 
 ?>
+    </div>
   </body>
 </html>
