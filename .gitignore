@@ -12,3 +12,4 @@ debug.log
 .setings/
 Syllabi/*.pdf
 Syllabi/To_Convert/*
+.sass-cache
