@@ -10,8 +10,17 @@ $(function()
   //  Put focus on first input element in tab sequence, if there is one
   $('[tabindex="1"]').first().focus();
 
-  //  Set height of scrollable section of page
-  $('#status-bar + div').height($(document));
+  //  Function to set height of scrollable section of page based on window size
+  $(window).resize(function()
+  {
+    var window_height = $(window).height();
+    var status_height = $('#status-bar').outerHeight();
+    var div_height    = window_height - status_height - 60; // 60 "works"
+    $('#status-bar + div').outerHeight(div_height);
+  });
+
+  //  Trigger window resize to initialize scrollable size
+  $(window).resize();
 
   //  Check whether browser supports localStorage
   if (typeof window.localStorage === 'undefined')
