@@ -7,7 +7,7 @@ cur_reports/
 Pathways/
 *.swp
 *.dSYM/
-debug.log
+*.log
 .project
 .setings/
 Syllabi/*.pdf
