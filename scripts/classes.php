@@ -398,7 +398,8 @@ EOD;
       {
         //  No id available yet: insert into db
         $query = <<<EOD
-  INSERT INTO proposals VALUES (
+  INSERT INTO proposals VALUES 
+  (
               default,                        -- id
               '{$this->type_id}',             -- type_id
               '{$this->guid}',                -- guid
@@ -418,8 +419,9 @@ EOD;
               '$new_catalog',                 -- new_catalog
               '$justifications',              -- justifications
               now(),                          -- saved_date
-              NULL                            -- submitted_date)
-    RETURNING id
+              NULL                            -- submitted_date
+  )
+  RETURNING id
 EOD;
         $result = pg_query($curric_db, $query) or die('Save failed: ' .
             basename(__FILE__) . ' ' . __LINE__ . "\n$query");
