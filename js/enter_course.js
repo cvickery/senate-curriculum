@@ -77,7 +77,6 @@ $(function()
     {
       if (event.which == 8) build_prompt_list(0);
     });
-
     //  Keydown gives you up, dn, with repeats
     $('#discipline').keydown(function(event)
     {

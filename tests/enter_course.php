@@ -36,6 +36,13 @@ require_once('init_session.php');
     <script type="text/javascript" src="../js/enter_course.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <style type='text/css'>
+      label, input {
+        display: block;
+        float: left;
+        width: 200px;
+        margin:0;
+      }
+      #discipline { clear:left; }
       #prompt-list {
         position: absolute;
         top:0;
