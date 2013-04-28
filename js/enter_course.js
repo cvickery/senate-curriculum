@@ -15,7 +15,7 @@ $(function()
   {
     var current_value = $('#discipline').val();
     if (next_char) current_value += String.fromCharCode(next_char);
-
+    current_value = current_value.toLowerCase();
     //  RegExp
     /*    Proper prefix of actual code
      *    All characters appear in name, in order
@@ -24,17 +24,30 @@ $(function()
     $('#prompt-list').empty();
     for (var i = 0; i < disciplines.length; i++)
     {
-      match = false;
-      var this_code = disciplines[i].code;
+      var match = false;
+      var this_code = disciplines[i].code.toLowerCase();
       if ( disciplines[i].code.indexOf(current_value) > -1) match = true;
       else
       {
         //  look for all input chars to mach name chars, in order, but not necessarily
         //  contiguously
-        var last_match_position = -1;
+        //
+        var this_name = disciplines[i].name.toLowerCase();
+        match = true;
         for (var c = 0; c < current_value.length; c++)
         {
-          ;
+          var position = this_name.indexOf(current_value[0])
+          {
+            if (position > -1)
+            {
+              current_value = current_value.substring(1);
+            }
+            else
+            {
+              match = false;
+              break;
+            }
+          }
         }
       }
       if (match)
