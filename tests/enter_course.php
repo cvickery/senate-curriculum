@@ -40,7 +40,13 @@ require_once('init_session.php');
         display: block;
         float: left;
         width: 200px;
-      margin:0; border:none; padding:0;
+      margin:0; padding:0.25em;
+      }
+      label {
+        border:2px solid transparent;
+      }
+      input {
+        border:2px inset ;
       }
       #discipline { clear:left; }
       #prompt-list {
