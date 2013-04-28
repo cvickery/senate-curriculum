@@ -16,21 +16,32 @@ $(function()
     var current_value = $('#discipline').val();
     if (next_char) current_value += String.fromCharCode(next_char);
 
-    //  TODO; build the regexp from the value, not from all the disciplines??
+    //  RegExp
+    /*    Proper prefix of actual code
+     *    All characters appear in name, in order
+     */
 
     $('#prompt-list').empty();
     for (var i = 0; i < disciplines.length; i++)
     {
-      var this_regex = disciplines[i].regex;
-      if (this_regex.test(current_value))
+      match = false;
+      var this_code = disciplines[i].code;
+      if ( disciplines[i].code.indexOf(current_value) > -1) match = true;
+      else
+      {
+        //  look for all input chars to mach name chars, in order, but not necessarily
+        //  contiguously
+        var last_match_position = -1;
+        for (var c = 0; c < current_value.length; c++)
+        {
+          ;
+        }
+      }
+      if (match)
       {
         var startTag = '<li>';
         if ( i == select_index ) startTag = "<li class='highlight'>";
         $(startTag + disciplines[i].prompt + '</li>').appendTo('#prompt-list');
-      }
-      else
-      {
-        console.log(current_value + ' does not match ' + this_regex);
       }
     }
   }
@@ -45,12 +56,6 @@ $(function()
       var code = disciplines[i].code;
       var name = disciplines[i].name;
       disciplines[i].prompt = code + ' - ' + name;
-      var regex = '^\s*' + code + '[\w\s]*';
-      for (var n = 0; n < name.length; n++)
-      {
-        regex += name[n] + '[\w\s]*';
-      }
-      disciplines[i].regex = new RegExp(regex, 'i');
     }
     $("<ul id='prompt-list'></ul>").appendTo('form');
     build_prompt_list(0);
