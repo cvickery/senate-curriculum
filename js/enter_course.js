@@ -16,9 +16,10 @@ $(function()
     var current_value = $('#discipline').val();
     if (next_char) current_value += String.fromCharCode(next_char);
     current_value = current_value.toLowerCase();
-    //  RegExp
-    /*    Proper prefix of actual code
-     *    All characters appear in name, in order
+    //  Match Rules:
+    /*    Input is proper prefix of code
+     *  or
+     *    Each input char appears in name, in order, but not necessarily contiguously.
      */
 
     $('#prompt-list').empty();
@@ -29,9 +30,7 @@ $(function()
       if ( disciplines[i].code.indexOf(current_value) > -1) match = true;
       else
       {
-        //  look for all input chars to mach name chars, in order, but not necessarily
-        //  contiguously
-        //
+        //  TODO Algorthm incorrect
         var this_name = disciplines[i].name.toLowerCase();
         match = true;
         for (var c = 0; c < current_value.length; c++)
