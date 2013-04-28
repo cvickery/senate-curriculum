@@ -72,10 +72,15 @@ require_once('init_session.php');
               name='form-name' 
               value='enter_course_test' />
       <fieldset>
-        <label for='course'>Course</label>
+        <label for='discipline'>Discipline</label>
+        <label for='course_number'>Number</label>
         <input  type='text'    
-                name='course' 
-                id='course'
+                name='discipline' 
+                id='discipline'
+                autocomplete='off' />
+        <input  type='text'    
+                name='course-number' 
+                id='course_number'
                 autocomplete='off' />
       </fieldset>
     </form>

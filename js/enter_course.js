@@ -13,7 +13,7 @@ $(function()
   //  -----------------------------------------------------------------------------------
   var build_prompt_list = function(next_char)
   {
-    var current_value = $('#course').val();
+    var current_value = $('#discipline').val();
     if (next_char) current_value += String.fromCharCode(next_char);
 
     //  TODO; build the regexp from the value, not from all the disciplines??
@@ -64,7 +64,7 @@ $(function()
    *    other:          Use input value to filter
    */
     //  Keypress gives you ASCII chars, including enter
-    $('#course').keypress(function(event)
+    $('#discipline').keypress(function(event)
     {
       if ( event.which > 31 && event.which < 123 )
       {
@@ -73,13 +73,13 @@ $(function()
     });
 
     //  Keyup gives you bs, with repeats
-    $('#course').keyup(function(event)
+    $('#discipline').keyup(function(event)
     {
       if (event.which == 8) build_prompt_list(0);
     });
 
     //  Keydown gives you up, dn, with repeats
-    $('#course').keydown(function(event)
+    $('#discipline').keydown(function(event)
     {
       switch (event.which)
       {
