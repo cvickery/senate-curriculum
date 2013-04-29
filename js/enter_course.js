@@ -25,21 +25,22 @@ $(function()
     $('#prompt-list').empty();
     for (var i = 0; i < disciplines.length; i++)
     {
+      //  guilty until proven innocent
       var match = false;
       var this_code = disciplines[i].code.toLowerCase();
       if ( disciplines[i].code.indexOf(current_value) > -1) match = true;
       else
       {
-        //  TODO Algorthm incorrect
-        var this_name = disciplines[i].name.toLowerCase();
+        //  innocent unless proven guilty
         match = true;
+        var this_name = disciplines[i].name.toLowerCase();
         for (var c = 0; c < current_value.length; c++)
         {
-          var position = this_name.indexOf(current_value[0])
+          var new_position = this_name.indexOf(current_value[0])
           {
-            if (position > -1)
+            if (new_position > -1)
             {
-              current_value = current_value.substring(1);
+              current_value = current_value.substring(new_position);
             }
             else
             {
