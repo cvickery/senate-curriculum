@@ -11,52 +11,79 @@ $(function()
 
   //  build_prompt_list()
   //  -----------------------------------------------------------------------------------
+  /*  Look for disciplines that match what the user has entered so far.
+   *  The argument next_char, if not zero, is a char code to be appended to the input
+   *  value, used when processing keydown events to handle the fact that the char has not
+   *  become part of the value yet.
+   *
+   *  Perform up to two passes over all possible disciplines:
+   *
+   *    1.  If the current input matches any discipline codes, either fully or as a proper
+   *    prefix, return the list of matched disciplines.
+   *    2.  If each char in the current input matches a char in a discipline name, in
+   *    sequence but not necessarily contiguously, the match list is all matched, with the
+   *    first one selected.
+   */
   var build_prompt_list = function(next_char)
   {
-    var current_value = $('#discipline').val();
-    if (next_char) current_value += String.fromCharCode(next_char);
-    current_value = current_value.toLowerCase();
-    //  Match Rules:
-    /*    Input is proper prefix of code
-     *  or
-     *    Each input char appears in name, in order, but not necessarily contiguously.
-     */
+    var current_input = $('#discipline').val();
+    if (next_char) current_input += String.fromCharCode(next_char);
+    current_input = current_input.toLowerCase();
 
     $('#prompt-list').empty();
+    select_list = [];
+
+    //  Case 1: search for matching discipline codes
     for (var i = 0; i < disciplines.length; i++)
     {
-      //  guilty until proven innocent
-      var match = false;
       var this_code = disciplines[i].code.toLowerCase();
-      if ( disciplines[i].code.indexOf(current_value) > -1) match = true;
-      else
+      if ( this_code.substring(0, current_input.length) === current_input )
       {
-        //  innocent unless proven guilty
-        match = true;
-        var this_name = disciplines[i].name.toLowerCase();
-        for (var c = 0; c < current_value.length; c++)
-        {
-          var new_position = this_name.indexOf(current_value[0])
-          {
-            if (new_position > -1)
-            {
-              current_value = current_value.substring(new_position);
-            }
-            else
-            {
-              match = false;
-              break;
-            }
-          }
-        }
-      }
-      if (match)
-      {
-        var startTag = '<li>';
-        if ( i == select_index ) startTag = "<li class='highlight'>";
-        $(startTag + disciplines[i].prompt + '</li>').appendTo('#prompt-list');
+        select_list.push(disciplines[i].prompt);
       }
     }
+
+    //  Case 2: search for matching disipline names
+    if (select_list.length < 1)
+    {
+      for (var i = 0; i < disciplines.length; i++)
+      {
+        //  See if all input chars appear in discipline name, in sequence
+        var this_name = disciplines[i].name.toLowerCase();
+        match = true; // until a mismatch
+        for (var c = 0; c < current_input.length; c++)
+        {
+          var match_position = this_name.indexOf(current_input[c]);
+          if (match_position > -1)
+          {
+            this_name = this_name.substr(match_position + 1);
+            continue;
+          }
+          else
+          {
+            match = false;
+            break;
+          }
+        }
+        if (match)
+        {
+          select_list.push(disciplines[i].prompt);
+        }
+      }
+    }
+
+    if (select_list.length > 0)
+    {
+      //  First prompt (if any) is highlighted
+      $("<li class='highlight'>" + select_list[0] + "</li>").appendTo('#prompt-list');
+    }
+
+    //  append remaining prompts (if any)
+    for (var i = 1; i < select_list.length; i++)
+    {
+      $("<li>" + select_list[i] + "</li>").appendTo('#prompt-list');
+    }
+    select_index = 0;
   }
 
   //  Get disciplines from db
