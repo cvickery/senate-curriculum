@@ -39,7 +39,7 @@ $(function()
       var this_code = disciplines[i].code.toLowerCase();
       if ( this_code.substring(0, current_input.length) === current_input )
       {
-        select_list.push(disciplines[i].prompt);
+        select_list.push(disciplines[i]);
       }
     }
 
@@ -67,24 +67,32 @@ $(function()
         }
         if (match)
         {
-          select_list.push(disciplines[i].prompt);
+          select_list.push(disciplines[i]);
         }
       }
     }
 
-    if (select_list.length > 0)
+    //  display each element (if any) in select_list
+    for (var i = 0; i < select_list.length; i++)
     {
-      //  First prompt (if any) is highlighted
-      $("<li class='highlight'>" + select_list[0] + "</li>").appendTo('#prompt-list');
+      $("<li>" + select_list[i].prompt + "</li>").appendTo('#prompt-list');
     }
-
-    //  append remaining prompts (if any)
-    for (var i = 1; i < select_list.length; i++)
-    {
-      $("<li>" + select_list[i] + "</li>").appendTo('#prompt-list');
-    }
+    //  Highlight the first one
     select_index = 0;
-  }
+    set_highlight();
+  };
+
+  //  set_highlight()
+  //  -----------------------------------------------------------------------------------
+  /*  Highlight the nth item in the select list after removing highlighting from any that
+   *  are already highlighted.
+   */
+    var set_highlight = function()
+    {
+      $('#prompt-list li').removeClass('highlight');
+      $('#prompt-list li:nth-child(' + (select_index + 1) +
+            ')').addClass('highlight').scrollIntoView(false);
+    };
 
   //  Get disciplines from db
   //  -----------------------------------------------------------------------------------
@@ -102,6 +110,22 @@ $(function()
   });
 
 
+  //  Event Handlers
+  //  -----------------------------------------------------------------------------------
+  $('#discipline').focus(function()
+  {
+    var input_position = $('#discipline').position();
+    var input_height = $('#discipline').height();
+    $('#prompt-list')
+      .css('top:' + (input_position.top + input_height))
+      .css('left:' + (input_position.left));
+
+        $('#prompt-list').show();
+  });
+  $('#discipline').blur(function()
+  {
+    $('#prompt-list').hide();
+  });
   /*    up/down arrows: Highlight next/previous list item.
    *    tab/enter:      If an element is highlighted, use its value. Otherwise
    *                    just dismiss the prompt list without
@@ -133,14 +157,14 @@ $(function()
                   if (select_index > 0)
                   {
                     select_index--;
-                    build_prompt_list(0);
+                    set_highlight();
                   }
                   break;
         case 40:  //  down arrow
                   if ( select_index < (disciplines.length -1) )
                   {
                     select_index++;
-                    build_prompt_list(0);
+                    set_highlight();
                   }
                   break;
         default:  break;

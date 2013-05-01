@@ -34,7 +34,8 @@ require_once('init_session.php');
     <title>Enter Course Test</title>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/enter_course.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
+    <script type="text/javascript" src="../js/scrollIntoView.min.js"></script>
+     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <style type='text/css'>
       label, input {
         display: block;
@@ -56,6 +57,8 @@ require_once('init_session.php');
         background-color:white;
         list-style-type: none;
         padding:0;
+        overflow-y:auto;
+        max-height:560px;
       }
       #prompt-list li { padding: 0.25em; margin:0;
       border: 1px solid black;
