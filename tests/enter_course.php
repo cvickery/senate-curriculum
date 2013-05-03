@@ -51,9 +51,7 @@ require_once('init_session.php');
       }
       #discipline { clear:left; }
       #prompt-list {
-        position: absolute;
-        top:0;
-        right: 0;
+        display:none;
         background-color:white;
         list-style-type: none;
         padding:0;

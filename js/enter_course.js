@@ -112,18 +112,22 @@ $(function()
 
   //  Event Handlers
   //  -----------------------------------------------------------------------------------
+  /*  TODO: click handler has to select the prompt item clicked on.
+   */
   $('#discipline').focus(function()
   {
-    var input_position = $('#discipline').position();
+    var input_offset = $('#discipline').offset();
     var input_height = $('#discipline').height();
+    var where = { top: input_offset.top + input_height + 8, left: input_offset.left };
     $('#prompt-list')
-      .css('top:' + (input_position.top + input_height))
-      .css('left:' + (input_position.left));
-
-        $('#prompt-list').show();
+      .show()
+      .offset(where);
+//      .css('top:' + (input_position.top + input_height), 'left:' + input_position.left);
   });
+
   $('#discipline').blur(function()
   {
+    $('#discipline').val(select_list[select_index].code);
     $('#prompt-list').hide();
   });
   /*    up/down arrows: Highlight next/previous list item.
