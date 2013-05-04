@@ -112,7 +112,7 @@ $(function()
 
   //  Event Handlers
   //  -----------------------------------------------------------------------------------
-  /*  TODO: click handler has to select the prompt item clicked on.
+  /*  TODO: bad interactions between click on prompt list and blur on discipline.
    */
   $('#discipline').focus(function()
   {
@@ -122,7 +122,12 @@ $(function()
     $('#prompt-list')
       .show()
       .offset(where);
-//      .css('top:' + (input_position.top + input_height), 'left:' + input_position.left);
+    $('#prompt-list li').on('click', function(evt)
+      {
+        var prompt_str = $(this).html();
+        var code = prompt_str.substr(0, prompt_str.indexOf(' '));
+        $('#discipline').val(code);
+      });
   });
 
   $('#discipline').blur(function()
@@ -130,6 +135,7 @@ $(function()
     $('#discipline').val(select_list[select_index].code);
     $('#prompt-list').hide();
   });
+
   /*    up/down arrows: Highlight next/previous list item.
    *    tab/enter:      If an element is highlighted, use its value. Otherwise
    *                    just dismiss the prompt list without
