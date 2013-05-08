@@ -31,9 +31,9 @@ require_once('init_session.php');
 <html <?php echo $html_attributes;?>>
   <head>
     <title>QC Curriculum</title>
+    <link rel="stylesheet" type="text/css" href="css/curriculum.css" />
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/site_ui.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/curriculum.css" />
   </head>
   <body>
 <?php

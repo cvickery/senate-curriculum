@@ -36,12 +36,12 @@ $one_hour = new DateInterval('PT1H');
     <title>Proposal Review Editor</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/review_editor.css" />
-    <script type='application/javascript' src='../js/jquery.min.js'></script>
-    <script type='application/javascript' src="../js/site_ui.js"></script>
-    <script type='application/javascript' src='../js/review_editor.js'></script>
     <style type="text/css">
       td, th {font-size: 0.9em;}
     </style>
+    <script type='application/javascript' src='../js/jquery.min.js'></script>
+    <script type='application/javascript' src="../js/site_ui.js"></script>
+    <script type='application/javascript' src='../js/review_editor.js'></script>
   </head>
   <body>
 <?php
