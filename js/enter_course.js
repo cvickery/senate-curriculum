@@ -112,7 +112,7 @@ $(function()
 
   //  Event Handlers
   //  -----------------------------------------------------------------------------------
-  /*  TODO: bad interactions between click on prompt list and blur on discipline.
+  /*  TODO: You still have to (update selected index and) move focus to next field.
    */
   $('#discipline').focus(function()
   {
@@ -122,11 +122,13 @@ $(function()
     $('#prompt-list')
       .show()
       .offset(where);
-    $('#prompt-list li').on('click', function(evt)
+    $('#prompt-list li').on('mousedown', function(evt)
       {
+        evt.preventDefault();
         var prompt_str = $(this).html();
         var code = prompt_str.substr(0, prompt_str.indexOf(' '));
         $('#discipline').val(code);
+        $('#prompt-list').hide();
       });
   });
 
