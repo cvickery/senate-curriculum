@@ -86,12 +86,37 @@ $(function()
   //  -----------------------------------------------------------------------------------
   /*  Highlight the nth item in the select list after removing highlighting from any that
    *  are already highlighted.
+   *
+   *  This completes presentation/update of the prompt list; set up to handle mousedown
+   *  events.
    */
     var set_highlight = function()
     {
-      $('#prompt-list li').removeClass('highlight');
-      $('#prompt-list li:nth-child(' + (select_index + 1) +
-            ')').addClass('highlight').scrollIntoView(false);
+      if ($('#prompt-list li').length)
+      {
+        $('#prompt-list li').removeClass('highlight');
+        $('#prompt-list li:nth-child(' + (select_index + 1) + ')')
+          .addClass('highlight')
+          .scrollIntoView(false);
+        $('#prompt-list li').on('mousedown', function(evt)
+        {
+          evt.preventDefault(); //  prevent blur on #discipline
+          var prompt_str = $(this).html();
+          var code = prompt_str.substr(0, prompt_str.indexOf(' '));
+          //  Find code in disciplines, and make that the single item in select_list
+          for (var i = 0; i < disciplines.length; i++)
+          {
+            if (code === disciplines[i].code)
+            {
+              select_list = [ disciplines[i] ];
+              select_index = 0;
+              break;
+            }
+          }
+          $('#discipline').val(code);
+          $('#prompt-list').hide();
+        });
+      }
     };
 
   //  Get disciplines from db
@@ -112,41 +137,31 @@ $(function()
 
   //  Event Handlers
   //  -----------------------------------------------------------------------------------
-  /*  TODO: You still have to (update selected index and) move focus to next field.
+  /*  TODO: Not getting mousedown when user is entering text in #discipline
    */
   $('#discipline').focus(function()
   {
+    $('#discipline').val('').css('background-color', 'white');
     var input_offset = $('#discipline').offset();
     var input_height = $('#discipline').height();
     var where = { top: input_offset.top + input_height + 8, left: input_offset.left };
     $('#prompt-list')
       .show()
       .offset(where);
-    $('#prompt-list li').on('mousedown', function(evt)
-      {
-        evt.preventDefault(); //  prevent blur on #discipline
-        var prompt_str = $(this).html();
-console.log("mousedown w/ this.html = " . prompt_str);
-        var code = prompt_str.substr(0, prompt_str.indexOf(' '));
-        //  Find code in disciplines, and make that the single item in select_list
-        for (var i = 0; i < disciplines.length; i++)
-        {
-          if (code === disciplines[i].code)
-          {
-            select_list = [ disciplines[i] ];
-            select_index = 0;
-            break;
-          }
-        }
-        $('#discipline').val(code);
-        $('#prompt-list').hide();
-      });
   });
 
   $('#discipline').blur(function()
   {
-    $('#discipline').val(select_list[select_index].code);
-    $('#prompt-list').hide();
+    if (select_list.length)
+    {
+      $('#discipline')
+        .val(select_list[select_index].code);
+      $('#prompt-list').hide();
+    }
+    else
+    {
+      $('#discipline').css('background-color', 'red');
+    }
   });
 
   /*    up/down arrows: Highlight next/previous list item.
@@ -158,6 +173,11 @@ console.log("mousedown w/ this.html = " . prompt_str);
     //  Keypress gives you ASCII chars, including enter
     $('#discipline').keypress(function(event)
     {
+      if (event.which === 13)
+      {
+        $('#course_number').focus();
+      }
+
       if ( event.which > 31 && event.which < 123 )
       {
         build_prompt_list(event.which);
@@ -175,7 +195,8 @@ console.log("mousedown w/ this.html = " . prompt_str);
       switch (event.which)
       {
         //  Totally rebuild the select list, with proper element highlighted.
-        //  TODO: this is a horribly inefficient way to handle arrows.
+        //  This is a horribly inefficient way to handle arrows, but it is simple and
+        //  suffices.
         case 38:  //  up arrow
                   if (select_index > 0)
                   {
