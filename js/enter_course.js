@@ -124,9 +124,19 @@ $(function()
       .offset(where);
     $('#prompt-list li').on('mousedown', function(evt)
       {
-        evt.preventDefault();
+        evt.preventDefault(); //  prevent blur on #discipline
         var prompt_str = $(this).html();
         var code = prompt_str.substr(0, prompt_str.indexOf(' '));
+        //  Find code in disciplines, and make that the single item in select_list
+        for (var i = 0; i < disciplines.length; i++)
+        {
+          if (code === disciplines[i].code)
+          {
+            select_list = [ disciplines[i] ];
+            select_index = 0;
+            break;
+          }
+        }
         $('#discipline').val(code);
         $('#prompt-list').hide();
       });
