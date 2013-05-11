@@ -126,6 +126,7 @@ $(function()
       {
         evt.preventDefault(); //  prevent blur on #discipline
         var prompt_str = $(this).html();
+console.log("mousedown w/ this.html = " . prompt_str);
         var code = prompt_str.substr(0, prompt_str.indexOf(' '));
         //  Find code in disciplines, and make that the single item in select_list
         for (var i = 0; i < disciplines.length; i++)
