@@ -31,11 +31,11 @@ require_once('init_session.php');
 <!DOCTYPE html>
 <html <?php echo $html_attributes;?>>
   <head>
-    <title>Enter Course Test</title>
+    <title>Course Information</title>
+    <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/enter_course.js"></script>
     <script type="text/javascript" src="../js/scrollIntoView.min.js"></script>
-     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <style type='text/css'>
       label, input {
         display: block;
@@ -64,6 +64,7 @@ require_once('init_session.php');
       form {
         position: relative;
       }
+      button {display:block; clear: both; }
       .highlight {
         background-color:#99f;
         color:white;
@@ -72,31 +73,35 @@ require_once('init_session.php');
   </head>
   <body>
 
-  <h1>Enter Course Test</h1>
+  <h1>Course Information</h1>
+  <form action='enter_course.php' method='post'>
+    <input  type='hidden'  
+            name='form-name' 
+            value='course-info' />
+    <fieldset>
+      <legend>Enter Course</legend>
+      <label for='discipline'>Discipline</label>
+      <label for='course_number'>Course Number</label>
+      <input  type='text'    
+              name='discipline' 
+              id='discipline'
+              autocomplete='off' />
+      <input  type='text'    
+              name='course-number' 
+              id='course_number'
+              autocomplete='off' />
+      <button type='submit'>Lookup</button>
+    </fieldset>
+  </form>
+
 <?php
   //  Show course(s) selected if form was submitted.
-  if ( !empty($form_name) and $form_name === 'enter_course_test')
+  if ( !empty($form_name) and $form_name === 'course-info')
   {
-    $course = sanitize($_POST['course']);
-    echo "<h2>'$course'</h2>\n";
+    $discipline     = sanitize($_POST['discipline']);
+    $course_number  = sanitize($_POST['course-number']);
+    echo "<h2>CUNYfirst information for $discipline $course_number</h2>\n";
   }
 ?>
-    <form action='enter_course.php' method='post'>
-      <input  type='hidden'  
-              name='form-name' 
-              value='enter_course_test' />
-      <fieldset>
-        <label for='discipline'>Discipline</label>
-        <label for='course_number'>Number</label>
-        <input  type='text'    
-                name='discipline' 
-                id='discipline'
-                autocomplete='off' />
-        <input  type='text'    
-                name='course-number' 
-                id='course_number'
-                autocomplete='off' />
-      </fieldset>
-    </form>
   </body>
 </html>
