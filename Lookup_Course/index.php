@@ -33,9 +33,6 @@ require_once('init_session.php');
   <head>
     <title>Course Information</title>
     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
-    <script type="text/javascript" src="../js/jquery.min.js"></script>
-    <script type="text/javascript" src="../js/enter_course.js"></script>
-    <script type="text/javascript" src="../js/scrollIntoView.min.js"></script>
     <style type='text/css'>
       label, input {
         display: block;
@@ -74,11 +71,14 @@ require_once('init_session.php');
         text-align: center;
       }
     </style>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/enter_course.js"></script>
+    <script type="text/javascript" src="../js/scrollIntoView.min.js"></script>
   </head>
   <body>
 
   <h1>Course Information</h1>
-  <form action='enter_course.php' method='post'>
+  <form action='./index.php' method='post'>
     <input  type='hidden'  
             name='form-name' 
             value='course-info' />
