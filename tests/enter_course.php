@@ -69,6 +69,10 @@ require_once('init_session.php');
         background-color:#99f;
         color:white;
        }
+      td, th {
+        padding: 0.25em;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -79,7 +83,11 @@ require_once('init_session.php');
             name='form-name' 
             value='course-info' />
     <fieldset>
-      <legend>Enter Course</legend>
+      <legend>Select Course</legend>
+      <div class='instructions'>
+        Select the course discipline from the list. Enter a single course number without
+        decimal points or leading zeros, and all variants (W and H), if any, will be shown.
+      </div>
       <label for='discipline'>Discipline</label>
       <label for='course_number'>Course Number</label>
       <input  type='text'    
@@ -100,7 +108,89 @@ require_once('init_session.php');
   {
     $discipline     = sanitize($_POST['discipline']);
     $course_number  = sanitize($_POST['course-number']);
-    echo "<h2>CUNYfirst information for $discipline $course_number</h2>\n";
+    $query = <<<EOD
+select * from cf_catalog 
+where lower(discipline) = lower('$discipline')
+and (   course_number = '$course_number'
+    or  course_number = '${course_number}W'
+    or  course_number = '${course_number}H')
+
+EOD;
+    $result = pg_query($curric_db, $query) or die("<h1 class='error'>Curric query failed: "
+        . basename(__FILE__) . " line " . __LINE__
+        . "</h1></body></html>\n");
+    $num = pg_num_rows($result);
+    if ($num < 1)
+    {
+      echo "<h2>No CUNYfirst data found for $discipline $course_number</h2>\n";
+    }
+    else
+    {
+      while ($row = pg_fetch_assoc($result))
+      {
+        $course_id            = $row['course_id'];
+        $effective_date       = new DateTime($row['effective_date']);
+        $effective_date       = $effective_date->format('F d, Y');
+        $is_active            = ('A' === $row['status']) ? 'yes' : 'no';
+        $can_schedule         = ('Y' === $row['schedule']) ? 'yes' : 'no';
+        $course               = $row['discipline'] . '—' . $row['course_number'];
+        $division             = $row['division'];
+        $department           = $row['department'];
+        $level                = ('UGRD' === $row['career']) ? 'Undergrad' : 'Grad';
+        $component            = ' ' . trim(strtolower($row['component']));
+        $hours                = $row['hours'];
+        $credits              = $row['credits'];
+        $title                = trim($row['course_title']);
+        if ( empty($title) )
+        {
+          $title = 'MISSING TITLE';
+        }
+        if (strtoupper($title) === $title)
+        {
+          $title = "<span class='error'>[$title]</span>";
+        }
+        $catalog_description  = trim($row['catalog_description']);
+        if ( empty($catalog_description) )
+        {
+          $catalog_description = "<span class='error'>[None]</span>";
+        }
+        $designation          = $row['designation'];
+        $prerequisites        = trim($row['prerequisites']);
+        if (empty($prerequisites))
+        {
+          $prerequisites = "No prerequisites";
+        }
+        echo <<<EOD
+      <h2>$course: $title</h2>
+      <div>
+        <table>
+          <tr>
+            <th>Course ID</th>
+            <th>Effective Date</th>
+            <th>Is Active</th>
+            <th>Can Schedule</th>
+            <th>Department</th>
+            <th>Division</th>
+            <th>Level</th>
+          </tr>
+          <tr>
+            <td>$course_id</td>
+            <td>$effective_date</td>
+            <td>$is_active</td>
+            <td>$can_schedule</td>
+            <td>$department</td>
+            <td>$divsion</td>
+            <td>$level</td>
+          </tr>
+        </table>
+        <p>${hours}hr${component}; ${credits}cr; $prerequisites</p>
+        <h3>Catalog Description:</h3>
+        <p>$catalog_description</p>
+      </div>
+
+EOD;
+      }
+    }
   }
 ?>
   </body>
