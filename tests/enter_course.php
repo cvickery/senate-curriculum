@@ -179,7 +179,7 @@ EOD;
             <td>$is_active</td>
             <td>$can_schedule</td>
             <td>$department</td>
-            <td>$divsion</td>
+            <td>$division</td>
             <td>$level</td>
           </tr>
         </table>
