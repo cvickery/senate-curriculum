@@ -1,12 +1,12 @@
 <?php
-//  /tests/enter_course.php
+//  /Lookup_Course/index.php
 
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
-//  Test enter_course widget
+//  Use enter_course widget to lookup a course
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
@@ -78,6 +78,11 @@ require_once('init_session.php');
   <body>
 
   <h1>Course Information</h1>
+  <p>
+    <?php 
+      echo "Catalog Information last updated on " .date('F i, Y', $cf_update_date);
+    ?>.
+  </p>
   <form action='./index.php' method='post'>
     <input  type='hidden'  
             name='form-name' 
