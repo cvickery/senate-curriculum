@@ -80,7 +80,7 @@ require_once('init_session.php');
   <h1>Course Information</h1>
   <p>
     <?php 
-      echo "Catalog Information last updated on " .date('F i, Y', $cf_update_date);
+      echo "Catalog Information last updated on " .date('F j, Y', $cf_update_date);
     ?>.
   </p>
   <form action='./index.php' method='post'>
