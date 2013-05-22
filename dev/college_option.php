@@ -58,20 +58,20 @@ require_once('init_session.php');
             value='college-option' />
     <fieldset>
       <legend>Questions</legend>
-      <div class='instructions'>
+      <p class='instructions'>
         Answer the following questions and see your College Option requirements at Queens
         College.
-      </div>
+      </p>
         <table>
           <tr>
             <td>
-              <input type='radio' id='other-cuny-yes' name='other-cuny' value='yes'/>
-              <label for='other-cuny-yes'>Yes</label>
+              <input type='radio' id='other-cuny-y' name='other-cuny' value='y'/>
+              <label for='other-cuny-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='other-cuny-no' name='other-cuny' value='no'
+              <input type='radio' id='other-cuny-n' name='other-cuny' value='n'
               checked='checked'/>
-              <label for='other-cuny-no'>No</label>
+              <label for='other-cuny-n'>No</label>
             </td>
             <td>
               Have you received credit for College Option courses from another CUNY
@@ -80,19 +80,20 @@ require_once('init_session.php');
           </tr>
           <tr id='other-cuny-courses'>
             <td colspan='2'>
-              <input name='num-other-cuny-courses' type='number' min='0' max='4' step='1' />
+              <input  name='num-other-cuny-courses' id='num-other-cuny-courses'
+                      type='number' min='0' max='4' step='1' />
             </td>
             <td>How many courses?</td>
           </tr>
           <tr>
             <td>
-              <input type='radio' id='bachelor-degree-yes' name='bachelor-degree' value='yes'/>
-              <label for='bachelor-deg-yes'>Yes</label>
+              <input type='radio' id='bachelor-degree-y' name='bachelor-degree' value='y'/>
+              <label for='bachelor-deg-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='bachelor-degree-no' name='bachelor-degree' value='no'
+              <input type='radio' id='bachelor-degree-n' name='bachelor-degree' value='n'
               checked='checked'/>
-              <label for='bachelor-degree-no'>No</label>
+              <label for='bachelor-degree-n'>No</label>
             </td>
             <td>
               Do you already have a Bachelor’s (BA, BS, or BFA) degree?
@@ -100,26 +101,26 @@ require_once('init_session.php');
           </tr>
           <tr>
             <td>
-              <input type='radio' id='associate-degree-yes' name='associate-degree' value='yes'/>
-              <label for='associate-deg-yes'>Yes</label>
+              <input type='radio' id='associate-degree-y' name='associate-degree' value='y'/>
+              <label for='associate-deg-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='associate-degree-no' name='associate-degree' value='no'
+              <input type='radio' id='associate-degree-n' name='associate-degree' value='n'
               checked='checked'/>
-              <label for='associate-degree-no'>No</label>
+              <label for='associate-degree-n'>No</label>
             </td>
             <td>
               Do you have an Associate’s (AA or AS) degree?
             </td>
           </tr>
             <td>
-              <input type='radio' id='31-or-more-yes' name='31-or-more' value='yes'/>
-              <label for='bachelor-deg-yes'>Yes</label>
+              <input type='radio' id='31-or-more-y' name='31-or-more' value='y'/>
+              <label for='bachelor-deg-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='31-or-more-no' name='31-or-more' value='no'
+              <input type='radio' id='31-or-more-n' name='31-or-more' value='n'
               checked='checked'/>
-              <label for='31-or-more-no'>No</label>
+              <label for='31-or-more-n'>No</label>
             </td>
             <td>
               Are you transferring 31 or more credits to Queens from another college?
@@ -130,9 +131,9 @@ require_once('init_session.php');
     </fieldset>
     <fieldset>
       <legend>Your College Option Requirements</legend>
-      <div class='instructions'>
-        You must take courses at Queens from the following lists:
-      </div>
+      <p id='result'>You must take a Language, a Literature, a Science, and an additional
+        course.
+      </p>
     </fieldset>
   </form>
 
