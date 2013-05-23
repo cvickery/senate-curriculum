@@ -21,12 +21,16 @@
 
 $(function()
 {
-  //  Initial state: all answers are no/4-year/0; only ask-num-prev-co is hidden
+  //  Initial state on page load
+  //  -----------------------------------------------------------------------------------
+  //    All radio answers are no|4-year
   $('#began-4, #prev-co-n, #bachelor-degree-n, #associate-degree-n, #31-or-more-n')
       .attr('checked', 'checked');
+  //    Hide irrelevant questions
   $('#ask-associate, #ask-31-or-more, #ask-num-prev-co').hide();
 
-  //  Update when anything changes
+  //  Update display and recalculate number of required courses when anything changes
+  //  -----------------------------------------------------------------------------------
   $('input').change(function()
     {
       //  Answers to questions
@@ -45,7 +49,7 @@ $(function()
               (num_prev_co % 1 !== 0)
            )
         {
-          num_prev_co = 0;
+          num_prev_co = -1; //  Flag value to generate error message for "result"
           $('#num-prev-co').css('background-color', '#f66');
         }
         else
@@ -55,6 +59,7 @@ $(function()
       }
 
       //  What to display and how much is required
+      $('#result').removeClass('error');
       var num_required  = 4;
       if (has_bachelor)
       {
@@ -102,27 +107,47 @@ $(function()
         num_prev_co = 0;
       }
 
+      //  Generate result
+      //  -------------------------------------------------------------------------------
       num_required -= num_prev_co;
       if (num_required < 0) num_required = 0;
       var category = 'CO0' + (4 - num_required);
-      switch (num_required)
+
+      if (num_prev_co < 0)
       {
-        case 0: msg = 'You do not need to take any College Option courses at Queens.';
-                break;
-        case 1: msg = 'You must take a Literature course.';
-                break;
-        case 2: msg = 'You must take a Literature and a Language course.';
-                break;
-        case 3: msg = 'You must take a Literature, a Language, and a Science course.';
-                break;
-        case 4: msg = 'You must take a Literature, a Language, a Science, and an ' +
-                      'additional course.';
-                break;
-        default:  msg = 'Program Error in ' + __FILE__ + ' line ' + __LINE__;
-                  break;
+        //  Invalid number of previous CO courses: generate error message
+        category = 'Error';
+        msg = "You must enter a number between 0 and 4 as the number of College " +
+          "Option courses completed at another CUNY senior college.";
+        $('#result').addClass('error');
       }
+      else
+      {
+        //  Generate the appropriate message as the result
+        switch (num_required)
+        {
+          case 0: msg = 'You do not need to take any College Option courses at Queens.';
+                  break;
+          case 1: msg = 'You must take a Literature course.';
+                  break;
+          case 2: msg = 'You must take a Literature and a Language course.';
+                  break;
+          case 3: msg = 'You must take a Literature, a Language, and a Science course.';
+                  break;
+          case 4: msg = 'You must take a Literature, a Language, a Science, and an ' +
+                        'additional course.';
+                  break;
+          default:  msg = 'Program Error in ' + __FILE__ + ' line ' + __LINE__;
+                    break;
+        }
+      }
+
+      //  Display the result
       $('#result').html(msg + ' [' + category + ']');
     });
+
+  //  Prevent data entry from generating any page loads.
   $('form').submit(function(evt) { evt.preventDefault(); });
+
 });
 
