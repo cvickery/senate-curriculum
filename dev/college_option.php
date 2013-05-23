@@ -172,7 +172,7 @@ margin:0;padding:0;
       <p>
         Based on the answers above:
       </p>
-      <p id='result'>You must take a Language, a Literature, a Science, and an additional
+      <p id='result'>You must take a Literature, a Language, a Science, and an additional
         course. [CO04]
       </p>
       <p>
