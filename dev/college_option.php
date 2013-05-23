@@ -53,7 +53,13 @@ require_once('init_session.php');
         padding:0.25em;
         }
       #ask-num-prev-co :last-child { padding: 0.25em 0.25em 0.25em 1em; }
-      #prev-co-courses input {display:block; width:90%; margin:auto; }
+      #num-prev-co {
+        display:inline-block;
+        width:50px;
+        float:right;
+        text-align:right;
+margin:0;padding:0;
+      }
       #result {
         margin:0 1em;
         padding: 0.5em;
