@@ -52,7 +52,7 @@ require_once('init_session.php');
       td {
         padding:0.25em;
         }
-      #prev-co-courses { display:none; }
+      #ask-num-prev-co :last-child { padding: 0.25em 0.25em 0.25em 1em; }
       #prev-co-courses input {display:block; width:90%; margin:auto; }
       #result {
         margin:0 1em;
@@ -68,8 +68,8 @@ require_once('init_session.php');
 <?php echo $instructions_button;?>
   <h1>College Option Calculator</h1>
   <form action='<?php echo $_SERVER['PHP_SELF'];?>' method='post'>
-    <input  type='hidden'  
-            name='form-name' 
+    <input  type='hidden'
+            name='form-name'
             value='college-option' />
     <fieldset>
       <legend>Questions</legend>
@@ -155,10 +155,8 @@ require_once('init_session.php');
                       type='number' min='0' max='4' step='1' />
             </td>
             <td>
-              <label for='num-prev-co'>
-                — How many College Option courses have you completed at another CUNY
-                senior college?
-              </label>
+              How many College Option courses have you completed at another CUNY
+              senior college?
             </td>
           </tr>
         </table>
