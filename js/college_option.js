@@ -98,7 +98,7 @@ $(function()
           .show(250);
         num_required  = 4;
       }
-      if (prev_co)
+      if (prev_co && ! has_bachelor)
       {
         $('#ask-num-prev-co').show(250);
         $('#num-prev-co').focus();
