@@ -34,18 +34,19 @@ $(function()
   $('input').change(function()
     {
       //  Answers to questions
-      var has_bachelor  = $('input[name="bachelor-degree"]:checked').val() === 'y';
-      var has_associate = $('input[name="associate-degree"]:checked').val() === 'y';
-      var start_4       = $('input[name="began"]:checked').val() === '4';
-      var over_30       = $('input[name="31-or-more"]:checked').val() === 'y';
-      var prev_co       = $('input[name="prev-co"]:checked').val() === 'y';
-      var num_prev_co   = 0;
+      var need_student_group  = true;
+      var has_bachelor        = $('input[name="bachelor-degree"]:checked').val() === 'y';
+      var has_associate       = $('input[name="associate-degree"]:checked').val() === 'y';
+      var start_4             = $('input[name="began"]:checked').val() === '4';
+      var over_30             = $('input[name="31-or-more"]:checked').val() === 'y';
+      var prev_co             = $('input[name="prev-co"]:checked').val() === 'y';
+      var num_prev_co         = 0;
       if ( $('#ask-num-prev-co').is(':visible') )
       {
         num_prev_co = $('#num-prev-co').val() - 0;
         if (  isNaN(num_prev_co) ||
               typeof(num_prev_co) !== "number" ||
-              num_prev_co < 0 || num_prev_co > 4 ||
+              num_prev_co < 0 ||
               (num_prev_co % 1 !== 0)
            )
         {
@@ -67,7 +68,8 @@ $(function()
         //  Has bachelor’s: no CO required; no other questions
         $('tr').hide();
         $('#ask-bachelor').show(250);
-        num_required  = 0;
+        num_required        = 0;
+        need_student_group  = false;
       }
       else if (start_4)
       {
@@ -82,7 +84,7 @@ $(function()
 // console.log('associate');
         $('#ask-31-or-more').hide();
         $('#ask-bachelor, #ask-began, #ask-associate, #ask-if-prev-co').show(250);
-        num_required  = 2;
+        num_required        = 2;
       }
       else if (over_30)
       {
@@ -109,6 +111,12 @@ $(function()
 
       //  Generate result
       //  -------------------------------------------------------------------------------
+      var note = "";
+      if (num_prev_co > 4)
+      {
+        note = "<p class='error'>More than 4 college option courses: " +
+          "extras have no effect.</p>";
+      }
       num_required -= num_prev_co;
       if (num_required < 0) num_required = 0;
       var category = 'CO0' + (4 - num_required);
@@ -142,8 +150,13 @@ $(function()
         }
       }
 
+      var student_group_str = '';
+      if (need_student_group)
+      {
+        student_group_str = " <span class='student-group'>[" + category + "]</span>";
+      }
       //  Display the result
-      $('#result').html(msg + ' [' + category + ']');
+      $('#result').html(msg + student_group_str + note);
     });
 
   //  Prevent data entry from generating any page loads.

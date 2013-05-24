@@ -6,6 +6,11 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
+//  If anything is specified in the GET query string, student group codes will be
+//  displayed.
+$student_group_rule = '.student-group { display:none; }';
+
+if (count($_GET) > 0) $student_group_rule = '';
 //  Develop College Option calculator
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -58,7 +63,7 @@ require_once('init_session.php');
         width:50px;
         float:right;
         text-align:right;
-margin:0;padding:0;
+        margin:0;padding:0;
       }
       #result {
         margin:0 1em;
@@ -68,10 +73,11 @@ margin:0;padding:0;
         font-style:italic;
       }
       #result + * { line-height:1.5em; }
+      <?php echo $student_group_rule;?>
     </style>
   </head>
   <body>
-<?php echo $instructions_button;?>
+<?php echo $instructions_button; ?>
   <h1>College Option Calculator</h1>
   <form action='<?php echo $_SERVER['PHP_SELF'];?>' method='post'>
     <input  type='hidden'
@@ -158,7 +164,7 @@ margin:0;padding:0;
           <tr id='ask-num-prev-co'>
             <td colspan='2'>
               <input  name='num-prev-co' id='num-prev-co'
-                      type='number' min='0' max='4' step='1' />
+                      type='number' min='0' step='1' />
             </td>
             <td>
               How many College Option courses have you completed at another CUNY
@@ -172,9 +178,9 @@ margin:0;padding:0;
       <p>
         Based on the answers above:
       </p>
-      <p id='result'>You must take a Literature, a Language, a Science, and an additional
-        course. [CO04]
-      </p>
+      <div id='result'>You must take a Literature, a Language, a Science, and an additional
+        course. <span class='student-group'>[CO04]</span>
+      </div>
       <p>
         <strong>Note: </strong> This analysis is only as accurate as your input!<br/>
         To be sure you answered each question correctly, consult with an advisor
