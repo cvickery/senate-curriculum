@@ -79,8 +79,8 @@ require_once('init_session.php');
 
   <h1>Course Information</h1>
   <form action='enter_course.php' method='post'>
-    <input  type='hidden'  
-            name='form-name' 
+    <input  type='hidden'
+            name='form-name'
             value='course-info' />
     <fieldset>
       <legend>Select Course</legend>
@@ -90,12 +90,12 @@ require_once('init_session.php');
       </div>
       <label for='discipline'>Discipline</label>
       <label for='course_number'>Course Number</label>
-      <input  type='text'    
-              name='discipline' 
+      <input  type='text'
+              name='discipline'
               id='discipline'
               autocomplete='off' />
-      <input  type='text'    
-              name='course-number' 
+      <input  type='text'
+              name='course-number'
               id='course_number'
               autocomplete='off' />
       <button type='submit'>Lookup</button>
@@ -109,7 +109,7 @@ require_once('init_session.php');
     $discipline     = sanitize($_POST['discipline']);
     $course_number  = sanitize($_POST['course-number']);
     $query = <<<EOD
-select * from cf_catalog 
+select * from cf_catalog
 where lower(discipline) = lower('$discipline')
 and (   course_number = '$course_number'
     or  course_number = '${course_number}W'
