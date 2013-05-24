@@ -177,6 +177,7 @@ EOD;
             <th>Department</th>
             <th>Division</th>
             <th>Level</th>
+            <th>Designation</th>
           </tr>
           <tr>
             <td>$course_id</td>
@@ -186,6 +187,7 @@ EOD;
             <td>$department</td>
             <td>$division</td>
             <td>$level</td>
+            <td>$designation</td>
           </tr>
         </table>
         <p>${hours}hr${component}; ${credits}cr; $prerequisites</p>
