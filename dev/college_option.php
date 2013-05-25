@@ -6,13 +6,43 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
-//  If anything is specified in the GET query string, student group codes will be
-//  displayed.
-$student_group_rule = '.student-group { display:none; }';
-
-if (count($_GET) > 0) $student_group_rule = '';
-//  Develop College Option calculator
+//  College Option Calculator
 //  -------------------------------------------------------------------------------------
+/*    Display a statement of either: what college option courses a student needs to take
+ *    or what student group, if any, applies to a student's situation.
+ *
+ *    If the GET query string is empty, display the student information.
+ *    Otherwise, display the student group information.
+ *
+ *    Requires JavaScript to operate.
+ */
+
+//  Tailor the instructions to the type of statement that will be generated, and attach
+//  the student-group-report class to the form so JavaScript will know what to display.
+ $student_group_report = (count($_GET) > 0);
+ $form_class = '';
+ $instructions = <<<EOD
+Answer the following questions to see what College Option courses you will need to take at
+Queens College.
+EOD;
+  if ($student_group_report)
+  {
+    if (isset($_GET['explain']))
+    {
+      $form_class = " class='explain'";
+      $instructions = <<<EOD
+Answer the following questions to see what College Option courses you will need to take at
+Queens College, with a technical explanation.
+EOD;
+    }
+    else
+    {
+      $form_class = " class='student-group-report'";
+      $instructions = <<<EOD
+Answer the following questions to determine the applicable student group code for a student.
+EOD;
+    }
+  }
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -42,6 +72,7 @@ if (count($_GET) > 0) $student_group_rule = '';
     <script type="text/javascript" src="../js/site_ui.js"></script>
     <script type="text/javascript" src="../js/college_option.js"></script>
     <style type='text/css'>
+      h1 + p { text-align:center; font-weight:bold; }
       fieldset { margin: 1em 0 }
       label, input {
         margin:0; padding:0.25em;
@@ -73,22 +104,23 @@ if (count($_GET) > 0) $student_group_rule = '';
         font-style:italic;
       }
       #result + * { line-height:1.5em; }
-      <?php echo $student_group_rule;?>
+      <?php echo $student_group_report;?>
     </style>
   </head>
   <body>
-<?php echo $instructions_button; ?>
+  
+  <?php echo $instructions_button; ?>
   <h1>College Option Calculator</h1>
-  <form action='<?php echo $_SERVER['PHP_SELF'];?>' method='post'>
+  <p id='need-javascript' class='error'>
+    You need to enable JavaScript to use this web page.
+  </p>
+  <form action=<?php echo "'{$_SERVER['PHP_SELF']}'$form_class";?> method='post'>
     <input  type='hidden'
             name='form-name'
             value='college-option' />
     <fieldset>
       <legend>Questions</legend>
-      <p class='instructions'>
-        Answer the following questions to see what College Option courses you will need
-        to take at Queens College.
-      </p>
+      <p class='instructions'><?php echo $instructions; ?></p>
         <table>
           <tr id='ask-bachelor'>
             <td>
