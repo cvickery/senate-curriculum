@@ -22,15 +22,16 @@ require_once('init_session.php');
  $form_class = '';
  $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>view a technical
-explanation</a>
+Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>display technical
+explanations</a> with the results.
 EOD;
   if (isset($_GET['explain']))
   {
     $form_class = " class='explain'";
     $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College, with a technical explanation.
+Queens College, with a technical explanation. You may also display the results <a
+href='{$_SERVER['PHP_SELF']}'>without the technical explanations</a>.
 EOD;
   }
 
@@ -77,7 +78,7 @@ EOD;
   }
 
   $num_prev_co = '';
-  if ( isset($_GET['num-prev-co']) && 
+  if ( isset($_GET['num-prev-co']) &&
       preg_match('/^[0-9]+$/', trim($_GET['num-prev-co'])) )
   {
     $num_prev_co = trim($_GET['num-prev-co']);
@@ -148,7 +149,7 @@ EOD;
     </style>
   </head>
   <body>
-  
+
   <?php echo $instructions_button; ?>
   <h1>College Option Calculator</h1>
   <p id='need-javascript' class='error'>
