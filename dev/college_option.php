@@ -19,30 +19,70 @@ require_once('init_session.php');
 
 //  Tailor the instructions to the type of statement that will be generated, and attach
 //  the student-group-report class to the form so JavaScript will know what to display.
- $student_group_report = (count($_GET) > 0);
  $form_class = '';
  $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College.
+Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>view a technical
+explanation</a>
 EOD;
-  if ($student_group_report)
+  if (isset($_GET['explain']))
   {
-    if (isset($_GET['explain']))
-    {
-      $form_class = " class='explain'";
-      $instructions = <<<EOD
+    $form_class = " class='explain'";
+    $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
 Queens College, with a technical explanation.
 EOD;
-    }
-    else
-    {
-      $form_class = " class='student-group-report'";
-      $instructions = <<<EOD
-Answer the following questions to determine the applicable student group code for a student.
-EOD;
-    }
   }
+
+//  Initial values for inputs
+//  -------------------------------------------------------------------------------------
+  $bachelor_y_checked = '';
+  $bachelor_n_checked = "checked='checked'";
+  if ( isset($_GET['bachelor-degree']) )
+  {
+    $bachelor_y_checked = "checked-'checked'";
+    $bachelor_n_checked = '';
+  }
+
+  $associate_y_checked = '';
+  $associate_n_checked = "checked='checked'";
+  if ( isset($_GET['associate-degree']) )
+  {
+    $associate_y_checked = "checked='checked'";
+    $associate_n_checked = '';
+  }
+
+  $began_2_checked = "checked='checked'";
+  $began_4_checked = '';
+  if ( isset($_GET['began']) )
+  {
+    $began_2_checked = '';
+    $began_4_checked = "checked='checked'";
+  }
+
+  $over_30_y_checked = '';
+  $over_30_n_checked = "checked='checked'";
+  if ( isset($_GET['31-or-more']) )
+  {
+    $over_30_y_checked = "checked='checked'";
+    $over_30_n_checked = '';
+  }
+
+  $prev_co_y_checked = '';
+  $prev_co_n_checked = "checked='checked'";
+  if ( isset($_GET['31-or-more']) )
+  {
+    $prev_co_y_checked = "checked='checked'";
+    $prev_co_n_checked = '';
+  }
+
+  $num_prev_co = '';
+  if ( isset($_GET['num-prev-co']) && 
+      preg_match('/^[0-9]+$/', trim($_GET['num-prev-co'])) )
+  {
+    $num_prev_co = trim($_GET['num-prev-co']);
+  }
+
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -120,16 +160,25 @@ EOD;
             value='college-option' />
     <fieldset>
       <legend>Questions</legend>
-      <p class='instructions'><?php echo $instructions; ?></p>
+<?php
+  echo <<<EOD
+      <p class='instructions'>$instructions</p>
         <table>
           <tr id='ask-bachelor'>
             <td>
-              <input type='radio' id='bachelor-degree-y' name='bachelor-degree' value='y'/>
+              <input  type='radio'
+                      id='bachelor-degree-y'
+                      name='bachelor-degree'
+                      value='y'
+                      $bachelor_y_checked />
               <label for='bachelor-deg-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='bachelor-degree-n' name='bachelor-degree' value='n'
-              checked='checked'/>
+              <input  type='radio'
+                      id='bachelor-degree-n'
+                      name='bachelor-degree'
+                      value='n'
+                      $bachelor_n_checked/>
               <label for='bachelor-degree-n'>No</label>
             </td>
             <td>
@@ -138,11 +187,19 @@ EOD;
           </tr>
           <tr id='ask-began'>
            <td>
-              <input type='radio' id='began-2' name='began' value='2' checked='checked' />
+              <input  type='radio'
+                      id='began-2'
+                      name='began'
+                      value='2'
+                      $began_2_checked />
               <label for='began-2'>2-year</label>
             </td>
             <td>
-              <input type='radio' id='began-4' name='began' value='4' />
+              <input  type='radio'
+                      id='began-4'
+                      name='began'
+                      value='4'
+                      $began_4_checked />
               <label for='began-4'>4-year</label>
             </td>
              <td>
@@ -152,12 +209,19 @@ EOD;
           </tr>
           <tr id='ask-associate'>
             <td>
-              <input type='radio' id='associate-degree-y' name='associate-degree' value='y'/>
+              <input  type='radio'
+                      id='associate-degree-y'
+                      name='associate-degree'
+                      value='y'
+                      $associate_y_checked />
               <label for='associate-deg-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='associate-degree-n' name='associate-degree' value='n'
-              checked='checked'/>
+              <input  type='radio'
+                      id='associate-degree-n'
+                      name='associate-degree'
+                      value='n'
+                      $associate_n_checked />
               <label for='associate-degree-n'>No</label>
             </td>
             <td>
@@ -166,12 +230,19 @@ EOD;
           </tr>
           <tr id='ask-31-or-more'>
             <td>
-              <input type='radio' id='31-or-more-y' name='31-or-more' value='y'/>
-              <label for='bachelor-deg-y'>Yes</label>
+              <input  type='radio'
+                      id='31-or-more-y'
+                      name='31-or-more'
+                      value='y'
+                      $over_30_y />
+              <label for='31-or-more-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='31-or-more-n' name='31-or-more' value='n'
-              checked='checked'/>
+              <input  type='radio'
+                      id='31-or-more-n'
+                      name='31-or-more'
+                      value='n'
+                      $over_30_n />
               <label for='31-or-more-n'>No</label>
             </td>
             <td>
@@ -180,12 +251,19 @@ EOD;
           </tr>
           <tr id='ask-if-prev-co'>
             <td>
-              <input type='radio' id='prev-co-y' name='prev-co' value='y'/>
+              <input  type='radio'
+                      id='prev-co-y'
+                      name='prev-co'
+                      value='y'
+                      $prev_co_y />
               <label for='prev-co-y'>Yes</label>
             </td>
             <td>
-              <input type='radio' id='prev-co-n' name='prev-co' value='n'
-              checked='checked'/>
+              <input  type='radio'
+                      id='prev-co-n'
+                      name='prev-co'
+                      value='n'
+                      $prev_co_n />
               <label for='prev-co-n'>No</label>
             </td>
             <td>
@@ -195,8 +273,10 @@ EOD;
           </tr>
           <tr id='ask-num-prev-co'>
             <td colspan='2'>
-              <input  name='num-prev-co' id='num-prev-co'
-                      type='number' min='0' step='1' />
+              <input  name='num-prev-co'
+                      id='num-prev-co'
+                      type='number' min='0' step='1'
+                      $num_prev_co />
             </td>
             <td>
               How many College Option courses have you completed at another CUNY
@@ -204,6 +284,8 @@ EOD;
             </td>
           </tr>
         </table>
+EOD;
+  ?>
     </fieldset>
     <fieldset>
       <legend>Your College Option Requirements</legend>
