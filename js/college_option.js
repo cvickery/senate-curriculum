@@ -32,7 +32,6 @@ $(function()
   $('#ask-associate, #ask-31-or-more, #ask-num-prev-co').hide();
 
   //    Is this a student-group report?
-  var do_student_group_report = $('form').hasClass('student-group-report');
   var do_explain              = $('form').hasClass('explain');
   var student_group_msg       = '';
 
@@ -206,7 +205,15 @@ $(function()
         {
           student_group_str = ' [CO0' + (num_required - num_remaining) + ']';
         }
-        student_group_msg   = '<p>' + student_group_msg + student_group_str + '</p>';
+        if (do_explain)
+        {
+          student_group_msg   = '<p>' + student_group_msg + student_group_str + '</p>';
+        }
+        else
+        {
+          student_group_msg   = '';
+        }
+
         //  Assemble the report
         var report = student_report_msg + student_group_msg + note;
         //  Display the result
@@ -216,6 +223,9 @@ $(function()
 
   //  Prevent data entry from generating any page loads.
   $('form').submit(function(evt) { evt.preventDefault(); });
+
+  //  Trigger bachelor-degree-n to initialize result section.
+  $('#bachelor-degree-n').trigger('change');
 
 });
 
