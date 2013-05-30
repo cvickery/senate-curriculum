@@ -11,8 +11,12 @@ require_once('init_session.php');
 /*    Display a statement of either: what college option courses a student needs to take
  *    or what student group, if any, applies to a student's situation.
  *
- *    If the GET query string is empty, display the student information.
- *    Otherwise, display the student group information.
+ *    If the GET query string includes 'explain' as a key, display a technical explanation
+ *    and the student group code that applies, if any.
+ *
+ *    Always display the set of courses the student must take.
+ *
+ *    TODO: provide links to the course lists for the courses the student must take.
  *
  *    Requires JavaScript to operate.
  */
@@ -37,6 +41,13 @@ EOD;
 
 //  Initial values for inputs
 //  -------------------------------------------------------------------------------------
+/*  The following code gets executed, but has no effect because there is currently no way
+ *  to actually submit the form because JavaScript prevents it. 
+ *  By changing the links in the instructions to submit buttons, removing the JavaScript
+ *  code that prevents submissions, and the JavaScript code that initializes the settings,
+ *  this code would let the user change the 'explain' option without losing their current
+ *  set of answers.
+ */
   $bachelor_y_checked = '';
   $bachelor_n_checked = "checked='checked'";
   if ( isset($_GET['bachelor-degree']) )
@@ -63,7 +74,7 @@ EOD;
 
   $over_30_y_checked = '';
   $over_30_n_checked = "checked='checked'";
-  if ( isset($_GET['31-or-more']) )
+  if ( isset($_GET['over-30']) )
   {
     $over_30_y_checked = "checked='checked'";
     $over_30_n_checked = '';
@@ -71,7 +82,7 @@ EOD;
 
   $prev_co_y_checked = '';
   $prev_co_n_checked = "checked='checked'";
-  if ( isset($_GET['31-or-more']) )
+  if ( isset($_GET['over-30']) )
   {
     $prev_co_y_checked = "checked='checked'";
     $prev_co_n_checked = '';
@@ -84,6 +95,8 @@ EOD;
     $num_prev_co = trim($_GET['num-prev-co']);
   }
 
+  //  Generate the web page
+  //  -----------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -229,25 +242,25 @@ EOD;
               Do you have an Associate’s degree?
             </td>
           </tr>
-          <tr id='ask-31-or-more'>
+          <tr id='ask-over-30'>
             <td>
               <input  type='radio'
-                      id='31-or-more-y'
-                      name='31-or-more'
+                      id='over-30-y'
+                      name='over-30'
                       value='y'
                       $over_30_y />
-              <label for='31-or-more-y'>Yes</label>
+              <label for='over-30-y'>Yes</label>
             </td>
             <td>
               <input  type='radio'
-                      id='31-or-more-n'
-                      name='31-or-more'
+                      id='over-30-n'
+                      name='over-30'
                       value='n'
                       $over_30_n />
-              <label for='31-or-more-n'>No</label>
+              <label for='over-30-n'>No</label>
             </td>
             <td>
-              Are you transferring 31 or more credits to Queens from another college?
+              Are you transferring over 30 credits to Queens from another college?
             </td>
           </tr>
           <tr id='ask-if-prev-co'>
