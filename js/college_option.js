@@ -93,10 +93,10 @@ $(function()
       else if (start_4)
       {
 // console.log('start at 4-year');
-        //  Must take 4 minus num-prev-co, even if they have an Associate's
+        //  Must take 4 minus num-prev-co, unless they have an Associate's
         //  Includes incoming freshmen
-        $('#ask-associate, #ask-over-30').hide();
-        $('#ask-bachelor, #ask-began, #ask-if-prev-co').show(250);
+        $('#ask-over-30').hide();
+        $('#ask-bachelor, #ask-began, #ask-associate, #ask-if-prev-co').show(250);
 
         student_group_msg   = "Started at 4-year; " + reduce_co_by +
             " previous CO course" + suffix;
