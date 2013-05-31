@@ -79,6 +79,7 @@ $(function()
 
       //  What to display and how much is required
       $('#result').removeClass('error');
+
       if (has_bachelor)
       {
 // console.log('has bachelor’s');
@@ -90,23 +91,11 @@ $(function()
         student_group_msg   = "Bachelor’s degree bridge: no student-group";
         need_student_group  = false;
       }
-      else if (start_4)
-      {
-// console.log('start at 4-year');
-        //  Must take 4 minus num-prev-co, even if they have an Associate's
-        //  Includes incoming freshmen
-        $('#ask-associate, #ask-over-30').hide();
-        $('#ask-bachelor, #ask-began, #ask-if-prev-co').show(250);
-
-        student_group_msg   = "Started at 4-year; " + reduce_co_by +
-            " previous CO course" + suffix;
-        need_student_group  = true;
-      }
       else if (has_associate)
       {
 // console.log('has associate’s');
-        $('#ask-over-30').hide();
-        $('#ask-bachelor, #ask-began, #ask-associate, #ask-if-prev-co').show(250);
+        $('#ask-over-30, #ask-began').hide();
+        $('#ask-bachelor, #ask-associate, #ask-if-prev-co').show(250);
         num_required        = 2;
         reduce_co_by        = Math.min(2, num_prev_co);
         num_remaining       = num_required - reduce_co_by;
@@ -123,16 +112,28 @@ $(function()
           need_student_group  = false;
         }
       }
+      else if (start_4)
+      {
+// console.log('start at 4-year');
+        //  Must take 4 minus num-prev-co
+        //  Includes incoming freshmen
+        $('#ask-over-30').hide();
+        $('#ask-bachelor, #ask-associate, #ask-began, #ask-if-prev-co').show(250);
+
+        student_group_msg   = "No degree; started at 4-year; " + reduce_co_by +
+            " previous CO course" + suffix;
+        need_student_group  = true;
+      }
       else if (over_30)
       {
 // console.log('over 30 credits');
-        $('#ask-bachelor, #ask-began, #ask-associate, #ask-over-30, #ask-if-prev-co')
+        $('#ask-bachelor, #ask-associate, #ask-began, #ask-over-30, #ask-if-prev-co')
           .show(250);
         num_required        = 3;
         reduce_co_by        = Math.min(3, num_prev_co);
         num_remaining       = num_required - reduce_co_by;
         suffix = (reduce_co_by === 1) ? '' : 's';
-        student_group_msg   = "Started at 2-year; over 30 credits; " +
+        student_group_msg   = "No degree; started at 2-year; over 30 credits; " +
           reduce_co_by + " previous CO course" + suffix;
         need_student_group  = true;
         if (reduce_co_by === 0) need_student_group = false;
@@ -140,7 +141,7 @@ $(function()
       else
       {
 // console.log('else');
-        $('#ask-bachelor, #ask-began, #ask-associate, #ask-over-30, #ask-if-prev-co')
+        $('#ask-bachelor, #ask-associate, #ask-began, #ask-over-30, #ask-if-prev-co')
           .show(250);
         student_group_msg   = "Started at 2-year; fewer than 31 credits; " +
           reduce_co_by + " previous CO course" + suffix;
@@ -149,6 +150,7 @@ $(function()
       }
 
       //  Be sure the num-prev-co field is visible if appropriate
+      //  -------------------------------------------------------------------------------
       if (has_prev_co && ! has_bachelor)
       {
         $('#ask-num-prev-co').show(250);

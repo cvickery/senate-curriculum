@@ -42,7 +42,7 @@ EOD;
 //  Initial values for inputs
 //  -------------------------------------------------------------------------------------
 /*  The following code gets executed, but has no effect because there is currently no way
- *  to actually submit the form because JavaScript prevents it. 
+ *  to actually submit the form because JavaScript prevents it.
  *  By changing the links in the instructions to submit buttons, removing the JavaScript
  *  code that prevents submissions, and the JavaScript code that initializes the settings,
  *  this code would let the user change the 'explain' option without losing their current
@@ -165,9 +165,6 @@ EOD;
 
   <?php echo $instructions_button; ?>
   <h1>College Option Calculator</h1>
-  <p id='need-javascript' class='error'>
-    You need to enable JavaScript to use this web page.
-  </p>
   <form action=<?php echo "'{$_SERVER['PHP_SELF']}'$form_class";?> method='post'>
     <input  type='hidden'
             name='form-name'
@@ -196,7 +193,28 @@ EOD;
               <label for='bachelor-degree-n'>No</label>
             </td>
             <td>
-              Do you already have a Bachelor’s degree?
+              Do you have a Bachelor’s degree?
+            </td>
+          </tr>
+          <tr id='ask-associate'>
+            <td>
+              <input  type='radio'
+                      id='associate-degree-y'
+                      name='associate-degree'
+                      value='y'
+                      $associate_y_checked />
+              <label for='associate-deg-y'>Yes</label>
+            </td>
+            <td>
+              <input  type='radio'
+                      id='associate-degree-n'
+                      name='associate-degree'
+                      value='n'
+                      $associate_n_checked />
+              <label for='associate-degree-n'>No</label>
+            </td>
+            <td>
+              Do you have an Associate’s degree?
             </td>
           </tr>
           <tr id='ask-began'>
@@ -219,27 +237,6 @@ EOD;
              <td>
               Did you first start taking college level courses in a 2-year program, or
               in a 4-year program?
-            </td>
-          </tr>
-          <tr id='ask-associate'>
-            <td>
-              <input  type='radio'
-                      id='associate-degree-y'
-                      name='associate-degree'
-                      value='y'
-                      $associate_y_checked />
-              <label for='associate-deg-y'>Yes</label>
-            </td>
-            <td>
-              <input  type='radio'
-                      id='associate-degree-n'
-                      name='associate-degree'
-                      value='n'
-                      $associate_n_checked />
-              <label for='associate-degree-n'>No</label>
-            </td>
-            <td>
-              Do you have an Associate’s degree?
             </td>
           </tr>
           <tr id='ask-over-30'>
@@ -304,15 +301,17 @@ EOD;
     <fieldset>
       <legend>Your College Option Requirements</legend>
       <p>
-        Based on the answers above:
+        Based on the questions above:
       </p>
-      <div id='result'>You must take a Literature, a Language, a Science, and an additional
-        course. <span class='student-group'>[CO04]</span>
+      <div id='result'>
+        <p id='need-javascript' class='error'>
+          You need to enable JavaScript to use this web page.
+        </p>
       </div>
       <p>
-        <strong>Note: </strong> This analysis is only as accurate as your input!<br/>
-        To be sure you answered each question correctly, consult with an advisor
-        in the <a href='http://advising.qc.cuny.edu'>Office of Academic Advisement</a>.
+        <strong>Note: </strong><em>The result is only as accurate as your input!<br/> To
+        be sure you answered each question correctly, consult with an advisor in the <a
+        href='http://advising.qc.cuny.edu'>Office of Academic Advisement</a>.</em>
       </p>
     </fieldset>
   </form>
