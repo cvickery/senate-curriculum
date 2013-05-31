@@ -11,8 +11,12 @@ require_once('init_session.php');
 /*    Display a statement of either: what college option courses a student needs to take
  *    or what student group, if any, applies to a student's situation.
  *
- *    If the GET query string is empty, display the student information.
- *    Otherwise, display the student group information.
+ *    If the GET query string includes 'explain' as a key, display a technical explanation
+ *    and the student group code that applies, if any.
+ *
+ *    Always display the set of courses the student must take.
+ *
+ *    TODO: provide links to the course lists for the courses the student must take.
  *
  *    Requires JavaScript to operate.
  */
@@ -22,20 +26,28 @@ require_once('init_session.php');
  $form_class = '';
  $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>view a technical
-explanation</a>
+Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>display technical
+explanations</a> with the results.
 EOD;
   if (isset($_GET['explain']))
   {
     $form_class = " class='explain'";
     $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College, with a technical explanation.
+Queens College, with a technical explanation. You may also display the results <a
+href='{$_SERVER['PHP_SELF']}'>without the technical explanations</a>.
 EOD;
   }
 
 //  Initial values for inputs
 //  -------------------------------------------------------------------------------------
+/*  The following code gets executed, but has no effect because there is currently no way
+ *  to actually submit the form because JavaScript prevents it.
+ *  By changing the links in the instructions to submit buttons, removing the JavaScript
+ *  code that prevents submissions, and the JavaScript code that initializes the settings,
+ *  this code would let the user change the 'explain' option without losing their current
+ *  set of answers.
+ */
   $bachelor_y_checked = '';
   $bachelor_n_checked = "checked='checked'";
   if ( isset($_GET['bachelor-degree']) )
@@ -62,7 +74,7 @@ EOD;
 
   $over_30_y_checked = '';
   $over_30_n_checked = "checked='checked'";
-  if ( isset($_GET['31-or-more']) )
+  if ( isset($_GET['over-30']) )
   {
     $over_30_y_checked = "checked='checked'";
     $over_30_n_checked = '';
@@ -70,19 +82,21 @@ EOD;
 
   $prev_co_y_checked = '';
   $prev_co_n_checked = "checked='checked'";
-  if ( isset($_GET['31-or-more']) )
+  if ( isset($_GET['over-30']) )
   {
     $prev_co_y_checked = "checked='checked'";
     $prev_co_n_checked = '';
   }
 
   $num_prev_co = '';
-  if ( isset($_GET['num-prev-co']) && 
+  if ( isset($_GET['num-prev-co']) &&
       preg_match('/^[0-9]+$/', trim($_GET['num-prev-co'])) )
   {
     $num_prev_co = trim($_GET['num-prev-co']);
   }
 
+  //  Generate the web page
+  //  -----------------------------------------------------------------------------------
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -148,12 +162,9 @@ EOD;
     </style>
   </head>
   <body>
-  
+
   <?php echo $instructions_button; ?>
   <h1>College Option Calculator</h1>
-  <p id='need-javascript' class='error'>
-    You need to enable JavaScript to use this web page.
-  </p>
   <form action=<?php echo "'{$_SERVER['PHP_SELF']}'$form_class";?> method='post'>
     <input  type='hidden'
             name='form-name'
@@ -182,7 +193,28 @@ EOD;
               <label for='bachelor-degree-n'>No</label>
             </td>
             <td>
-              Do you already have a Bachelor’s degree?
+              Do you have a Bachelor’s degree?
+            </td>
+          </tr>
+          <tr id='ask-associate'>
+            <td>
+              <input  type='radio'
+                      id='associate-degree-y'
+                      name='associate-degree'
+                      value='y'
+                      $associate_y_checked />
+              <label for='associate-deg-y'>Yes</label>
+            </td>
+            <td>
+              <input  type='radio'
+                      id='associate-degree-n'
+                      name='associate-degree'
+                      value='n'
+                      $associate_n_checked />
+              <label for='associate-degree-n'>No</label>
+            </td>
+            <td>
+              Do you have an Associate’s degree?
             </td>
           </tr>
           <tr id='ask-began'>
@@ -207,46 +239,25 @@ EOD;
               in a 4-year program?
             </td>
           </tr>
-          <tr id='ask-associate'>
+          <tr id='ask-over-30'>
             <td>
               <input  type='radio'
-                      id='associate-degree-y'
-                      name='associate-degree'
-                      value='y'
-                      $associate_y_checked />
-              <label for='associate-deg-y'>Yes</label>
-            </td>
-            <td>
-              <input  type='radio'
-                      id='associate-degree-n'
-                      name='associate-degree'
-                      value='n'
-                      $associate_n_checked />
-              <label for='associate-degree-n'>No</label>
-            </td>
-            <td>
-              Do you have an Associate’s degree?
-            </td>
-          </tr>
-          <tr id='ask-31-or-more'>
-            <td>
-              <input  type='radio'
-                      id='31-or-more-y'
-                      name='31-or-more'
+                      id='over-30-y'
+                      name='over-30'
                       value='y'
                       $over_30_y />
-              <label for='31-or-more-y'>Yes</label>
+              <label for='over-30-y'>Yes</label>
             </td>
             <td>
               <input  type='radio'
-                      id='31-or-more-n'
-                      name='31-or-more'
+                      id='over-30-n'
+                      name='over-30'
                       value='n'
                       $over_30_n />
-              <label for='31-or-more-n'>No</label>
+              <label for='over-30-n'>No</label>
             </td>
             <td>
-              Are you transferring 31 or more credits to Queens from another college?
+              Are you transferring over 30 credits to Queens from another college?
             </td>
           </tr>
           <tr id='ask-if-prev-co'>
@@ -290,15 +301,17 @@ EOD;
     <fieldset>
       <legend>Your College Option Requirements</legend>
       <p>
-        Based on the answers above:
+        Based on the questions above:
       </p>
-      <div id='result'>You must take a Literature, a Language, a Science, and an additional
-        course. <span class='student-group'>[CO04]</span>
+      <div id='result'>
+        <p id='need-javascript' class='error'>
+          You need to enable JavaScript to use this web page.
+        </p>
       </div>
       <p>
-        <strong>Note: </strong> This analysis is only as accurate as your input!<br/>
-        To be sure you answered each question correctly, consult with an advisor
-        in the <a href='http://advising.qc.cuny.edu'>Office of Academic Advisement</a>.
+        <strong>Note: </strong><em>The result is only as accurate as your input!<br/> To
+        be sure you answered each question correctly, consult with an advisor in the <a
+        href='http://advising.qc.cuny.edu'>Office of Academic Advisement</a>.</em>
       </p>
     </fieldset>
   </form>
