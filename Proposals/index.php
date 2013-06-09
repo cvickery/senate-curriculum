@@ -421,32 +421,7 @@ EOD;
 
 EOD;
 
-      $query = <<<EOD
-SELECT      p.id                                    AS proposal_id,
-            t.abbr                                  AS type,
-            c.abbr                                  AS class,
-            p.discipline||' '||p.course_number      AS course,
-            to_char(p.submitted_date, 'YYYY-MM-DD') AS submitted_date,
-            p.submitter_name                        AS submitter_name,
-            p.submitter_email                       AS submitter_email,
-            g.abbr                                  AS agency,
-            a.full_name                             AS action,
-            e.event_date                            AS event_date
-FROM        proposals p LEFT JOIN events e
-                        ON  p.id = e.proposal_id
-                        LEFT JOIN actions a
-                        ON a.id = e.action_id,
-          proposal_types t,
-          agencies g,
-          proposal_classes c
-WHERE     p.discipline ~* '$discp_abbr'
-AND       t.id  = p.type_id
-AND       c.id = (SELECT class_id FROM proposal_types WHERE id = p.type_id)
-AND       p.submitted_date IS NOT NULL
-AND       g.id = e.agency_id
-ORDER BY  lpad(p.course_number, 3), c.id, e.event_date
-
-EOD;
+      $query = "select * from track_by_discipline where discipline = '$discp_abbr'";
       $result = pg_query($curric_db, $query)
         or die('Unable to access proposals: ' . basename(__FILE__) . ' ' . __LINE__);
       $n = pg_num_rows($result);
