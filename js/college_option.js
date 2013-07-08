@@ -201,6 +201,7 @@ $(function()
           case 4:   student_report_msg=
                       'You must take a Literature, a Language, a Science, and an ' +
                           'additional course.';
+                    need_student_group = false;
                     break;
           default:  student_report_msg= 'Program Error in ' + __FILE__ + ' line ' + __LINE__;
                     break;
