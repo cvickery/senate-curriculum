@@ -46,17 +46,18 @@ $(function()
       var start_4             = $('input[name="began"]:checked').val() === '4';
       var over_30             = $('input[name="over-30"]:checked').val() === 'y';
       var has_prev_co         = $('input[name="prev-co"]:checked').val() === 'y';
-      var num_prev_co         = 0;
+      var num_prev_co_credits = 0;
+      var num_prev_co_courses = 0;
       if ( $('#ask-num-prev-co').is(':visible') )
       {
-        num_prev_co = $('#num-prev-co').val() - 0;
-        if (  isNaN(num_prev_co) ||
-              typeof(num_prev_co) !== "number" ||
-              num_prev_co < 0 ||
-              (num_prev_co % 1 !== 0)
+        num_prev_co_credits = $('#num-prev-co').val() - 0;
+        if (  isNaN(num_prev_co_credits) ||
+              typeof(num_prev_co_credits) !== "number" ||
+              num_prev_co_credits < 0 ||
+              (num_prev_co_credits % 1 !== 0)
            )
         {
-          num_prev_co = -1; //  Flag value to generate error message for "result"
+          num_prev_co_credits = -1; //  Flag value to generate error message for "result"
           $('#num-prev-co').css('background-color', '#f66');
         }
         else
@@ -68,11 +69,11 @@ $(function()
       {
         $('#num-prev-co').val('0');
       }
-
+      num_prev_co_courses = Math.floor(num_prev_co_credits / 3) //  Convert credits to courses.
       //  Basic situation: native students, started at baccalaureate, or transferred with
       //  fewer than 31 credits.
       var num_required  = 4;
-      var reduce_co_by  = Math.min(4, num_prev_co);
+      var reduce_co_by  = Math.min(4, num_prev_co_courses);
       var num_remaining = num_required - reduce_co_by;
 
       var suffix        = (reduce_co_by === 1) ? '' : 's';
@@ -97,7 +98,7 @@ $(function()
         $('#ask-over-30, #ask-began').hide();
         $('#ask-bachelor, #ask-associate, #ask-if-prev-co').show(250);
         num_required        = 2;
-        reduce_co_by        = Math.min(2, num_prev_co);
+        reduce_co_by        = Math.min(2, num_prev_co_courses);
         num_remaining       = num_required - reduce_co_by;
         suffix              = (reduce_co_by === 1) ? '' : 's';
         if (reduce_co_by > 0)
@@ -130,7 +131,7 @@ $(function()
         $('#ask-bachelor, #ask-associate, #ask-began, #ask-over-30, #ask-if-prev-co')
           .show(250);
         num_required        = 3;
-        reduce_co_by        = Math.min(3, num_prev_co);
+        reduce_co_by        = Math.min(3, num_prev_co_courses);
         num_remaining       = num_required - reduce_co_by;
         suffix = (reduce_co_by === 1) ? '' : 's';
         student_group_msg   = "No degree; started at 2-year; over 30 credits; " +
@@ -159,7 +160,7 @@ $(function()
       else
       {
         $('#ask-num-prev-co').hide(250);
-        num_prev_co = 0;
+        num_prev_co_courses = 0;
       }
 
       //  Generate report
@@ -167,7 +168,7 @@ $(function()
       var msg         = '';
       var note        = "";
 
-      if (num_prev_co < 0)
+      if (num_prev_co_courses < 0)
       {
         //  Invalid number of previous CO courses: generate error message
         msg = "You must enter a non-negative number as the number of College " +
@@ -177,11 +178,11 @@ $(function()
       else
       {
         //  Alert if extra CO courses previously taken
-        if ( num_prev_co > num_required )
+        if ( num_prev_co_credits > num_required * 3)
         {
-          note = "<p class='error'>More college option courses previously completed (" +
-            num_prev_co + ") than needed (" + num_required + "): extras have no effect." +
-            "</p>";
+          note = "<p class='error'>More college option credits previously completed (" +
+            num_prev_co_credits + ") than needed (" + (num_required * 3) +
+            "): extras have no effect.</p>";
         }
         //  Statement of courses needed
         switch (num_remaining)
@@ -201,6 +202,7 @@ $(function()
           case 4:   student_report_msg=
                       'You must take a Literature, a Language, a Science, and an ' +
                           'additional course.';
+                    need_student_group = false;
                     break;
           default:  student_report_msg= 'Program Error in ' + __FILE__ + ' line ' + __LINE__;
                     break;
