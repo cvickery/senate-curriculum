@@ -290,7 +290,7 @@ EOD;
                       $num_prev_co />
             </td>
             <td>
-              How many College Option courses have you completed at another CUNY
+              How many College Option credits have you completed at another CUNY
               senior college?
             </td>
           </tr>
