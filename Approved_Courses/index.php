@@ -58,7 +58,7 @@ require_once('init_session.php');
   <h1>Queens College General Education Courses</h1>
   <table>
     <tr>
-      <th>Course</th><th>W-ness</th><th>Title</th>
+      <th>Course</th><th>Title</th>
       <th>Hours</th><th>Credits</th><th>Prerequisites</th>
       <th colspan='5'>Designation(s)</th>
     </tr>
@@ -76,46 +76,120 @@ EOD;
     $discipline     = $row['discipline'];
     $course_number  = $row['course_number'];
     $suffixes       = $row['suffixes'];
-    $query = <<<EOD
+    $titles         = array(sanitize($row['course_title']));
+    $hours          = $row['hours'];
+    $credits        = $row['credits'];
+    $prereqs        = '';
+    $designations   = array();
+    $cf_query = <<<EOD
 select * from cf_catalog
 where discipline = '$discipline'
 and course_number ~* '^{$course_number}[WH]?$'
 EOD;
-    $course_result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed " .
-      basename(__FILE__) . ' line ' . __LINE__ . "</h1></body></html>\n");
-    $w_ness = 'Undefined';
-    $honors = '';
-    $title  = '';
-    while ($course_row = pg_fetch_assoc($course_result))
+    $cf_result = pg_query($curric_db, $cf_query) or
+      die("<h1 class='error'>Query Failed " . basename(__FILE__) .
+          " line " . __LINE__ . "</h1></body></html>\n");
+    $w_ness       = 'Undefined';
+    $is_honors    = '';
+    while ($cf_row = pg_fetch_assoc($cf_result))
     {
-      $cf_course_number = $course_row['course_number'];
+      $cf_course_number = $cf_row['course_number'];
       $suffix = $cf_course_number[strlen($cf_course_number) - 1];
-      $debug .= "$suffix:";
       switch ($suffix)
       {
         case 'W':
-          if ($w_ness === 'Undefined') $w_ness = 'Always-W';
-          else $w_ness = 'Sometimes-W';
+          if ($w_ness === 'Undefined') $w_ness = 'Always';
+          else $w_ness = 'Sometimes';
           break;
         case 'H':
-          $honors = '<br/>Honors';
+          $is_honors = 'Honors';
           break;
         default:
-          if ($w_ness === 'Undefined') $w_ness = 'Never-W';
-          else $w_ness = 'Sometimes-W';
+          if ($w_ness === 'Undefined') $w_ness = 'Never';
+          else $w_ness = 'Sometimes';
           break;
       }
-      if ($title !== $course_row['course_title'])
+
+      $titles[] = $cf_row['course_title'];
+      if ($hours != $row['hours'])
       {
-        $br = $title === '' ? '' : '<br/>';
-        $title .= "$br{$course_row['course_title']}";
+        $hours .= "<div class='error'>{$row['hours']}</div>";
+      }
+      if ($credits != $row['credits'])
+      {
+        $credits .= "<div class='error'>{$row['credits']}</div>";
+      }
+      $prereqs = $cf_row['prerequisites'];
+    }
+
+    $course_numbers = '';
+    switch ($w_ness)
+    {
+      case 'Always':
+        $course_numbers = "{$course_number}W";
+        break;
+      case 'Sometimes':
+        $course_numbers = "$course_number/{$course_number}W";
+        break;
+      case 'Never':
+      case 'Undefined':
+        $course_numbers = $course_number;
+        break;
+      default:
+        die("<h1 class='error'>Bad switch at " . basename(__FILE__) . " line " .
+          __LINE__ . "</h1></body></html>");
+    }
+    if ($is_honors)
+    {
+      if ($w_ness === 'Undefined')
+      {
+        $course_numbers .= 'H';
+      }
+      else
+      {
+        $course_numbers .= "/{$course_number}H";
       }
     }
+    else if ($w_ness === 'Undefined')
+    {
+      $titles[] = "<span class='error'>Course not active in CUNYfirst</span>";
+    }
+    $title = $titles[0];
+    for ($i = 1; $i < count($titles); $i++)
+    {
+      if ($titles[$i] !== $titles[0])
+      {
+        $title .= "<div class='error'>{$titles[$i]}</div>";
+      }
+    }
+    $d_query = <<<EOD
+select t.abbr as designation, m.is_primary, m.reason
+from course_designation_mappings m, proposal_types t
+where m.discipline = '$discipline'
+and   m.course_number = $course_number
+and   t.id = m.designation_id
+EOD;
+    $d_result = pg_query($curric_db, $d_query) or
+      die("<h1 class='error'>Query Failed " . basename(__FILE__) .
+          " line " . __LINE__ . "</h1></body></html>\n");
+    while ($d_row = pg_fetch_assoc($d_result))
+    {
+      $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
+      $designations[] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+    }
+    while (count($designations) < 5) $designations[] = '';
     echo <<<EOD
   <tr>
-    <td>$discipline $course_number</td>
-    <td>$w_ness$honors</td>
+    <td>$discipline $course_numbers</td>
     <td>$title</td>
+    <td>$hours</td>
+    <td>$credits</td>
+    <td>$prereqs</td>
+    <td>$designations[0]</td>
+    <td>$designations[1]</td>
+    <td>$designations[2]</td>
+    <td>$designations[3]</td>
+    <td>$designations[4]</td>
   </tr>
 
 EOD;
