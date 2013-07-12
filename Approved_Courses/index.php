@@ -41,8 +41,8 @@ require_once('init_session.php');
     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
-    <script type="text/javascript" src="../js/course_list.js"></script>
     <style type='text/css'>
+      body {width: 1024px;}
       table {
         border: 1px solid black;
         border-radius: 0.25em;
@@ -56,11 +56,14 @@ require_once('init_session.php');
   <body>
 
   <h1>Queens College General Education Courses</h1>
+  <p>Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);
+  ?>.</p>
   <table>
     <tr>
       <th>Course</th><th>Title</th>
       <th>Hours</th><th>Credits</th><th>Prerequisites</th>
-      <th colspan='5'>Designation(s)</th>
+      <th>CF Designation</th>
+      <th colspan='5'>QC Designation(s)</th>
     </tr>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
@@ -80,6 +83,7 @@ EOD;
     $hours          = $row['hours'];
     $credits        = $row['credits'];
     $prereqs        = '';
+    $cf_designation = '';
     $designations   = array();
     $cf_query = <<<EOD
 select * from cf_catalog
@@ -94,6 +98,7 @@ EOD;
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
       $cf_course_number = $cf_row['course_number'];
+      $cf_designation   = $cf_row['designation'];
       $suffix = $cf_course_number[strlen($cf_course_number) - 1];
       switch ($suffix)
       {
@@ -172,10 +177,18 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
+    $designations[0] = 'reserved for primary';
     while ($d_row = pg_fetch_assoc($d_result))
     {
       $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
-      $designations[] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+      if ($is_primary)
+      {
+        $designations[0] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+      }
+      else
+      {
+        $designations[] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+      }
     }
     while (count($designations) < 5) $designations[] = '';
     echo <<<EOD
@@ -185,6 +198,7 @@ EOD;
     <td>$hours</td>
     <td>$credits</td>
     <td>$prereqs</td>
+    <td>$cf_designation</td>
     <td>$designations[0]</td>
     <td>$designations[1]</td>
     <td>$designations[2]</td>
