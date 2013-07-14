@@ -267,7 +267,7 @@ EOD;
             <input type='text' id='$abbr-hours'
                                class='quarter-wide'
                                name='$abbr'
-                               value='$hours' /> contact hours per week
+                               value='$hours' /> $full_name hours per week
           </div>
 
 EOD;
@@ -285,7 +285,8 @@ EOD;
           $check_prereq_caps
           <label for='prerequisites'>Anti- Co- Pre-requisites:</label>
           <input type='text' class='triple-wide'
-                 id='prerequisites' name='prerequisites' value='{$new_catalog->prerequisites}' />
+                 id='prerequisites'
+                 name='prerequisites' value='{$new_catalog->prerequisites}' />
         </div>
         <div>
           <label for='catalog-description' id='description-label'>Catalog Description:</label>
