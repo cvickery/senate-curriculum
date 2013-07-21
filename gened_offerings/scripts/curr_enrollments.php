@@ -75,7 +75,7 @@ EOD;
       "'{$term->abbr}', " .
       "'{$row->SUBJECT}', " .
       "'{$row->CATALOG_NBR}', " .
-      "'{$row->CLASS_SECTION}'. " .
+      "'{$row->CLASS_SECTION}', " .
       "'{$row->SSR_COMPONENT}', " .
       "'{$row->CLASS_STAT}', " .
       "{$row->ENRL_CAP}, " .
