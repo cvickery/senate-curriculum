@@ -12,11 +12,14 @@ require_once('utils.php');
    $enrollment_query = <<<EOD
 SELECT a.strm,
        a.session_code,
+       a.class_section,
        a.subject,
        a.catalog_nbr,
        a.class_stat,
        a.enrl_cap,
+       a.wait_cap,
        a.enrl_tot,
+       a.wait_tot,
        b.ssr_component
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b
@@ -51,6 +54,7 @@ EOD;
         "term_abbr      TEXT,   " .
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
+        "class_section  TEXT,   " .
         "component      TEXT,   " .
         "status         TEXT,   " .
         "seats          NUMBER, " .
@@ -71,6 +75,7 @@ EOD;
       "'{$term->abbr}', " .
       "'{$row->SUBJECT}', " .
       "'{$row->CATALOG_NBR}', " .
+      "'{$row->CLASS_SECTION}', " .
       "'{$row->SSR_COMPONENT}', " .
       "'{$row->CLASS_STAT}', " .
       "{$row->ENRL_CAP}, " .

@@ -6,9 +6,10 @@
       'July', 'August', 'September', 'October', 'November', 'December'
       );
       
-    // TODO: find a CUNYfirst table that defines all possible values for this column
+    // TODO: Use the curric.cf_components table to populate this array.
     $components = array(
-          'LEC','LAB', 'MSG', 'REC', 'SEM', 'TUT'
+          'LEC', 'LAB', 'REC', 'SEM', 'CHR'
+// CLN, CON, DIS, FLD, IND, INT, LAB, LEC, MSG, PRA, REC, RSC, SEM, TST, TUT
     );
 //  Class Term
 //  --------------------------------------------------------------------------
