@@ -1,6 +1,6 @@
 <?php
 
-//  .../Curriculum/scripts/utils.php
+//  .../scripts/utils.php
 
 /*  General purpose utilities. Mostly designed for Proposal Editor, but used by any page
  *  that accesses the db.
@@ -10,6 +10,7 @@
 
 //  db Setup
 //  --------------------------------------------------------------------------------------
+$cf_update_date = 'unknown';
 if (file_exists('../CF_Queries/qccv_cu_catalog.xls'))
 {
   $cf_update_date = filemtime('../CF_Queries/qccv_cu_catalog.xls');
