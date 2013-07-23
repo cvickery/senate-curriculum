@@ -35,4 +35,7 @@ c = conn.cursor()
 c.execute('select * from offerings')
 row = c.fetchone()
 print(row.keys())
-o_cursor = conn.cursor()
+count = 0;
+for row in c:
+  count += 1
+print('{} rows'.format(count))
