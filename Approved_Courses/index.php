@@ -190,6 +190,19 @@ EOD;
         $designations[] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
       }
     }
+    //  Move PLAS designations to the end.
+    for ($i = 1; $i < count($designations); $i++)
+    {
+      if (false !== strstr($designations[$i], '(PLAS)'))
+      {
+        $t = $designations[$i];
+        for ($j = $i; $j < count($designations) -1; $j++)
+        {
+          $designations[$j] = $designations[$j + 1];
+        }
+        $designations[count($designations) -1] = $t;
+      }
+    }
     while (count($designations) < 5) $designations[] = '';
     echo <<<EOD
   <tr>
