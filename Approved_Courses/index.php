@@ -63,7 +63,8 @@ require_once('init_session.php');
       <th>Course</th><th>Title</th>
       <th>Hours</th><th>Credits</th><th>Prerequisites</th>
       <th>CF Designation</th>
-      <th colspan='5'>QC Designation(s)</th>
+      <th>CUNY/QC Core Designations</th>
+      <th>PLAS Designations</th>
     </tr>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
@@ -177,33 +178,21 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
-    $designations[0] = 'reserved for primary';
+    $core_designations = '';
+    $plas_designations = '';
     while ($d_row = pg_fetch_assoc($d_result))
     {
       $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
-      if ($is_primary)
+      if ($d_row['reason'] === 'PLAS')
       {
-        $designations[0] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+        $plas_designations .= "{$d_row['designation']} ";
       }
       else
       {
-        $designations[] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
+        $core_designations .= (($core_designations === '') ? '' : '<br/>') .
+          "{$d_row['designation']}{$is_primary} ({$d_row['reason']}) ";
       }
     }
-    //  Move PLAS designations to the end.
-    for ($i = 1; $i < count($designations); $i++)
-    {
-      if (false !== strstr($designations[$i], '(PLAS)'))
-      {
-        $t = $designations[$i];
-        for ($j = $i; $j < count($designations) -1; $j++)
-        {
-          $designations[$j] = $designations[$j + 1];
-        }
-        $designations[count($designations) -1] = $t;
-      }
-    }
-    while (count($designations) < 5) $designations[] = '';
     echo <<<EOD
   <tr>
     <td>$discipline $course_numbers</td>
@@ -212,11 +201,8 @@ EOD;
     <td>$credits</td>
     <td>$prereqs</td>
     <td>$cf_designation</td>
-    <td>$designations[0]</td>
-    <td>$designations[1]</td>
-    <td>$designations[2]</td>
-    <td>$designations[3]</td>
-    <td>$designations[4]</td>
+    <td>$core_designations</td>
+    <td>$plas_designations</td>
   </tr>
 
 EOD;
