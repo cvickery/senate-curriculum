@@ -1,6 +1,7 @@
 <?php
-//  /Approved_Courses/index.php
-
+//  /Approved_Courses/full_list.php
+/*  Master list of all courses with all their designations.
+ */
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
