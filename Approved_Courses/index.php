@@ -1,17 +1,110 @@
 <?php
 //  /Approved_Courses/index.php
 
-set_include_path(get_include_path()
-    . PATH_SEPARATOR . getcwd() . '/../scripts'
-    . PATH_SEPARATOR . getcwd() . '/../include');
-require_once('init_session.php');
+require_once('credentials.inc');
+//  db Setup
+//  --------------------------------------------------------------------------------------
+$cf_update_date = 'unknown';
+if (file_exists('../CF_Queries/qccv_cu_catalog.xls'))
+{
+  $cf_update_date = filemtime('../CF_Queries/qccv_cu_catalog.xls');
+}
+$curric_db      = curric_connect() or die('Unable to access curriculum db');
 
-//  Approved courses
-//  -------------------------------------------------------------------------------------
-/*    List all approved courses and their designations.
- *    To evolve: list selected categories; limit info displayed; provide editing (add,
- *    delete, change)
+//  sanitize()
+//  ---------------------------------------------------------------------------
+/*  Prepare a user-supplied string for inserting/updating a db table.
+ *    Force all line endings to Unix-style.
+ *    Replace straight quotes, apos, and quot with smart quotes
+ *    Convert '<' and '&' to html entities without destroying existing entities
+ *    Convert '--' to mdash
  */
+  function sanitize($str)
+  {
+    $returnVal = trim($str);
+    //  Convert \r\n to \n, then \r to \n
+    $returnVal = str_replace("\r\n", "\n", $returnVal);
+    $returnVal = str_replace("\r", "\n", $returnVal);
+    //  Convert exisiting html entities to characters
+    $returnVal = str_replace('&amp;', '&', $returnVal);
+    $returnVal = str_replace('--', '—', $returnVal);
+    $returnVal = preg_replace('/(^|\s)"/', '$1“', $returnVal);
+    $returnVal = str_replace('"', '”', $returnVal);
+    $returnVal = preg_replace("/(^\s)'/", "$1‘", $returnVal);
+    $returnVal = str_replace("'", "’", $returnVal);
+    $returnVal = htmlspecialchars($returnVal, ENT_NOQUOTES, 'UTF-8');
+    return $returnVal;
+  }
+
+//  Approved_Courses/index.php
+//  -------------------------------------------------------------------------------------
+/*    Generate a table to be displayed in a SharePoint web part.
+ *    Use query string parameters to configure the generated table:
+ *
+ *    Parameter Default
+ *    title     Queens College General Education Courses
+ *    cols      def     Comma and/or space-separated list of columns to display.
+ *                        default = course, title, designations
+ *                        title
+ *                        details = hours, credits, requisites
+ *                        full    = course, title, details
+ *    width     800     Width in pixels of the page. Set this to the width of the target
+ *                      web part.
+ *    desig     MNS     Comma and/or space-separated list of designations to include.
+ *                      Case insensitive.
+ *                      Groups can be specified as follows:
+ *                        RCC   = EC1, EC2, MQR, LPS
+ *                        FCC   = CE, IS, SW, USED, WCGI
+ *                        CO4   = RCC, FCC, LIT, LANG, SCI, SYN
+ *                        COPT  = LIT, LANG, SCI, CO4
+ *                        PATH  = RCC, FCC, COPT
+ *                        MNS   = LPS, SW, SCI
+ *                        AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
+ *                        CTXT  = US, ET, WC                (Context of Experience)
+ *                        PLAS  = AOK, CTXT, PI
+ * 
+ *  Examples. All the following are equivalent:
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses?width=800&desig=MNS
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,sci,sw
+ * 
+ *    Notes:  1. You can put spaces in the query string, but they must be "URL-encoded"
+ *            as %20:
+ * 
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw
+ * 
+ *            2. An alternate URL encoding for spaces is +, which means NS+L must be 
+ *            URL-encoded as NS%2BL:
+ * 
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw,ns%2bl
+ *    (Adds NS+L to the previous examples.)
+ * 
+ */
+ 
+  //  Process the query string
+  //  ------------------------------------------------------------------------------------
+  $page_title   = 'Queens College General Education Courses';
+  $table_width  = '800px';
+  $show_course  = true;
+  $show_title   = true;
+  $show_details = false;
+  $designations = array('lps', 'sw', 'sci');
+
+  if (isset($_GET['title']))
+  {
+    $page_title = $_GET['title'];
+  }  
+  if (isset($_GET['cols']))
+  {
+  }
+  if (isset($_GET['width']))
+  {
+    $width = $_GET['width'] . 'px';
+  }
+  if (isset($_GET['desig']))
+  {
+    
+  }
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -38,24 +131,16 @@ require_once('init_session.php');
 <html <?php echo $html_attributes;?>>
   <head>
     <title>Approved General Education Courses</title>
-    <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
-    <script type="text/javascript" src="../js/jquery.min.js"></script>
-    <script type="text/javascript" src="../js/site_ui.js"></script>
+    <link rel='stylesheet' href='../css/approved_courses.css' type='text/css'/>
     <style type='text/css'>
-      body {width: 1024px;}
-      table {
-        border: 1px solid black;
-        border-radius: 0.25em;
-        box-shadow: #999 0.25em 0.25em;
-      }
-      td {
-        padding:0.25em;
+      body {
+        width:<?php echo $width;?>;
         }
     </style>
   </head>
   <body>
 
-  <h1>Queens College General Education Courses</h1>
+  <h1><?php echo $page_title;?></h1>
   <p>Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);
   ?>.</p>
   <table>
