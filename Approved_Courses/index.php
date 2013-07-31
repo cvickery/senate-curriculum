@@ -8,11 +8,11 @@
  *    ------------+---------+------------------------------------------------------------
  *    title       |         | Abbreviations of the designations included.
  *                |         |
- *    cols        | none    | Comma and/or space-separated list of columns to display.
- *                |         | Course and Designations are always shown.
+ *    show        | title   | Show title, or title with details?
+ *                |         | Course is always shown. Designations are shown if multiple.
  *                |         | Options (case-insensitive):
- *                |         |   title
- *                |         |   details = title, hours, credits, requisites
+ *                |         |   title   - title only
+ *                |         |   details = title, hours, credits, and requisites
  *                |         |
  *    width       | 800     | Width in pixels of the page.
  *                |         | Set this to the width of the target web part.
@@ -143,14 +143,14 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
   //  ===================================================================================
 
   //  Default values
-  $page_title   = 'Queens College General Education Courses';
-  $page_width   = '800px';
-  $show_title   = false;
-  $show_details = false;
-  $designations = array('LPS', 'SW', 'SCI');
+  $page_title         = 'Queens College General Education Courses';
+  $page_width         = '800px';
+  $show_details       = false;
+  $show_designations  = true;
+  $designations       = array('LPS', 'SW', 'SCI');
 
   //  Make the option keys case-insensitive and canonical
-  /*  c = c*    Columns
+  /*  s = s*    Show (title or title and details)
    *  d = d*    Designation
    *  t = t*    Page title
    *  w = w*    Page width
@@ -161,8 +161,8 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     $k = strtolower($key[0]);
     switch ($k)
     {
-      case 'c':
-        $_GET['cols']         = $value;
+      case 's':
+        $_GET['show']         = $value;
         break;
       case 'd':
         $_GET['designations'] = $value;
@@ -182,22 +182,21 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
   {
     $page_title = sanitize($_GET['title']);
   }
-  if (isset($_GET['cols']))
+  if (isset($_GET['show']))
   {
-    //  Validate and process column display option
-    $col_option = sanitize(strtolower($_GET['c']));
-    switch (strtolower($col_option[0]))
+    //  Validate and process show option
+    //  This is more elaborate than expected because it was originally conceived that way!
+    $show_option = sanitize(strtolower($_GET['show']));
+    switch (strtolower($show_option[0]))
     {
       case 't':
-        $show_title   = true;
         $show_details = false;
         break;
       case 'd':
-        $show_title   = true;
         $show_details = true;
         break;
       default:
-        die("<h1>'$col_option' is not a valid columns option</h1>" .
+        die("<h1>'$show_option' is not a valid show option</h1>" .
             "<h2>Must be ‘title’, ‘details’, or omitted.</h2>");
     }
   }
@@ -211,7 +210,7 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     }
   }
   if (isset($_GET['designations']))
-{
+  {
      //  Extract array of lowercase strings from query string
     $desig_str = str_replace(',', ' ', $_GET['designations']);
     $desig_str = preg_replace('/\s+/', ' ', $desig_str);
@@ -222,6 +221,17 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     foreach ($desig_array as $desig) append_designations($desig);
   }
 
+  //  Designations column is displayed only if there are multiple designations selected
+  if (count($designations) > 1)
+  {
+    $show_designations = true;
+    $designation_heading = '<th>Designations</th>';
+  }
+  else
+  {
+    $show_designations = false;
+    $designation_heading = '';    
+  }
 
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
@@ -257,22 +267,28 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     </style>
   </head>
   <body>
+  <!--
+    <?php 
+      var_dump($designations);
+      echo "Show details: " . ($show_details ? 'yes' : 'no') . ". ";
+      echo "Page width: $page_width.";
+    ?>
+  -->
     <h1><?php echo $page_title;?></h1>
     <p>
       Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);?>.
     </p>
     <table>
       <tr>
-        <th>Course</th><th>Title</th>
-        <th>Hours</th><th>Credits</th><th>Prerequisites</th>
-        <th>CF Designation</th>
-        <th>CUNY/QC Core Designations</th>
-        <th>PLAS Designations</th>
+        <th>Course</th>
+        <th>Title</th>
+        <?php echo "$designation_heading"; ?>
       </tr>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
   //  for each one from cf_catalog. Then get all the designation mappings and their
-  //  reasons.
+  //  reasons.  TODO: display only the courses that include mappings to the requested
+  //  designation(s)
   $query = <<<EOD
 select * from approved_courses order by discipline, course_number
 EOD;
