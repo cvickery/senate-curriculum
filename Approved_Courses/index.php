@@ -1,15 +1,93 @@
 <?php
-//  /Approved_Courses/index.php
+//  Approved_Courses/index.php
+//  -------------------------------------------------------------------------------------
+/*    Generate a table to be displayed in a SharePoint web part.
+ *    Use query string parameters to configure the generated table:
+ *
+ *    Option      | Default | Notes
+ *    ------------+---------+------------------------------------------------------------
+ *    title       |         | Abbreviations of the designations included.
+ *                |         |
+ *    cols        | none    | Comma and/or space-separated list of columns to display.
+ *                |         | Course and Designations are always shown.
+ *                |         | Options (case-insensitive):
+ *                |         |   title
+ *                |         |   details = title, hours, credits, requisites
+ *                |         |
+ *    width       | 800     | Width in pixels of the page.
+ *                |         | Set this to the width of the target web part.
+ *                |         |
+ *    designation | MNS     | Comma and/or space-separated list of designations to
+ *                |         | include.
+ *                |         | Case insensitive.
+ *                |         | Groups can be specified as follows:
+ *                |         |   RCC   = EC1, EC2, MQR, LPS
+ *                |         |   FCC   = CE, IS, SW, USED, WCGI
+ *                |         |   CO4   = RCC, FCC, LIT, LANG, SCI, SYN
+ *                |         |   COPT  = LIT, LANG, SCI, CO4
+ *                |         |   PATH  = RCC, FCC, COPT
+ *                |         |   MNS   = LPS, SW, SCI
+ *                |         |   AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
+ *                |         |   CTXT  = US, ET, WC                (Context of Experience)
+ *                |         |   PLAS  = AOK, CTXT, PI
+ *
+ *  Options may be abbreviated to their unique prefixes. For example, title = t;
+ *  designation = d; details = det; default = def; full = f.
+ *
+ *  Examples. All the following are equivalent:
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses?width=800&desig=MNS
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,sci,sw
+ *
+ *    Notes:  1. You can put spaces in the query string, but they must be "URL-encoded"
+ *            as %20:
+ *
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw
+ *
+ *            2. An alternate URL encoding for spaces is +, which means NS+L must be
+ *            URL-encoded as NS%2BL:
+ *
+ *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw,ns%2bl
+ *    (Adds NS+L to the previous examples.)
+ *
+ */
+//  Setup and initialization
+//  --------------------------------------------------------------------------------------
+date_default_timezone_set('America/New_York');
 
 require_once('credentials.inc');
-//  db Setup
-//  --------------------------------------------------------------------------------------
 $cf_update_date = 'unknown';
 if (file_exists('../CF_Queries/qccv_cu_catalog.xls'))
 {
   $cf_update_date = filemtime('../CF_Queries/qccv_cu_catalog.xls');
 }
 $curric_db      = curric_connect() or die('Unable to access curriculum db');
+
+//  Global arrays for identifying designations
+//  -------------------------------------------------------------------------------------
+  //  Designation Sets
+  $designation_sets = array
+    (
+      //  Note recursive definitions here
+      'EC'    =>  array('EC1', 'EC2'),
+      'RCC'   =>  array('EC', 'MQR', 'LPS'),
+      'FCC'   =>  array('CE', 'IS', 'SW', 'USED', 'WCGI'),
+      'CO4'   =>  array('FCC', 'LIT', 'LANG', 'SCI', 'SYN'),
+      'COPT'  =>  array('LIT', 'LANG', 'SCI', 'CO4'),
+      'PATH'  =>  array('RCC', 'FCC', 'COPT'),
+      'MNS'   =>  array('LPS', 'SW', 'SCI'),
+      'AOK'   =>  array('AP', 'CV', 'NS', 'NS+L', 'RL', 'SS'),
+      'CTXT'  =>  array('US', 'ET', 'WC'),
+      'PLAS'  =>  array('AOK', 'CTXT', 'PI'),
+    );
+  //  Designation Atoms
+  $designation_atoms = array
+    (
+      'EC1', 'EC2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
+      'LIT', 'LANG', 'SCI', 'SYN',
+      'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
+      'ET', 'WC', 'PI'
+    );
 
 //  sanitize()
 //  ---------------------------------------------------------------------------
@@ -36,75 +114,115 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     return $returnVal;
   }
 
-//  Approved_Courses/index.php
+//  append_designations()
 //  -------------------------------------------------------------------------------------
-/*    Generate a table to be displayed in a SharePoint web part.
- *    Use query string parameters to configure the generated table:
- *
- *    Parameter Default
- *    title     Queens College General Education Courses
- *    cols      def     Comma and/or space-separated list of columns to display.
- *                        default = course, title, designations
- *                        title
- *                        details = hours, credits, requisites
- *                        full    = course, title, details
- *    width     800     Width in pixels of the page. Set this to the width of the target
- *                      web part.
- *    desig     MNS     Comma and/or space-separated list of designations to include.
- *                      Case insensitive.
- *                      Groups can be specified as follows:
- *                        RCC   = EC1, EC2, MQR, LPS
- *                        FCC   = CE, IS, SW, USED, WCGI
- *                        CO4   = RCC, FCC, LIT, LANG, SCI, SYN
- *                        COPT  = LIT, LANG, SCI, CO4
- *                        PATH  = RCC, FCC, COPT
- *                        MNS   = LPS, SW, SCI
- *                        AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
- *                        CTXT  = US, ET, WC                (Context of Experience)
- *                        PLAS  = AOK, CTXT, PI
- * 
- *  Examples. All the following are equivalent:
- *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses
- *    http://senate.qc.cuny.edu/Curriculum/Approved_Courses?width=800&desig=MNS
- *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,sci,sw
- * 
- *    Notes:  1. You can put spaces in the query string, but they must be "URL-encoded"
- *            as %20:
- * 
- *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw
- * 
- *            2. An alternate URL encoding for spaces is +, which means NS+L must be 
- *            URL-encoded as NS%2BL:
- * 
- *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw,ns%2bl
- *    (Adds NS+L to the previous examples.)
- * 
+/*  Append all designations implied by a designation name to the global array,
+ *  $designations
  */
- 
-  //  Process the query string
-  //  ------------------------------------------------------------------------------------
-  $page_title   = 'Queens College General Education Courses';
-  $table_width  = '800px';
-  $show_course  = true;
-  $show_title   = true;
-  $show_details = false;
-  $designations = array('lps', 'sw', 'sci');
+  function append_designations($desig)
+  {
+    global $designation_atoms, $designation_sets, $designations;
+    if (in_array($desig, $designation_atoms))
+    {
+      if (! in_array($desig, $designations)) $designations[] = $desig;
+      return;
+    }
+    else
+    {
+      if (isset($designation_sets[$desig]))
+      {
+        $this_set = $designation_sets[$desig];
+        foreach($this_set as $element) append_designations($element);
+        return;
+      }
+      else die("<h1>append_designations: $desig is not a valid designation</h1>");
+    }
+}
 
+  //  Process the query string
+  //  ===================================================================================
+
+  //  Default values
+  $page_title   = 'Queens College General Education Courses';
+  $page_width   = '800px';
+  $show_title   = false;
+  $show_details = false;
+  $designations = array('LPS', 'SW', 'SCI');
+
+  //  Make the option keys case-insensitive and canonical
+  /*  c = c*    Columns
+   *  d = d*    Designation
+   *  t = t*    Page title
+   *  w = w*    Page width
+   */
+  foreach ($_GET as $key => $value)
+  {
+    unset($_GET[$key]);
+    $k = strtolower($key[0]);
+    switch ($k)
+    {
+      case 'c':
+        $_GET['cols']         = $value;
+        break;
+      case 'd':
+        $_GET['designations'] = $value;
+        break;
+      case 't':
+        $_GET['title']        = $value;
+        break;
+      case 'w':
+        $_GET['width']        = $value;
+        break;
+      default:
+        die("<h1>Unrecognized option: $key</h1>");
+    }
+  }
+  //  Process options
   if (isset($_GET['title']))
   {
-    $page_title = $_GET['title'];
-  }  
+    $page_title = sanitize($_GET['title']);
+  }
   if (isset($_GET['cols']))
   {
+    //  Validate and process column display option
+    $col_option = sanitize(strtolower($_GET['c']));
+    switch (strtolower($col_option[0]))
+    {
+      case 't':
+        $show_title   = true;
+        $show_details = false;
+        break;
+      case 'd':
+        $show_title   = true;
+        $show_details = true;
+        break;
+      default:
+        die("<h1>'$col_option' is not a valid columns option</h1>" .
+            "<h2>Must be ‘title’, ‘details’, or omitted.</h2>");
+    }
   }
   if (isset($_GET['width']))
   {
-    $width = $_GET['width'] . 'px';
+    $w = sanitize($_GET['width']);
+    if (is_numeric($w)) $width = $w . 'px';
+    else
+    {
+      exit("<h1>‘$w’ is not a valid page width</h1>");
+    }
   }
-  if (isset($_GET['desig']))
-  {
-    
+  if (isset($_GET['designations']))
+{
+     //  Extract array of lowercase strings from query string
+    $desig_str = str_replace(',', ' ', $_GET['designations']);
+    $desig_str = preg_replace('/\s+/', ' ', $desig_str);
+    $desig_array = explode(' ', strtoupper($desig_str));
+
+    //  Generate the set of designations to be displayed
+    $designations = array();
+    foreach ($desig_array as $desig) append_designations($desig);
   }
+
+
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -139,18 +257,18 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     </style>
   </head>
   <body>
-
-  <h1><?php echo $page_title;?></h1>
-  <p>Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);
-  ?>.</p>
-  <table>
-    <tr>
-      <th>Course</th><th>Title</th>
-      <th>Hours</th><th>Credits</th><th>Prerequisites</th>
-      <th>CF Designation</th>
-      <th>CUNY/QC Core Designations</th>
-      <th>PLAS Designations</th>
-    </tr>
+    <h1><?php echo $page_title;?></h1>
+    <p>
+      Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);?>.
+    </p>
+    <table>
+      <tr>
+        <th>Course</th><th>Title</th>
+        <th>Hours</th><th>Credits</th><th>Prerequisites</th>
+        <th>CF Designation</th>
+        <th>CUNY/QC Core Designations</th>
+        <th>PLAS Designations</th>
+      </tr>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
   //  for each one from cf_catalog. Then get all the designation mappings and their
@@ -293,6 +411,7 @@ EOD;
 EOD;
   }
 ?>
-  </table>
+    </table>
   </body>
 </html>
+
