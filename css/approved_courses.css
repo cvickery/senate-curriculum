@@ -30,3 +30,6 @@ th,td {
 td {
   padding:0.25em;
   }
+.error {
+  color:#f99;
+}

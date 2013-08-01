@@ -56,14 +56,31 @@
 //  --------------------------------------------------------------------------------------
 date_default_timezone_set('America/New_York');
 
-require_once('credentials.inc');
-$cf_update_date = 'unknown';
-if (file_exists('../CF_Queries/qccv_cu_catalog.xls'))
-{
-  $cf_update_date = filemtime('../CF_Queries/qccv_cu_catalog.xls');
-}
-$curric_db      = curric_connect() or die('Unable to access curriculum db');
+require_once('../include/titleCase.inc');
 
+require_once('credentials.inc');
+$curric_db                    = curric_connect() or die('Unable to access curriculum db');
+$cf_catalog_update_date       = 'Unknown';
+$approved_courses_update_date = 'Unknown';
+
+$query = 'select * from update_log';
+$result = pg_query($curric_db, $query) or die('update_log query failed');
+while ($row = pg_fetch_assoc($result))
+{
+  $this_date = new DateTime($row['updated_date']);
+  $date_str = $this_date->format('F j, Y');
+  switch ($row['table_name'])
+  {
+    case 'cf_catalog':
+      $cf_catalog_update_date = $date_str;
+      break;
+    case 'approved_courses':
+      $approved_courses_update_date = $date_str;
+      break;
+    default:
+      ; //  ignore other tables that might be there
+  }
+}
 //  Global arrays for identifying designations
 //  -------------------------------------------------------------------------------------
   //  Designation Sets
@@ -242,6 +259,8 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     $designation_heading = '';
   }
 
+  $catalog_heading = ($show_details ? 'Catalog Description' : 'Course Title') . ' (with variants).';
+
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -276,24 +295,22 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     </style>
   </head>
   <body>
-  <!--
-    <?php
-      var_dump($designations);
-      echo "Show details: " . ($show_details ? 'yes' : 'no') . ". ";
-      echo "Page width: $page_width.";
-    ?>
-  -->
-    <h1><?php echo $page_title;?></h1>
+<?php
+  echo <<<EOD
+    <h1>$page_title</h1>
     <p>
-      Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);?>.
+      Approval data last updated $approved_courses_update_date.
+      <br/>
+      CUNYfirst catalog data last updated $cf_catalog_update_date.
     </p>
     <table>
       <tr>
         <th>Course</th>
-        <th>Title</th>
-        <?php echo "$designation_heading $other_heading"; ?>
+        <th>$catalog_heading</th>
+        $designation_heading $other_heading
       </tr>
-<?php
+EOD;
+
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
   //  for each one from cf_catalog. Then get all the designation mappings and their
   //  reasons.  Display only those courses that have at least one of the requested
@@ -308,12 +325,14 @@ EOD;
     $discipline     = $row['discipline'];
     $course_number  = $row['course_number'];
     $suffixes       = $row['suffixes'];
-    $titles         = array(sanitize($row['course_title']));
+    $titles         = array
+                      (
+                        str_replace('Ii', 'II', titleCase(sanitize(strtolower(($row['course_title'])))))
+                      );
     $hours          = $row['hours'];
     $credits        = $row['credits'];
     $prereqs        = '';
     $cf_designation = '';
-    $designations   = array();
     $cf_query = <<<EOD
 select * from cf_catalog
 where discipline = '$discipline'
@@ -343,8 +362,13 @@ EOD;
           else $w_ness = 'Sometimes';
           break;
       }
-
-      $titles[] = $cf_row['course_title'];
+      //  Hack the title as best we can
+      $this_title = str_replace('Ii', 'II', titleCase(sanitize(strtolower($cf_row['course_title']))));
+      if ('.' === substr($this_title, -1)) $this_title = substr($this_title, 0, -1);
+      if (! in_array($this_title, $titles))
+      {
+        $titles[] = $this_title;
+      }
       if ($hours != $row['hours'])
       {
         $hours .= "<div class='error'>{$row['hours']}</div>";
@@ -386,14 +410,14 @@ EOD;
     }
     else if ($w_ness === 'Undefined')
     {
-      $titles[] = "<span class='error'>Course not active in CUNYfirst</span>";
+      $titles[] = "<span class='error'><strong>Note: </strong>Course not active in CUNYfirst</span>";
     }
-    $title = $titles[0];
+    $title = "$titles[0].";
     for ($i = 1; $i < count($titles); $i++)
     {
       if ($titles[$i] !== $titles[0])
       {
-        $title .= "<div class='error'>{$titles[$i]}</div>";
+        $title .= "<div>$titles[$i].</div>";
       }
     }
     $d_query = <<<EOD
@@ -412,7 +436,7 @@ EOD;
     $other_designations = '';
     while ($d_row = pg_fetch_assoc($d_result))
     {
-      $this_designation = $_row['designation'];
+      $this_designation = $d_row['designation'];
       if (in_array($this_designation, $designations))
       {
         $requested_designations .= "$this_designation ";
@@ -427,7 +451,7 @@ EOD;
       $course_info = $title;
       if ($show_details)
       {
-        $course_info .= " {$hours}hr; {$credits}cr; " . strtolower($prereqs);
+        $course_info .= " {$hours}hr; {$credits}cr; $prereqs";
       }
       $others = '';
       if ($show_all)
@@ -439,7 +463,7 @@ EOD;
     <td>$discipline $course_numbers</td>
     <td>$course_info</td>
     <td>$requested_designations</td>
-    <td>$others</td>
+    $others
   </tr>
 
 EOD;
