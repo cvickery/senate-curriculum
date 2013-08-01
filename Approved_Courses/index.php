@@ -56,7 +56,7 @@
 //  --------------------------------------------------------------------------------------
 date_default_timezone_set('America/New_York');
 
-require_once('../include/titleCase.inc');
+require_once('../include/titlecase.inc');
 
 require_once('credentials.inc');
 $curric_db                    = curric_connect() or die('Unable to access curriculum db');
