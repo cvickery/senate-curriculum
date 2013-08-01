@@ -406,36 +406,44 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
-    $core_designations = '';
-    $plas_designations = '';
-    //  TODO: you are here: filter out unwanted courses; format catalog and designation
-    //  strings
+    //  Build lists of requested and other designations. If requested list
+    //  ends up empty, skip the course.
+    $requested_designations = '';
+    $other_designations = '';
     while ($d_row = pg_fetch_assoc($d_result))
     {
-      $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
-      if ($d_row['reason'] === 'PLAS')
+      $this_designation = $_row['designation'];
+      if (in_array($this_designation, $designations))
       {
-        $plas_designations .= "{$d_row['designation']} ";
+        $requested_designations .= "$this_designation ";
       }
       else
       {
-        $core_designations .= (($core_designations === '') ? '' : '<br/>') .
-          "{$d_row['designation']}{$is_primary} ({$d_row['reason']}) ";
+        $other_designations .= "$this_designation ";
       }
     }
-    echo <<<EOD
+    if ($requested_designations !== '')
+    {
+      $course_info = $title;
+      if ($show_details)
+      {
+        $course_info .= " {$hours}hr; {$credits}cr; " . strtolower($prereqs);
+      }
+      $others = '';
+      if ($show_all)
+      {
+        $others = "<td>$other_designations</td>";
+      }
+      echo <<<EOD
   <tr>
     <td>$discipline $course_numbers</td>
-    <td>$title</td>
-    <td>$hours</td>
-    <td>$credits</td>
-    <td>$prereqs</td>
-    <td>$cf_designation</td>
-    <td>$core_designations</td>
-    <td>$plas_designations</td>
+    <td>$course_info</td>
+    <td>$requested_designations</td>
+    <td>$others</td>
   </tr>
 
 EOD;
+    }
   }
 ?>
     </table>
