@@ -12,7 +12,8 @@
  *                |         | Course is always shown. Designations are shown if multiple.
  *                |         | Options (case-insensitive):
  *                |         |   title   - title only
- *                |         |   details = title, hours, credits, and requisites
+ *                |         |   details - title, hours, credits, and requisites
+ *                |         |   all     - details plus all designations for a course
  *                |         |
  *    width       | 800     | Width in pixels of the page.
  *                |         | Set this to the width of the target web part.
@@ -146,7 +147,7 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
   $page_title         = 'Queens College General Education Courses';
   $page_width         = '800px';
   $show_details       = false;
-  $show_designations  = true;
+  $show_all           = false;
   $designations       = array('LPS', 'SW', 'SCI');
 
   //  Make the option keys case-insensitive and canonical
@@ -187,13 +188,21 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
     //  Validate and process show option
     //  This is more elaborate than expected because it was originally conceived that way!
     $show_option = sanitize(strtolower($_GET['show']));
+    $other_heading = '';
     switch (strtolower($show_option[0]))
     {
       case 't':
         $show_details = false;
+        $show_all     = false;
         break;
       case 'd':
         $show_details = true;
+        $show_all     = false;
+        break;
+      case 'a':
+        $show_details = true;
+        $show_all     = true;
+        $other_heading = '<th>Other Designation(s)</th>';
         break;
       default:
         die("<h1>'$show_option' is not a valid show option</h1>" .
@@ -225,12 +234,12 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
   if (count($designations) > 1)
   {
     $show_designations = true;
-    $designation_heading = '<th>Designations</th>';
+    $designation_heading = '<th>Designation(s)</th>';
   }
   else
   {
     $show_designations = false;
-    $designation_heading = '';    
+    $designation_heading = '';
   }
 
   //  Generate the web page
@@ -268,7 +277,7 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
   </head>
   <body>
   <!--
-    <?php 
+    <?php
       var_dump($designations);
       echo "Show details: " . ($show_details ? 'yes' : 'no') . ". ";
       echo "Page width: $page_width.";
@@ -282,13 +291,13 @@ $curric_db      = curric_connect() or die('Unable to access curriculum db');
       <tr>
         <th>Course</th>
         <th>Title</th>
-        <?php echo "$designation_heading"; ?>
+        <?php echo "$designation_heading $other_heading"; ?>
       </tr>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
   //  for each one from cf_catalog. Then get all the designation mappings and their
-  //  reasons.  TODO: display only the courses that include mappings to the requested
-  //  designation(s)
+  //  reasons.  Display only those courses that have at least one of the requested
+  //  designations in its mapping set.
   $query = <<<EOD
 select * from approved_courses order by discipline, course_number
 EOD;
@@ -399,6 +408,8 @@ EOD;
           " line " . __LINE__ . "</h1></body></html>\n");
     $core_designations = '';
     $plas_designations = '';
+    //  TODO: you are here: filter out unwanted courses; format catalog and designation
+    //  strings
     while ($d_row = pg_fetch_assoc($d_result))
     {
       $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
