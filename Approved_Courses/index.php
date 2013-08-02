@@ -155,13 +155,43 @@ while ($row = pg_fetch_assoc($result))
       }
       else die("<h1>append_designations: $desig is not a valid designation</h1>");
     }
-}
+  }
+
+//  or_list()
+//  ----------------------------------------------------------------------
+/*  Returns a comma-separated list of array elements, with the last item
+ *  preceded by "or."
+ */
+ function or_list($elements)
+ {
+   $n = count($elements);
+   switch ($n)
+   {
+     case 0:
+         return "";
+         break;
+     case 1:
+         return $elements[0];
+         break;
+     case 2:
+         return $elements[0] . " or " . $elements[1];
+         break;
+     default:
+         $str = $elements[0];
+         for ($i = 1; $i < $n - 1; $i++)
+         {
+           $str .= ", " . $elements[$i];
+         }
+         return $str . ", or " . $elements[$n -1];
+   }
+ }
+
 
   //  Process the query string
   //  ===================================================================================
 
   //  Default values
-  $page_title         = 'Queens College General Education Courses';
+  $page_title         = '';
   $page_width         = '800px';
   $show_details       = false;
   $show_all           = false;
@@ -226,6 +256,7 @@ while ($row = pg_fetch_assoc($result))
             "<h2>Must be ‘title’, ‘details’, or omitted.</h2>");
     }
   }
+
   if (isset($_GET['width']))
   {
     $w = sanitize($_GET['width']);
@@ -235,6 +266,8 @@ while ($row = pg_fetch_assoc($result))
       exit("<h1>‘$w’ is not a valid page width</h1>");
     }
   }
+
+  $desig_array = array(); //  Default if not in _GET
   if (isset($_GET['designations']))
   {
      //  Extract array of lowercase strings from query string
@@ -245,6 +278,21 @@ while ($row = pg_fetch_assoc($result))
     //  Generate the set of designations to be displayed
     $designations = array();
     foreach ($desig_array as $desig) append_designations($desig);
+  }
+
+  //  If page_title is not set, generate one based on the designations requested.
+  //  ---------------------------------------------------------------------------
+  if ($page_title === '')
+  {
+    $page_title = 'Courses that can satisfy ';
+    if (isset($_GET['designations']))
+    {
+      $page_title .= or_list($desig_array);
+    }
+    else
+    {
+      $page_title .= or_list($designations);
+    }
   }
 
   //  Designations column is displayed only if there are multiple designations selected
@@ -259,7 +307,8 @@ while ($row = pg_fetch_assoc($result))
     $designation_heading = '';
   }
 
-  $catalog_heading = ($show_details ? 'Catalog Description' : 'Course Title') . ' (with variants).';
+  $catalog_heading = ($show_details ?
+                        'Catalog Description' : 'Course Title') . ' (with variants).';
 
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
@@ -327,7 +376,10 @@ EOD;
     $suffixes       = $row['suffixes'];
     $titles         = array
                       (
-                        str_replace('Ii', 'II', titleCase(sanitize(strtolower(($row['course_title'])))))
+                        str_replace('Ii', 'II',
+                          titleCase(
+                            sanitize(
+                              strtolower(($row['course_title'])))))
                       );
     $hours          = $row['hours'];
     $credits        = $row['credits'];
@@ -363,7 +415,10 @@ EOD;
           break;
       }
       //  Hack the title as best we can
-      $this_title = str_replace('Ii', 'II', titleCase(sanitize(strtolower($cf_row['course_title']))));
+      $this_title = str_replace('Ii', 'II',
+          titleCase(
+            sanitize(
+              strtolower($cf_row['course_title']))));
       if ('.' === substr($this_title, -1)) $this_title = substr($this_title, 0, -1);
       if (! in_array($this_title, $titles))
       {
