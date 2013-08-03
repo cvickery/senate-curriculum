@@ -253,7 +253,7 @@ while ($row = pg_fetch_assoc($result))
         break;
       default:
         die("<h1>'$show_option' is not a valid show option</h1>" .
-            "<h2>Must be ‘title’, ‘details’, or omitted.</h2>");
+            "<h2>Must be ‘title’, ‘details’, 'all', or omitted.</h2>");
     }
   }
 
@@ -465,7 +465,11 @@ EOD;
     }
     else if ($w_ness === 'Undefined')
     {
-      $titles[] = "<span class='error'><strong>Note: </strong>Course not active in CUNYfirst</span>";
+      $titles[] = <<<EOD
+      <span class='error'>
+        <strong>Note: </strong>Course not active in CUNYfirst
+      </span>
+EOD;
     }
     $title = "$titles[0].";
     for ($i = 1; $i < count($titles); $i++)
@@ -513,11 +517,19 @@ EOD;
       {
         $others = "<td>$other_designations</td>";
       }
+      if ($show_designations)
+      {
+        $requested_designations = "<td>$requested_designations</td>";
+      }
+      else
+      {
+        $requested_designations = '';
+      }
       echo <<<EOD
   <tr>
     <td>$discipline $course_numbers</td>
     <td>$course_info</td>
-    <td>$requested_designations</td>
+    $requested_designations
     $others
   </tr>
 
