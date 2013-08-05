@@ -1,7 +1,7 @@
 <?php
 //  Approved_Courses/index.php
 //  -------------------------------------------------------------------------------------
-/*    Generate a table to be displayed in a SharePoint web part.
+/*    Generate a table designed to be displayed in a SharePoint "Page Viewer" web part.
  *    Use query string parameters to configure the generated table:
  *
  *    Option      | Default | Notes
@@ -13,7 +13,8 @@
  *                |         | Options (case-insensitive):
  *                |         |   title   - title only
  *                |         |   details - title, hours, credits, and requisites
- *                |         |   all     - details plus all designations for a course
+ *                |         |   other   - other designations besides the one(s) requested
+ *                |         |   all     - title, details, and other
  *                |         |
  *    width       | 800     | Width in pixels of the page.
  *                |         | Set this to the width of the target web part.
@@ -194,7 +195,7 @@ while ($row = pg_fetch_assoc($result))
   $page_title         = '';
   $page_width         = '800px';
   $show_details       = false;
-  $show_all           = false;
+  $show_other         = false;
   $designations       = array('LPS', 'SW', 'SCI');
 
   //  Make the option keys case-insensitive and canonical
@@ -240,20 +241,25 @@ while ($row = pg_fetch_assoc($result))
     {
       case 't':
         $show_details = false;
-        $show_all     = false;
+        $show_other   = false;
         break;
       case 'd':
         $show_details = true;
-        $show_all     = false;
+        $show_other   = false;
+        break;
+      case 'o':
+        $show_details = false;
+        $show_other   = true;
+        $other_heading = '<th>Other Designation(s)</th>';
         break;
       case 'a':
         $show_details = true;
-        $show_all     = true;
+        $show_other   = true;
         $other_heading = '<th>Other Designation(s)</th>';
         break;
       default:
         die("<h1>'$show_option' is not a valid show option</h1>" .
-            "<h2>Must be ‘title’, ‘details’, 'all', or omitted.</h2>");
+            "<h2>Must be ‘title’, ‘details’, 'other', or'all'.</h2>");
     }
   }
 
@@ -513,7 +519,7 @@ EOD;
         $course_info .= " {$hours}hr; {$credits}cr; $prereqs";
       }
       $others = '';
-      if ($show_all)
+      if ($show_other)
       {
         $others = "<td>$other_designations</td>";
       }
