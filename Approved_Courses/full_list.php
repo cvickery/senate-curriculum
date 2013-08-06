@@ -45,27 +45,49 @@ require_once('init_session.php');
     <style type='text/css'>
       body {width: 1024px;}
       table {
+        table-layout: fixed;
         border: 1px solid black;
         border-radius: 0.25em;
         box-shadow: #999 0.25em 0.25em;
       }
-      td {
+      th, td {
         padding:0.25em;
         }
+      th:nth-child(1), td:nth-child(1) { width: 100px; }
+      th:nth-child(2), td:nth-child(2) { width: 200px; }
+      th:nth-child(3), td:nth-child(3) { width:  30px; }
+      th:nth-child(4), td:nth-child(4) { width:  30px; }
+      th:nth-child(5), td:nth-child(5) { width: 120px; }
+      th:nth-child(6), td:nth-child(6) { width: 100px; }
+      th:nth-child(7)  {width: 400px; }
+      td:nth-child(7)  {width:  80px; }
+      td:nth-child(8)  {width:  80px; }
+      td:nth-child(9)  {width:  80px; }
+      td:nth-child(10) {width:  80px; }
+      td:nth-child(11) {width:  80px; }
+      thead, tbody {display:block;}
+      thead {width:980px;}
+      tbody {width:1000px;}
+      tbody {height:800px; overflow:scroll;}
     </style>
   </head>
   <body>
 
   <h1>Queens College General Education Courses</h1>
-  <p>Based on CUNYfirst catalog data as of <?php echo date('F j, Y', $cf_update_date);
-  ?>.</p>
+  <p>Based on CUNYfirst catalog data as of <?php $cf_update_date; ?>.</p>
   <table>
-    <tr>
-      <th>Course</th><th>Title</th>
-      <th>Hours</th><th>Credits</th><th>Prerequisites</th>
-      <th>CF Designation</th>
-      <th colspan='5'>QC Designation(s)</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Title</th>
+        <th>Hr</th>
+        <th>Cr</th>
+        <th>Requisites</th>
+        <th>CF Designation</th>
+        <th colspan='5'>QC Designation(s)</th>
+      </tr>
+    </thead>
+    <tbody>
 <?php
   //  Loop through all the approved_courses, getting proper catalog data and suffix list
   //  for each one from cf_catalog. Then get all the designation mappings and their
@@ -135,7 +157,7 @@ EOD;
         $course_numbers = "{$course_number}W";
         break;
       case 'Sometimes':
-        $course_numbers = "$course_number/{$course_number}W";
+        $course_numbers = "$course_number/­{$course_number}W";
         break;
       case 'Never':
       case 'Undefined':
@@ -153,7 +175,7 @@ EOD;
       }
       else
       {
-        $course_numbers .= "/{$course_number}H";
+        $course_numbers .= "/­{$course_number}H";
       }
     }
     else if ($w_ness === 'Undefined')
@@ -178,7 +200,7 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
-    $designations[0] = 'reserved for primary';
+    $designations[0] = 'No pri. desig.';
     while ($d_row = pg_fetch_assoc($d_result))
     {
       $is_primary = $d_row['is_primary'] === 't' ? '*' : '';
@@ -210,6 +232,7 @@ EOD;
 EOD;
   }
 ?>
-  </table>
+      </tbody>
+    </table>
   </body>
 </html>
