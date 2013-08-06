@@ -597,7 +597,7 @@ class Component
         }
         else
         {
-          $this->cf_info_date = date('F j, Y', $cf_update_date);
+          $this->cf_info_date = $cf_update_date;
         }
 
         //  Look up requirement designations approved by Academic Senate
