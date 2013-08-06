@@ -10,12 +10,12 @@
 
 //  db Setup
 //  --------------------------------------------------------------------------------------
-$cf_update_date = 'unknown';
-if (file_exists('../CF_Queries/qccv_cu_catalog.xls'))
-{
-  $cf_update_date = filemtime('../CF_Queries/qccv_cu_catalog.xls');
-}
 $curric_db      = curric_connect() or die('Unable to access curriculum db');
+$result = pg_query("select * from update_log where table_name = 'cf_catalog'")
+    or die("Unable to query update_log");
+$row = pg_fetch_assoc($result);
+$cf_update_date_raw = new DateTime($row['updated_date']);
+$cf_update_date = $cf_update_date_raw->format('F j, Y');
 
 //  The discp_dept_div table
 //  --------------------------------------------------------------------------------------
