@@ -45,8 +45,6 @@ $cf_update_date     = $cf_update_date_raw->format('F j, Y');
 //  Approved courses
 //  -------------------------------------------------------------------------------------
 /*    List all approved courses and their designations.
- *    To evolve: list selected categories; limit info displayed; provide editing (add,
- *    delete, change)
  */
   //  Generate the web page
   //  -----------------------------------------------------------------------------------
