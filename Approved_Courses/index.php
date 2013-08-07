@@ -81,6 +81,14 @@ while ($row = pg_fetch_assoc($result))
     default:
       ; //  ignore other tables that might be there
   }
+
+$disipline_names = array();
+$result = pg_query($curric_db, 'select * from discp_dept_div') or
+            die ('Unable to query discp_dept_div');
+while ($row = pg_fetch_assoc($result))
+{
+  $discipline_names[$row['discipline']] = $row['discipline_full_name'];
+}
 }
 //  Global arrays for identifying designations
 //  -------------------------------------------------------------------------------------
@@ -119,8 +127,8 @@ while ($row = pg_fetch_assoc($result))
       'AOK'   =>  'QC Perspectives (PLAS) Area of Knowledge',
       'CTXT'  =>  'QC Perspectives (PLAS) Context of Experience',
       'PLAS'  =>  'QC Perspectives',
-      'EC1'   =>  'QC First English Composition',
-      'EC2'   =>  'QC Second English Composition',
+      'EC-1'   =>  'QC First English Composition',
+      'EC-2'   =>  'QC Second English Composition',
       'MQR'   =>  'CUNY Pathways: Mathematics and Quantitative Reasoning',
       'LPS'   =>  'CUNY Pathways: Life and Physical Sciences',
       'CE'    =>  'CUNY Pathways: Creative Expression',
@@ -267,12 +275,13 @@ while ($row = pg_fetch_assoc($result))
   {
     $page_title = sanitize($_GET['title']);
   }
+
+  $other_heading = '';
   if (isset($_GET['show']))
   {
     //  Validate and process show option
     //  This is more elaborate than expected because it was originally conceived that way!
     $show_option = sanitize(strtolower($_GET['show']));
-    $other_heading = '';
     switch (strtolower($show_option[0]))
     {
       case 't':
@@ -302,7 +311,7 @@ while ($row = pg_fetch_assoc($result))
   if (isset($_GET['width']))
   {
     $w = sanitize($_GET['width']);
-    if (is_numeric($w)) $width = $w . 'px';
+    if (is_numeric($w)) $page_width = $w . 'px';
     else
     {
       exit("<h1>‘$w’ is not a valid page width</h1>");
@@ -381,19 +390,21 @@ while ($row = pg_fetch_assoc($result))
     <link rel='stylesheet' href='../css/approved_courses.css' type='text/css'/>
     <style type='text/css'>
       body {
-        width:<?php echo $width;?>;
+        width:<?php echo $page_width;?>;
         }
+      h1+p {text-align:center;}
     </style>
   </head>
   <body>
 <?php
   echo <<<EOD
     <h1>$page_title</h1>
-    <p>
+    <p>Hover over abbreviations for translations.</p>
+    <p><em>
       Approval data last updated $approved_courses_update_date.
       <br/>
       CUNYfirst catalog data last updated $cf_catalog_update_date.
-    </p>
+    </em></p>
     <table>
       <tr>
         <th>Course</th>
@@ -413,20 +424,21 @@ EOD;
       basename(__FILE__) . ' line ' . __LINE__ . "</h1></body></html>\n");
   while ($row = pg_fetch_assoc($result))
   {
-    $discipline     = $row['discipline'];
-    $course_number  = $row['course_number'];
-    $suffixes       = $row['suffixes'];
-    $titles         = array
-                      (
-                        str_replace('Ii', 'II',
-                          titleCase(
-                            sanitize(
-                              strtolower(($row['course_title'])))))
-                      );
-    $hours          = $row['hours'];
-    $credits        = $row['credits'];
-    $prereqs        = '';
-    $cf_designation = '';
+    $discipline       = $row['discipline'];
+    $discipline_name  = $discipline_names[$discipline];
+    $course_number    = $row['course_number'];
+    $suffixes         = $row['suffixes'];
+    $titles           = array
+                        (
+                          str_replace('Ii', 'II',
+                            titleCase(
+                              sanitize(
+                                strtolower(($row['course_title'])))))
+                        );
+    $hours            = $row['hours'];
+    $credits          = $row['credits'];
+    $prereqs          = '';
+    $cf_designation   = '';
     $cf_query = <<<EOD
 select * from cf_catalog
 where discipline = '$discipline'
@@ -518,7 +530,7 @@ EOD;
     {
       if ($titles[$i] !== $titles[0])
       {
-        $title .= "<div>$titles[$i].</div>";
+        $title .= "<div>{$titles[$i]}.</div>";
       }
     }
     $d_query = <<<EOD
@@ -538,13 +550,14 @@ EOD;
     while ($d_row = pg_fetch_assoc($d_result))
     {
       $this_designation = $d_row['designation'];
+      $this_title = $designation_titles[$this_designation];
       if (in_array($this_designation, $designations))
       {
-        $requested_designations .= "$this_designation ";
+        $requested_designations .= "<span title='$this_title'>$this_designation</span> ";
       }
       else
       {
-        $other_designations .= "$this_designation ";
+        $other_designations .= "<span title='$this_title'$this_designation</span> ";
       }
     }
     if ($requested_designations !== '')
@@ -569,7 +582,7 @@ EOD;
       }
       echo <<<EOD
   <tr>
-    <td>$discipline $course_numbers</td>
+    <td><span title='$discipline_name'>$discipline</span> $course_numbers</td>
     <td>$course_info</td>
     $requested_designations
     $others
