@@ -2,10 +2,45 @@
 //  /Approved_Courses/full_list.php
 /*  Master list of all courses with all their designations.
  */
-set_include_path(get_include_path()
-    . PATH_SEPARATOR . getcwd() . '/../scripts'
-    . PATH_SEPARATOR . getcwd() . '/../include');
-require_once('init_session.php');
+//set_include_path(get_include_path()
+//    . PATH_SEPARATOR . getcwd() . '/../scripts'
+//    . PATH_SEPARATOR . getcwd() . '/../include');
+//require_once('init_session.php');
+date_default_timezone_set('America/New_York');
+require_once('credentials.inc');
+$curric_db          = curric_connect() or die('Unable to access curriculum db');
+$result             = pg_query("select * from update_log where table_name = 'cf_catalog'")
+                        or die("Unable to query update_log");
+$row                = pg_fetch_assoc($result);
+$cf_update_date_raw = new DateTime($row['updated_date']);
+$cf_update_date     = $cf_update_date_raw->format('F j, Y');
+
+
+//  sanitize()
+//  ---------------------------------------------------------------------------
+/*  Prepare a user-supplied string for inserting/updating a db table.
+ *    Force all line endings to Unix-style.
+ *    Replace straight quotes, apos, and quot with smart quotes
+ *    Convert '<' and '&' to html entities without destroying existing entities
+ *    Convert '--' to mdash
+ */
+  function sanitize($str)
+  {
+    $returnVal = trim($str);
+    //  Convert \r\n to \n, then \r to \n
+    $returnVal = str_replace("\r\n", "\n", $returnVal);
+    $returnVal = str_replace("\r", "\n", $returnVal);
+    //  Convert exisiting html entities to characters
+    $returnVal = str_replace('&amp;', '&', $returnVal);
+    $returnVal = str_replace('--', '—', $returnVal);
+    $returnVal = preg_replace('/(^|\s)"/', '$1“', $returnVal);
+    $returnVal = str_replace('"', '”', $returnVal);
+    $returnVal = preg_replace("/(^\s)'/", "$1‘", $returnVal);
+    $returnVal = str_replace("'", "’", $returnVal);
+    $returnVal = htmlspecialchars($returnVal, ENT_NOQUOTES, 'UTF-8');
+    return $returnVal;
+  }
+
 
 //  Approved courses
 //  -------------------------------------------------------------------------------------
@@ -43,48 +78,45 @@ require_once('init_session.php');
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
     <style type='text/css'>
-      body {width: 1024px;}
+      body {width: 1200px;}
       table {
+width:1170px;
         table-layout: fixed;
         border: 1px solid black;
-        border-radius: 0.25em;
-        box-shadow: #999 0.25em 0.25em;
       }
       th, td {
-        padding:0.25em;
+        padding:8px;
         }
-      th:nth-child(1), td:nth-child(1) { width: 100px; }
-      th:nth-child(2), td:nth-child(2) { width: 200px; }
-      th:nth-child(3), td:nth-child(3) { width:  30px; }
-      th:nth-child(4), td:nth-child(4) { width:  30px; }
-      th:nth-child(5), td:nth-child(5) { width: 120px; }
-      th:nth-child(6), td:nth-child(6) { width: 100px; }
-      th:nth-child(7)  {width: 400px; }
-      td:nth-child(7)  {width:  80px; }
-      td:nth-child(8)  {width:  80px; }
-      td:nth-child(9)  {width:  80px; }
-      td:nth-child(10) {width:  80px; }
-      td:nth-child(11) {width:  80px; }
+      th:nth-child(1 ) div, td:nth-child(1 ) div { width: 100px; }
+      th:nth-child(2 ) div, td:nth-child(2 ) div { width: 200px; }
+      th:nth-child(3 ) div, td:nth-child(3 ) div { width:  30px; }
+      th:nth-child(4 ) div, td:nth-child(4 ) div { width:  30px; }
+      th:nth-child(5 ) div, td:nth-child(5 ) div { width: 120px; }
+      th:nth-child(6 ) div, td:nth-child(6 ) div { width: 100px; }
+      th:nth-child(7 ) div  {width: 468px; }
+      td:nth-child(7 ) div  {width:  80px; }
+      td:nth-child(8 ) div  {width:  80px; }
+      td:nth-child(9 ) div  {width:  80px; }
+      td:nth-child(10 ) div {width:  80px; }
+      td:nth-child(11 ) div {width:  80px; }
       thead, tbody {display:block;}
-      thead {width:980px;}
-      tbody {width:1000px;}
-      tbody {height:800px; overflow:scroll;}
+      tbody {height:800px; width:1184px; overflow:auto;}
     </style>
   </head>
   <body>
 
   <h1>Queens College General Education Courses</h1>
-  <p>Based on CUNYfirst catalog data as of <?php $cf_update_date; ?>.</p>
+  <p>Based on CUNYfirst catalog data as of <?php echo $cf_update_date; ?>.</p>
   <table>
     <thead>
       <tr>
-        <th>Course</th>
-        <th>Title</th>
-        <th>Hr</th>
-        <th>Cr</th>
-        <th>Requisites</th>
-        <th>CF Designation</th>
-        <th colspan='5'>QC Designation(s)</th>
+        <th><div>Course</div></th>
+        <th><div>Title</div></th>
+        <th><div>Hr</div></th>
+        <th><div>Cr</div></th>
+        <th><div>Requisites</div></th>
+        <th><div>CF Designation</div></th>
+        <th colspan='5'><div>QC Designation(s)</div></th>
       </tr>
     </thead>
     <tbody>
@@ -216,17 +248,17 @@ EOD;
     while (count($designations) < 5) $designations[] = '';
     echo <<<EOD
   <tr>
-    <td>$discipline $course_numbers</td>
-    <td>$title</td>
-    <td>$hours</td>
-    <td>$credits</td>
-    <td>$prereqs</td>
-    <td>$cf_designation</td>
-    <td>$designations[0]</td>
-    <td>$designations[1]</td>
-    <td>$designations[2]</td>
-    <td>$designations[3]</td>
-    <td>$designations[4]</td>
+    <td><div>$discipline $course_numbers</div></td>
+    <td><div>$title</div></td>
+    <td><div>$hours</div></td>
+    <td><div>$credits</div></td>
+    <td><div>$prereqs</div></td>
+    <td><div>$cf_designation</div></td>
+    <td><div>$designations[0]</div></td>
+    <td><div>$designations[1]</div></td>
+    <td><div>$designations[2]</div></td>
+    <td><div>$designations[3]</div></td>
+    <td><div>$designations[4]</div></td>
   </tr>
 
 EOD;
