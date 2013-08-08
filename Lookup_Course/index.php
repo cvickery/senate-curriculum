@@ -6,8 +6,22 @@ set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../include');
 require_once('init_session.php');
 
-//  Use enter_course widget to lookup a course
+//  Get form data, if any.
 //  -------------------------------------------------------------------------------------
+
+$discipline_value     = $discipline     = '';
+$course_number_value  = $course_number  = '';
+  if ( !empty($form_name) and $form_name === 'course-info')
+  {
+    $discipline     = sanitize($_POST['discipline']);
+    $course_number  = sanitize($_POST['course-number']);
+    $course_number  = preg_replace('/[a-z\.]/i', '', $course_number);
+    $course_number  = preg_replace('/^0*/', '', $course_number);
+
+    $discipline_value     = " value='$discipline'";
+    $course_number_value  = " value='$course_number'";
+  }
+
   $mime_type = "text/html";
   $html_attributes="lang=\"en\"";
   if ( array_key_exists("HTTP_ACCEPT", $_SERVER) &&
@@ -70,6 +84,10 @@ require_once('init_session.php');
         padding: 0.25em;
         text-align: center;
       }
+      .error {
+        background-color: red;
+        color: white;
+      }
     </style>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/enter_course.js"></script>
@@ -79,46 +97,44 @@ require_once('init_session.php');
 
   <h1>Course Information</h1>
   <p>
-    <?php 
+    <?php
       echo "Catalog Information last updated on $cf_update_date";
     ?>.
   </p>
   <form action='./index.php' method='post'>
-    <input  type='hidden'  
-            name='form-name' 
+    <input  type='hidden'
+            name='form-name'
             value='course-info' />
     <fieldset>
       <legend>Select Course</legend>
       <div class='instructions'>
-        Select the course discipline from the list. Enter a single course number without
+        Select the course discipline from the list, and enter a single course number without
         decimal points or leading zeros, and all variants (W and H), if any, will be shown.
       </div>
       <label for='discipline'>Discipline</label>
       <label for='course_number'>Course Number</label>
-      <input  type='text'    
-              name='discipline' 
+      <input  type='text'
+              name='discipline'
               id='discipline'
-              autocomplete='off' />
-      <input  type='text'    
-              name='course-number' 
+              autocomplete='off'
+              <?php echo $discipline_value; ?>/>
+      <input  type='text'
+              name='course-number'
               id='course_number'
-              autocomplete='off' />
+              autocomplete='off'
+              <?php echo $course_number_value; ?>/>
       <button type='submit'>Lookup</button>
     </fieldset>
   </form>
 
 <?php
   //  Show course(s) selected if form was submitted.
-  if ( !empty($form_name) and $form_name === 'course-info')
+  if ( $discipline !== '' )
   {
-    $discipline     = sanitize($_POST['discipline']);
-    $course_number  = sanitize($_POST['course-number']);
     $query = <<<EOD
-select * from cf_catalog 
+select * from cf_catalog
 where lower(discipline) = lower('$discipline')
-and (   course_number = '$course_number'
-    or  course_number = '${course_number}W'
-    or  course_number = '${course_number}H')
+and (course_number ~* '^{$course_number}[WH]?$')
 
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Curric query failed: "
@@ -202,3 +218,4 @@ EOD;
 ?>
   </body>
 </html>
+
