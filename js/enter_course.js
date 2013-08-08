@@ -141,7 +141,10 @@ $(function()
    */
   $('#discipline').focus(function()
   {
-    $('#discipline').val('').css('background-color', 'white');
+    if ($('#discipline').hasClass('error'))
+    {
+      $('#discipline').removeClass('error').val('');
+    }
     var input_offset = $('#discipline').offset();
     var input_height = $('#discipline').height();
     var where = { top: input_offset.top + input_height + 8, left: input_offset.left };
@@ -152,15 +155,14 @@ $(function()
 
   $('#discipline').blur(function()
   {
+    $('#prompt-list').hide();
     if (select_list.length)
     {
-      $('#discipline')
-        .val(select_list[select_index].code);
-      $('#prompt-list').hide();
+      $('#discipline').val(select_list[select_index].code);
     }
     else
     {
-      $('#discipline').css('background-color', 'red');
+      $('#discipline').addClass('error');
     }
   });
 
@@ -214,4 +216,6 @@ $(function()
         default:  break;
       }
     });
+    // Page-load focus on discipline; but it does weird things.
+    // $('#discipline').focus();
 });
