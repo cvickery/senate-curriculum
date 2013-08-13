@@ -149,19 +149,20 @@ EOD;
     {
       while ($row = pg_fetch_assoc($result))
       {
-        $course_id            = $row['course_id'];
-        $effective_date       = new DateTime($row['effective_date']);
-        $effective_date       = $effective_date->format('F d, Y');
-        $is_active            = ('A' === $row['status']) ? 'yes' : 'no';
-        $can_schedule         = ('Y' === $row['schedule']) ? 'yes' : 'no';
-        $course               = $row['discipline'] . '—' . $row['course_number'];
-        $division             = $row['division'];
-        $department           = $row['department'];
-        $level                = ('UGRD' === $row['career']) ? 'Undergrad' : 'Grad';
-        $component            = ' ' . trim(strtolower($row['component']));
-        $hours                = $row['hours'];
-        $credits              = $row['credits'];
-        $title                = trim($row['course_title']);
+        $course_id      = $row['course_id'];
+        $effective_date = new DateTime($row['effective_date']);
+        $effective_date = $effective_date->format('F d, Y');
+        $is_active      = ('A' === $row['status']) ? 'yes' : 'no';
+        $can_schedule   = ('Y' === $row['schedule']) ? 'yes' : 'no';
+        $course         = $row['discipline'] . '—' . $row['course_number'];
+        $division       = $row['division'];
+        $department     = $row['department'];
+        $level          = ('UGRD' === $row['career']) ? 'Undergrad' : 'Grad';
+        $component      = ' ' . trim(strtolower($row['component']));
+        $uc_component		= strtoupper($component);
+        $hours          = $row['hours'];
+        $credits        = $row['credits'];
+        $title          = trim($row['course_title']);
         if ( empty($title) )
         {
           $title = 'MISSING TITLE';
@@ -182,7 +183,7 @@ EOD;
           $prerequisites = "No prerequisites";
         }
         echo <<<EOD
-      <h2>$course: $title</h2>
+      <h2>$course: $title. $uc_component</h2>
       <div>
         <table>
           <tr>

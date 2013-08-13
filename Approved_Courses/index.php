@@ -557,7 +557,7 @@ EOD;
       }
       else
       {
-        $other_designations .= "<span title='$this_title'$this_designation</span> ";
+        $other_designations .= "<span title='$this_title'>$this_designation</span> ";
       }
     }
     if ($requested_designations !== '')
