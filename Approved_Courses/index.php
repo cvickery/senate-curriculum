@@ -81,6 +81,7 @@ while ($row = pg_fetch_assoc($result))
     default:
       ; //  ignore other tables that might be there
   }
+}
 
 $disipline_names = array();
 $result = pg_query($curric_db, 'select * from discp_dept_div') or
@@ -89,7 +90,7 @@ while ($row = pg_fetch_assoc($result))
 {
   $discipline_names[$row['discipline']] = $row['discipline_full_name'];
 }
-}
+
 //  Global arrays for identifying designations
 //  -------------------------------------------------------------------------------------
   //  Designation Sets
