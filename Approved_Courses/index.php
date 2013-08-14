@@ -522,8 +522,7 @@ EOD;
     {
       $titles[] = <<<EOD
       <span class='error'>
-        <strong>Note: </strong>Course not active in CUNYfirst
-      </span>
+        <strong>Note: </strong>Course not active in CUNYfirst</span>
 EOD;
     }
     $title = "$titles[0].";
