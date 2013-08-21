@@ -84,7 +84,7 @@ EOD;
       "'{$row->CLASS_STAT}',    " .
       "{$row->ENRL_CAP},        " .
       "{$row->ENRL_TOT},        " .
-      "$date_loaded             " .
+      "'$date_loaded'           " .
       ")");
     }
 
