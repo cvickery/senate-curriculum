@@ -21,7 +21,7 @@ SELECT a.strm,
        a.enrl_tot,
        a.wait_tot,
        b.ssr_component,
-       b.date_loaded
+       a.date_loaded
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b
 WHERE a.crse_id = b.crse_id
