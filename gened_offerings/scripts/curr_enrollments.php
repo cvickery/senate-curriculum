@@ -68,6 +68,8 @@ EOD;
       //  Convert the STRM and SESSION_CODE columns into a single,
       //  chronologically-correct numerical column in the form YYYYTTT.
       $term = new Term($row->STRM, $row->SESSION_CODE);
+      $date_loaded = new DateTime($row->DATE_LOADED);
+      $date_loaded = $date_loaded->format('Y-m-d');
       //  Insert the row.
       $db->exec("INSERT INTO offerings VALUES ("  .
       "'{$row->STRM}',          " .
@@ -82,7 +84,7 @@ EOD;
       "'{$row->CLASS_STAT}',    " .
       "{$row->ENRL_CAP},        " .
       "{$row->ENRL_TOT},        " .
-      "{$row->DATE_LOADED}      " .
+      "$date_loaded             " .
       ")");
     }
 
