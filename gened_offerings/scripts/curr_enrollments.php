@@ -20,7 +20,8 @@ SELECT a.strm,
        a.wait_cap,
        a.enrl_tot,
        a.wait_tot,
-       b.ssr_component
+       b.ssr_component,
+       b.date_loaded
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b
 WHERE a.crse_id = b.crse_id
@@ -58,7 +59,8 @@ EOD;
         "component      TEXT,   " .
         "status         TEXT,   " .
         "seats          NUMBER, " .
-        "enrollment     NUMBER  " .
+        "enrollment     NUMBER, " .
+        "date_loaded    DATE    " .
       ")");
     //  Populate the table
     foreach ($enrollment_info as $row)
@@ -68,18 +70,19 @@ EOD;
       $term = new Term($row->STRM, $row->SESSION_CODE);
       //  Insert the row.
       $db->exec("INSERT INTO offerings VALUES ("  .
-      "'{$row->STRM}', " .
-      "'{$row->SESSION_CODE}', " .
-      "$term->code, " .
-      "'{$term->name}', " .
-      "'{$term->abbr}', " .
-      "'{$row->SUBJECT}', " .
-      "'{$row->CATALOG_NBR}', " .
+      "'{$row->STRM}',          " .
+      "'{$row->SESSION_CODE}',  " .
+      "$term->code,             " .
+      "'{$term->name}',         " .
+      "'{$term->abbr}',         " .
+      "'{$row->SUBJECT}',       " .
+      "'{$row->CATALOG_NBR}',   " .
       "'{$row->CLASS_SECTION}', " .
       "'{$row->SSR_COMPONENT}', " .
-      "'{$row->CLASS_STAT}', " .
-      "{$row->ENRL_CAP}, " .
-      "{$row->ENRL_TOT} " .
+      "'{$row->CLASS_STAT}',    " .
+      "{$row->ENRL_CAP},        " .
+      "{$row->ENRL_TOT},        " .
+      "{$row->DATE_LOADED}      " .
       ")");
     }
 
