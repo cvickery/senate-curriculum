@@ -60,7 +60,7 @@ EOD;
         "status         TEXT,   " .
         "seats          NUMBER, " .
         "enrollment     NUMBER, " .
-        "date_loaded    DATE    " .
+        "date_loaded    TEXT    " .
       ")");
     //  Populate the table
     foreach ($enrollment_info as $row)
