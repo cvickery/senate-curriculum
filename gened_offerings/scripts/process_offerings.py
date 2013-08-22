@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 """
   Process the latest offerings table to give current # of sections/seats/enrollment
   for each approved gened course.
@@ -22,6 +22,7 @@ CREATE TABLE offerings (
 
 import argparse
 import os
+import re
 import sqlite3
 import psycopg2
 import collections
@@ -41,31 +42,64 @@ curric_curs = curric_db.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 print('Curriculum db: {}'.format(curric_name))
 
 # Find latest offerings db, and open it
-
-offering_dbs = sorted(os.listdir('../db/'))
-offering_file = '../db/' + offering_dbs[-1]
+offering_file = '1901-01-01'
+for file in os.listdir('../db/'):
+  if re.match("\d{4}", file):
+    if file > offering_file: offering_file = file
+if offering_file == '1901-01-01': exit("No offerings database found")
+offering_file = '../db/' + offering_file
 print('Offerings db: {}'.format(offering_file))
 offering_conn = sqlite3.connect(offering_file)
 offering_conn.row_factory = sqlite3.Row
 offering_curs = offering_conn.cursor()
+offering_curs.execute('select date_loaded from offerings group by date_loaded')
+date_loaded = ''
+for row in offering_curs:
+  if date_loaded != '':
+    print('Warning: replacing date_loaded({}) with{}.'.format(date_loaded, row['date_loaded']))
+  date_loaded = row['date_loaded']
+if date_loaded == '': exit("Unable to determine date_loaded")
+print("Offerings last updated on", date_loaded)
+curric_curs.execute("""
+    update update_log
+    set updated_date = '{}'
+    where table_name = 'enrollments'
+    """.format(date_loaded))
 offering_curs.execute('select term_code, term_name from offerings group by term,term_name')
 
 # Recreate the curric.terms table
-curric_curs.execute('drop table if exists terms')
+curric_curs.execute('drop table if exists enrollment_terms cascade')
 curric_curs.execute("""
-create table terms (
+create table enrollment_terms (
   term_code integer primary key,
   term_name text)
 """)
 for row in offering_curs:
-  curric_curs.execute("insert into terms values({}, '{}')".format(row['term_code'],
+  curric_curs.execute("insert into enrollment_terms values({}, '{}')".format(row['term_code'],
                                                                   row['term_name']))
 
 # Create curric.enrollments for courses of interest
 curric_curs.execute('drop table if exists enrollments')
-#curric_curs.execute("""
-#create table enrollments(
+curric_curs.execute("""
+create  table enrollments(
+        term_code     integer references enrollment_terms,
+        discipline    text    references cf_academic_organizations(abbr),
+        course_number integer not null,
+        suffixes      text    default '',
+        section       integer,
+        seats         integer,
+        enrollment    integer,
+        primary key   (term_code, discipline, course_number))
+""")
 
-
+# Create dictionary, indexed by term_code, discipline, course_number, of enrollment info
+offering_curs.execute('select * from offerings')
+for row in offering_curs:
+  term_code = row['term_code']
+  discipline = row['discipline']
+  print(row['course_number'], end=': ')
+  empty, course_number, suffix = re.split('(\d+)', row['course_number'])
+  print("{} '{}'".format(course_number, suffix))
+  course_key = (term_code, discipline, course_number)
 curric_curs.close()
 curric_db.commit()
