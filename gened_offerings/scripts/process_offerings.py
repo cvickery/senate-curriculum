@@ -26,6 +26,7 @@ import re
 import sqlite3
 import psycopg2
 import collections
+from collections import namedtuple
 from psycopg2.extras import NamedTupleConnection
 
 # Determine what curric db to use and connect to it
@@ -93,13 +94,17 @@ create  table enrollments(
 """)
 
 # Create dictionary, indexed by term_code, discipline, course_number, of enrollment info
+courses = {}
 offering_curs.execute('select * from offerings')
 for row in offering_curs:
   term_code = row['term_code']
   discipline = row['discipline']
-  print(row['course_number'], end=': ')
   empty, course_number, suffix = re.split('(\d+)', row['course_number'])
-  print("{} '{}'".format(course_number, suffix))
   course_key = (term_code, discipline, course_number)
+  if course_key not in courses:
+    courses[course_key] = namedtuple('Course', 'suffixes etc')
+    courses[course_key].suffixes = set()
+  courses[course_key].suffixes.add(suffix)
+
 curric_curs.close()
 curric_db.commit()
