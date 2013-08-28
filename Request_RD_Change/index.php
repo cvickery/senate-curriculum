@@ -27,98 +27,134 @@ $curric_db = curric_connect();
 <html <?php echo $html_attributes;?>>
   <head>
     <title>QC Curriculum</title>
-    <link rel="stylesheet" type="text/css" href="css/curriculum.css" />
-    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="request_rd_change.css" />
+    <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="request_rd_change.js"></script>
   </head>
   <body>
     <h1>Request Requirement Designation Change</h1>
-    <form>
-      <fieldset><legend>Instructions</legend>
-        <p>
-          If you have completed or are registered for a course that has two or more
-          general education requirement designations (RD’s), you can use this page
-          to request to have an alternate designation applied to your academic record
-          at Queens College.
-        </p>
-      </fieldset>
-      <fieldset>
-        <label for='email'>Queens College Email Address</label>
-        <input type='text' id='email'/>
-        <label for='course'>Select Course</label>
-        <?php
-          $query = <<<EOD
-select c.discipline, c.course_number, c.suffixes, d.is_primary, p.abbr
-from approved_courses c, course_designation_mappings d, proposal_types p
-where c.discipline = d.discipline
-and c.course_number = d.course_number
-and d.designation_id = p.id
-and d.reason != 'PLAS'
-order by c.discipline, c.course_number
+    <div>
+      <form>
+        <fieldset><legend><strong>Instructions</strong></legend>
+          <p>
+            If you have completed or are registered for a course that has two or more
+            general education requirement designations (RD’s), you can use this page
+            to request to have one of the alternate designation applied to your academic record
+            at Queens College.
+          </p>
+          <p>
+            To use this form, you must provide your QC email address. When you submit
+            your request, an email message will be sent to that email address, and you
+            must click a link in that email to submit your request to the registrar.
+          </p>
+          <p>
+            <strong>The only email address that will work is your Queens College email
+            address. You must respond to the email message sent to that address to complete
+            your request.</strong>
+          </p>
+        </fieldset>
+        <fieldset>
+          <p>
+            <label for='email'>Your Queens College Email Address</label><br/>
+            <input type='text' id='email'/>@qc.cuny.edu
+          </p>
+          <label for='course'>Select Your Course</label><br/>
+          <?php
+            $query = <<<EOD
+  select c.discipline, c.course_number, c.suffixes, d.is_primary, p.abbr
+  from approved_courses c, course_designation_mappings d, proposal_types p
+  where c.discipline = d.discipline
+  and c.course_number = d.course_number
+  and d.designation_id = p.id
+  and d.reason != 'PLAS'
+  order by c.discipline, c.course_number
 EOD;
-          $last_course          = '';
-          $last_course_str      = '';
-          $last_course_primary  = '';
-          $last_course_others   = array();
-          $strings              = array();
-          $primaries            = array();
-          $others               = array();
-          $result = pg_query($curric_db, $query) or
-                    die("<h1 class='error'>Course query failed</h1>");
-          while ($row = pg_fetch_assoc($result))
-          {
-            //  Agglomerate courses
-            $this_course  = $row['discipline'] . '-' . $row['course_number'];
-            $suffixes     = $row['suffixes'];
-            if ($last_course !== $this_course)
+            $last_course          = '';
+            $last_course_str      = '';
+            $last_course_primary  = '';
+            $last_course_others   = array();
+            $course_strings       = array();
+            $course_titles        = array();
+            $primaries            = array();
+            $others               = array();
+            $result = pg_query($curric_db, $query) or
+                      die("<h1 class='error'>Course query failed</h1>");
+            while ($row = pg_fetch_assoc($result))
             {
-              if ($last_course !== '')
+              //  Agglomerate courses
+              $this_course  = $row['discipline'] . '-' . $row['course_number'];
+              $course_titles[$this_course] = $row['course_title'];
+              $suffixes     = $row['suffixes'];
+              if ($last_course !== $this_course)
               {
-                $strings[$last_course]    = $last_course;
-                $primaries[$last_course]  = $last_course_primary;
-                $others[$last_course]     = $last_course_others;
-              }
-              $last_course              = $this_course;
-              $last_course_str          = $this_course;
-              $last_course_primary      = '';
-              $last_course_others       = array();
+                if ($last_course !== '')
+                {
+                  $course_strings[$last_course] = $last_course;
+                }
+                $last_course                    = $this_course;
+                $last_course_str                = $this_course;
+                $last_course_primary            = '';
+                $last_course_others             = array();
 
-              if (1 === strlen($suffixes))
+                if (1 === strlen($suffixes))
+                {
+                  $last_course_str .= ($suffixes === '-') ? '' : $suffixes;
+                }
+                else
+                {
+                  $last_course_str .= ($suffixes[0] === '-') ? '' : $suffixes[0];
+                  for ($i = 1; $i < strlen($suffixes); $i++)
+                  {
+                    $last_course_str .= "/$last_course" . (($suffixes[$i] === '-') ? '' : $suffixes[$i]);
+                  }
+                }
+              }
+              if ($row['is_primary'] === 't')
               {
-                $last_course_str .= ($suffixes === '-') ? '' : $suffixes;
+                $primaries[$last_course] = $row['abbr'];
               }
               else
               {
-                $last_course_str .= ($suffixes[0] === '-') ? '' : $suffixes[0];
-                for ($i = 1; $i < strlen($suffixes); $i++)
-                {
-                  $last_course_str .= "/$last_course" . (($suffixes[$i] === '-') ? '' : $suffixes[$i]);
-                }
+                $others[$last_course][] = $row['abbr'];
               }
             }
-            if ($row['is_primary'] === 't')
-            {
-              $primaries[$last_course] = $row['abbr'];
-            }
-            else
-            {
-              $others[$last_course] = $row['abbr'];
-            }
-          }
-          $strings[$last_course]    = $last_course_str;
-          $primaries[$last_course]  = $last_course_primary;
-          $others[$last_course]     = $last_course_others;
-echo count($strings) . ' ' . count($primaries) . ' ' . count($others) . "\n";
-        ?>
-
-        <select id='course' name='course'>
-          <?php
-            foreach ($others as $course => $string)
-            {
-              //echo "<option value='$course'>$string</option>\n";
-            }
+            $course_strings[$last_course] = $last_course_str;
           ?>
-        </select>
-      </fieldset>
-    </form>
+
+            <?php
+              $options = "<option value='none'>Select Course</option>\n";
+              $divs = '';
+              foreach ($others as $course => $list)
+              {
+                if (count($list) > 0)
+                {
+                  $options .= "<option value='$course'>{$course_strings[$course]}</option>\n";
+                  $primary = $primaries[$course];
+                  $alternates = '';
+                  foreach ($list as $designation)
+                  {
+                    $alternates .= <<<EOD
+    <p>
+      <input type='radio' name='new-designation' value='$designation'/>
+      Use $designation instead of $primary for $course.
+    </p>
+EOD;
+                  }
+                  $divs .= <<<EOD
+  <div id='{$course}-div' class='course-div' style='display:none;'>
+    $alternates
+  </div>
+
+EOD;
+                }
+              }
+            ?>
+          <select id='course' name='course'>
+            <?php echo "$options"; ?>
+          </select>
+          <?php echo $divs; ?>
+        </fieldset>
+      </form>
+    </div>
   </body>
 </html>
