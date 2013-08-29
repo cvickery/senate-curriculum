@@ -34,12 +34,38 @@ $curric_db = curric_connect();
   {
     die('<h1>Missing Information</h1>');
   }
-  $email .= '@qc.cuny.edu';
+  $email = strtolower($email . '@qc.cuny.edu');
+  $guid = uniqid($email);
+
+  //  Check if confirmation request has already been sent
+  $repeat_note = '';
+  $query = <<<EOD
+select * from change_rd_requests
+where lower(email) = '$email'
+and course = '$course'
+and new_rd = '$new_rd'
+
+EOD;
+  $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed</h1>");
+  if ( 0 < pg_num_rows($result))
+  {
+    $row = pg_fetch_assoc($result);
+    $guid = $row['guid'];
+    $when_submitted = new DateTime($row['when_submitted']);
+    $when_submitted = $when_submitted->format('F j, Y');
+    $repeat_note = <<<EOD
+<p>This is a repeat of an email that was sent to $email on $when_submitted.</p>
+
+EOD;
+//  TODO: need to check if registrar has already fized it or not; whether the person
+//  has confirmed it yet or not.
+  }
   $ack_para = <<<EOD
 <p>
   An email has been sent to $email asking you to confirm that you want to
   change the requirement designation for $course from $primary to $new_rd.
 </p>
+$repeat_note
 <p>
   You must click the link in that email message in order to verify that you
   actually own that email address and want to make this change to your academic
@@ -47,10 +73,29 @@ $curric_db = curric_connect();
   Queens College Registrar’s office (<em>adrienne.bricker@hunter.qc.cuny.edu</em>) to
   submit the actual change request.
 </p>
-<p><strong>Your request will not be processed until you respond to that email
-  message.
-</strong></p>
+<p>
+  <strong>
+    Your request will not be processed until you respond to that email message.
+  </strong>
+</p>
 EOD;
+
+  $query = <<<EOD
+insert into change_rd_requests values(
+  '$guid',    --  token
+  '$email',   --  email
+  '$course',  --  course
+  '$primary', --  primary_id
+  '$new_rd',  --  new_rd
+  now(),      --  submitted
+  null,       --  confirmed
+  '$host_ip'  --  submited_from
+)
+
+EOD;
+  $result = pg_query($curric_db, $query)
+            or die("<h1 class='error'>Query failed. Line " . __LINE__ . "</h1>");
+
 //  Generate the page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
