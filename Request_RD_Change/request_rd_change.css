@@ -1,4 +1,17 @@
 /* request_rd_change.css */
-form {
+html, body {
+  font-family: sans-serif;
+}
+body {
   width:50%;
+}
+input[type=text] {
+  width:260px;
+}
+select {
+  width:150px;
+}
+button {
+  display:block;
+  margin:1em auto;
 }
