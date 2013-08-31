@@ -23,7 +23,7 @@
  *                |         | include.
  *                |         | Case insensitive.
  *                |         | Groups can be specified as follows:
- *                |         |   RCC   = EC1, EC2, MQR, LPS
+ *                |         |   RCC   = EC-1, EC-2, MQR, LPS
  *                |         |   FCC   = CE, IS, SW, USED, WCGI
  *                |         |   CO4   = RCC, FCC, LIT, LANG, SCI, SYN
  *                |         |   COPT  = LIT, LANG, SCI, CO4
@@ -97,7 +97,7 @@ while ($row = pg_fetch_assoc($result))
   $designation_sets = array
     (
       //  Note recursive definitions here
-      'EC'    =>  array('EC1', 'EC2'),
+      'EC'    =>  array('EC-1', 'EC-2'),
       'RCC'   =>  array('EC', 'MQR', 'LPS'),
       'FCC'   =>  array('CE', 'IS', 'SW', 'USED', 'WCGI'),
       'CO4'   =>  array('FCC', 'LIT', 'LANG', 'SCI', 'SYN'),
@@ -111,7 +111,7 @@ while ($row = pg_fetch_assoc($result))
   //  Designation Atoms
   $designation_atoms = array
     (
-      'EC1', 'EC2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
+      'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
       'LIT', 'LANG', 'SCI', 'SYN',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
       'ET', 'WC', 'PI'
