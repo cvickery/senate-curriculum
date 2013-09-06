@@ -30,6 +30,10 @@ th,td {
 td {
   padding:0.25em;
   }
+#hover-msg {
+  text-align: center;
+  font-variant: small-caps;
+}
 .error {
   color:#f99;
 }

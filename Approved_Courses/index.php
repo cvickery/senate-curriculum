@@ -25,8 +25,8 @@
  *                |         | Groups can be specified as follows:
  *                |         |   RCC   = EC-1, EC-2, MQR, LPS
  *                |         |   FCC   = CE, IS, SW, USED, WCGI
- *                |         |   CO4   = RCC, FCC, LIT, LANG, SCI, SYN
- *                |         |   COPT  = LIT, LANG, SCI, CO4
+ *                |         |   COPT4 = LPS, FCC, LIT, LANG, SCI, SYN
+ *                |         |   COPT  = LIT, LANG, SCI, COPT4
  *                |         |   PATH  = RCC, FCC, COPT
  *                |         |   MNS   = LPS, SW, SCI
  *                |         |   AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
@@ -100,8 +100,8 @@ while ($row = pg_fetch_assoc($result))
       'EC'    =>  array('EC-1', 'EC-2'),
       'RCC'   =>  array('EC', 'MQR', 'LPS'),
       'FCC'   =>  array('CE', 'IS', 'SW', 'USED', 'WCGI'),
-      'CO4'   =>  array('FCC', 'LIT', 'LANG', 'SCI', 'SYN'),
-      'COPT'  =>  array('LIT', 'LANG', 'SCI', 'CO4'),
+      'COPT'  =>  array('LIT', 'LANG', 'SCI', 'COPT4'),
+      'COPT4' =>  array('LPS', 'FCC', 'LIT', 'LANG', 'SCI', 'SYN'),
       'PATH'  =>  array('RCC', 'FCC', 'COPT'),
       'MNS'   =>  array('LPS', 'SW', 'SCI'),
       'AOK'   =>  array('AP', 'CV', 'NS', 'NS+L', 'RL', 'SS'),
@@ -121,7 +121,7 @@ while ($row = pg_fetch_assoc($result))
       'EC'    =>  'CUNY Required Core: English Composition',
       'RCC'   =>  'CUNY Required Core',
       'FCC'   =>  'CUNY Flexible Core',
-      'CO4'   =>  'QC College Option: fourth group',
+      'COPT4' =>  'QC College Option: fourth group',
       'COPT'  =>  'QC College Option',
       'PATH'  =>  'CUNY Pathways, including QC College Option',
       'MNS'   =>  'Pathways courses offered by MNS Division',
@@ -352,11 +352,15 @@ while ($row = pg_fetch_assoc($result))
   {
     $show_designations = true;
     $designation_heading = '<th>Designation(s)</th>';
+    $hover_msg =
+    "<p id='hover-msg'>hover over discipline and designation abbreviations for translations</p>\n";
   }
   else
   {
     $show_designations = false;
     $designation_heading = '';
+    $hover_msg =
+    "<p id='hover-msg'>hover over discipline abbreviations for translations</p>\n";
   }
 
   $catalog_heading = ($show_details ?
@@ -393,14 +397,13 @@ while ($row = pg_fetch_assoc($result))
       body {
         width:<?php echo $page_width;?>;
         }
-      h1+p {text-align:center;}
     </style>
   </head>
   <body>
 <?php
   echo <<<EOD
     <h1>$page_title</h1>
-    <p>Hover over abbreviations for translations.</p>
+    $hover_msg
     <p><em>
       Approval data last updated $approved_courses_update_date.
       <br/>
