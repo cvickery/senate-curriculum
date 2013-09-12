@@ -128,8 +128,8 @@ while ($row = pg_fetch_assoc($result))
       'AOK'   =>  'QC Perspectives (PLAS) Area of Knowledge',
       'CTXT'  =>  'QC Perspectives (PLAS) Context of Experience',
       'PLAS'  =>  'QC Perspectives',
-      'EC-1'   =>  'QC First English Composition',
-      'EC-2'   =>  'QC Second English Composition',
+      'EC-1'  =>  'QC First English Composition',
+      'EC-2'  =>  'QC Second English Composition',
       'MQR'   =>  'CUNY Pathways: Mathematics and Quantitative Reasoning',
       'LPS'   =>  'CUNY Pathways: Life and Physical Sciences',
       'CE'    =>  'CUNY Pathways: Creative Expression',
@@ -259,6 +259,7 @@ while ($row = pg_fetch_assoc($result))
         $_GET['show']         = $value;
         break;
       case 'd':
+        $value = preg_replace("/ec([12])/i", "EC-$1", $value);
         $_GET['designations'] = $value;
         break;
       case 't':
