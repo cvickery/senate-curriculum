@@ -112,22 +112,22 @@ while ($row = pg_fetch_assoc($result))
   $designation_atoms = array
     (
       'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
-      'LIT', 'LANG', 'SCI', 'SYN',
+      'LIT', 'LANG', 'SCI', 'SYN', 'COPT4',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
       'ET', 'WC', 'PI'
     );
     $designation_titles = array
     (
-      'EC'    =>  'CUNY Required Core: English Composition',
+      'PATH'  =>  'CUNY Pathways, including QC College Option',
       'RCC'   =>  'CUNY Required Core',
       'FCC'   =>  'CUNY Flexible Core',
-      'COPT4' =>  'QC College Option: fourth group',
       'COPT'  =>  'QC College Option',
-      'PATH'  =>  'CUNY Pathways, including QC College Option',
+      'EC'    =>  'CUNY Required Core: English Composition',
       'MNS'   =>  'Pathways courses offered by MNS Division',
+      'COPT4' =>  'QC College Option: fourth group',
+      'PLAS'  =>  'QC Perspectives',
       'AOK'   =>  'QC Perspectives (PLAS) Area of Knowledge',
       'CTXT'  =>  'QC Perspectives (PLAS) Context of Experience',
-      'PLAS'  =>  'QC Perspectives',
       'EC-1'  =>  'QC First English Composition',
       'EC-2'  =>  'QC Second English Composition',
       'MQR'   =>  'CUNY Pathways: Mathematics and Quantitative Reasoning',
@@ -237,11 +237,11 @@ while ($row = pg_fetch_assoc($result))
   //  ===================================================================================
 
   //  Default values
-  $page_title         = '';
+  $page_title         = '2013 CUNY Core Approved Courses';
   $page_width         = '800px';
   $show_details       = false;
-  $show_other         = false;
-  $designations       = array('LPS', 'SW', 'SCI');
+  $show_other         = true;
+  $other_heading      = '<th>Other Designation(s)</th>';
 
   //  Make the option keys case-insensitive and canonical
   /*  s = s*    Show (title or title and details)
@@ -278,7 +278,6 @@ while ($row = pg_fetch_assoc($result))
     $page_title = sanitize($_GET['title']);
   }
 
-  $other_heading = '';
   if (isset($_GET['show']))
   {
     //  Validate and process show option
@@ -286,23 +285,23 @@ while ($row = pg_fetch_assoc($result))
     $show_option = sanitize(strtolower($_GET['show']));
     switch (strtolower($show_option[0]))
     {
-      case 't':
-        $show_details = false;
-        $show_other   = false;
+      case 't': //  Course title only
+        $show_details   = false;
+        $show_other     = false;
         break;
-      case 'd':
-        $show_details = true;
-        $show_other   = false;
+      case 'd': //  Course details
+        $show_details   = true;
+        $show_other     = false;
         break;
-      case 'o':
-        $show_details = false;
-        $show_other   = true;
-        $other_heading = '<th>Other Designation(s)</th>';
+      case 'o': //  Other designations
+        $show_details   = false;
+        $show_other     = true;
+        $other_heading  = '<th>Other Designation(s)</th>';
         break;
-      case 'a':
-        $show_details = true;
-        $show_other   = true;
-        $other_heading = '<th>Other Designation(s)</th>';
+      case 'a': //  Show all info
+        $show_details   = true;
+        $show_other     = true;
+        $other_heading  = '<th>Other Designation(s)</th>';
         break;
       default:
         die("<h1>'$show_option' is not a valid show option</h1>" .
@@ -320,33 +319,21 @@ while ($row = pg_fetch_assoc($result))
     }
   }
 
-  $desig_array = array(); //  Default if not in _GET
+  $desig_array  = array('PATH'); //  Default if not in _GET
   if (isset($_GET['designations']))
   {
      //  Extract array of lowercase strings from query string
     $desig_str = str_replace(',', ' ', $_GET['designations']);
     $desig_str = preg_replace('/\s+/', ' ', $desig_str);
     $desig_array = explode(' ', strtoupper($desig_str));
-
-    //  Generate the set of designations to be displayed
-    $designations = array();
-    foreach ($desig_array as $desig) append_designations($desig);
-  }
-
-  //  If page_title is not set, generate one based on the designations requested.
-  //  ---------------------------------------------------------------------------
-  if ($page_title === '')
-  {
-    $page_title = 'Courses that can satisfy ';
-    if (isset($_GET['designations']))
+    if ($page_title === '2013 CUNY Core Approved Courses')
     {
-      $page_title .= or_list($desig_array);
-    }
-    else
-    {
-      $page_title .= or_list($designations);
+      $page_title = 'Courses that can satisfy ' . or_list($desig_array);
     }
   }
+  //  Generate the set of designations to be displayed
+  $designations = array();
+  foreach ($desig_array as $desig) append_designations($desig);
 
   //  Designations column is displayed only if there are multiple designations selected
   if (count($designations) > 1)
