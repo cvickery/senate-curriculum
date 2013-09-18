@@ -11,10 +11,12 @@
  *    show        | title   | Show title, or title with details?
  *                |         | Course is always shown. Designations are shown if multiple.
  *                |         | Options (case-insensitive):
- *                |         |   title   - title only
- *                |         |   details - title, hours, credits, and requisites
- *                |         |   other   - other designations besides the one(s) requested
- *                |         |   all     - title, details, and other
+ *                |         |   title     - title only
+ *                |         |   details   - title, hours, credits, and requisites
+ *                |         |   other     - other designations besides the one(s) requested
+ *                |         |   all       - title, details, and other
+ *                |         |   reporting - Separate row for each suffix; separate col for
+ *                |         |               discipline and number
  *                |         |
  *    width       | 800     | Width in pixels of the page.
  *                |         | Set this to the width of the target web part.
@@ -56,7 +58,6 @@
 //  Setup and initialization
 //  --------------------------------------------------------------------------------------
 date_default_timezone_set('America/New_York');
-
 require_once('../include/titlecase.inc');
 
 require_once('credentials.inc');
@@ -112,7 +113,7 @@ while ($row = pg_fetch_assoc($result))
   $designation_atoms = array
     (
       'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
-      'LIT', 'LANG', 'SCI', 'SYN', 'COPT4',
+      'LIT', 'LANG', 'SCI', 'SYN',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
       'ET', 'WC', 'PI'
     );
@@ -241,7 +242,7 @@ while ($row = pg_fetch_assoc($result))
   $page_width         = '800px';
   $show_details       = false;
   $show_other         = true;
-  $other_heading      = '<th>Other Designation(s)</th>';
+  $reporting          = false;
 
   //  Make the option keys case-insensitive and canonical
   /*  s = s*    Show (title or title and details)
@@ -288,26 +289,34 @@ while ($row = pg_fetch_assoc($result))
       case 't': //  Course title only
         $show_details   = false;
         $show_other     = false;
+        $reporting      = false;
         break;
       case 'd': //  Course details
         $show_details   = true;
         $show_other     = false;
+        $reporting      = false;
         break;
       case 'o': //  Other designations
         $show_details   = false;
         $show_other     = true;
-        $other_heading  = '<th>Other Designation(s)</th>';
+        $reporting      = false;
         break;
       case 'a': //  Show all info
         $show_details   = true;
         $show_other     = true;
-        $other_heading  = '<th>Other Designation(s)</th>';
+        $reporting      = false;
+        break;
+      case 'r': //  Reporting format for Stuart Schaffer
+        $show_details   = false;
+        $show_other     = true;
+        $reporting      = true;
         break;
       default:
         die("<h1>'$show_option' is not a valid show option</h1>" .
             "<h2>Must be ‘title’, ‘details’, 'other', or'all'.</h2>");
     }
   }
+  $other_heading      = $show_other ? '<th>Other Designation(s)</th>' : '';
 
   if (isset($_GET['width']))
   {
@@ -389,6 +398,7 @@ while ($row = pg_fetch_assoc($result))
   </head>
   <body>
 <?php
+  $course_heading = $reporting ? '<th>Discipline</th><th>Number</th>' : '<th>Course</th>';
   echo <<<EOD
     <h1>$page_title</h1>
     $hover_msg
@@ -399,7 +409,7 @@ while ($row = pg_fetch_assoc($result))
     </em></p>
     <table>
       <tr>
-        <th>Course</th>
+        $course_heading
         <th>$catalog_heading</th>
         $designation_heading $other_heading
       </tr>
@@ -440,6 +450,7 @@ EOD;
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
     $w_ness       = 'Undefined';
+    $suffixes     = array();
     $is_honors    = '';
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
@@ -449,15 +460,18 @@ EOD;
       switch ($suffix)
       {
         case 'W':
+          if (! in_array($suffix, $suffixes)) $suffixes[] = $suffix;
           if ($w_ness === 'Undefined') $w_ness = 'Always';
           else $w_ness = 'Sometimes';
           break;
         case 'H':
+          if (! in_array($suffix, $suffixes)) $suffixes[] = $suffix;
           $is_honors = 'Honors';
           break;
         default:
-          if ($w_ness === 'Undefined') $w_ness = 'Never';
-          else $w_ness = 'Sometimes';
+          if (! in_array('', $suffixes)) $suffixes[] = '';
+          if ($w_ness === 'Always') $w_ness = 'Sometimes';
+          else $w_ness = 'Never';
           break;
       }
       //  Hack the title as best we can
@@ -571,7 +585,24 @@ EOD;
       {
         $requested_designations = '';
       }
-      echo <<<EOD
+      if ($reporting)
+      {
+        foreach($suffixes as $suffix)
+        {
+          echo <<<EOD
+  <tr>
+    <td><span title='$discipline_name'>$discipline</span></td><td>$course_number$suffix</td>
+    <td>$course_info</td>
+    $requested_designations
+    $others
+  </tr>
+
+EOD;
+        }
+      }
+      else
+      {
+        echo <<<EOD
   <tr>
     <td><span title='$discipline_name'>$discipline</span> $course_numbers</td>
     <td>$course_info</td>
@@ -580,6 +611,7 @@ EOD;
   </tr>
 
 EOD;
+      }
     }
   }
 ?>
