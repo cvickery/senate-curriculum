@@ -113,7 +113,7 @@ while ($row = pg_fetch_assoc($result))
   $designation_atoms = array
     (
       'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
-      'LIT', 'LANG', 'SCI', 'SYN',
+      'LIT', 'LANG', 'SCI', 'SYN', 'COPT4',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
       'ET', 'WC', 'PI'
     );
@@ -189,7 +189,10 @@ while ($row = pg_fetch_assoc($result))
     global $designation_atoms, $designation_sets, $designations;
     if (in_array($desig, $designation_atoms))
     {
-      if (! in_array($desig, $designations)) $designations[] = $desig;
+      if (! in_array($desig, $designations))
+      {
+        $designations[] = $desig;
+      }
       return;
     }
     else
@@ -197,7 +200,10 @@ while ($row = pg_fetch_assoc($result))
       if (isset($designation_sets[$desig]))
       {
         $this_set = $designation_sets[$desig];
-        foreach($this_set as $element) append_designations($element);
+        foreach($this_set as $element)
+        {
+          append_designations($element);
+        }
         return;
       }
       else die("<h1>append_designations: $desig is not a valid designation</h1>");
