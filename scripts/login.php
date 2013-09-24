@@ -360,7 +360,7 @@ EOD;
               $person = unserialize($_SESSION[person]);
               //  User might set initial passwd using the new/repeat fields
               $login_error_message =
-                  update_passwd($person, $new_passwd, $repeat_new);
+                  update_password($person, $new_passwd, $repeat_new);
             }
             else
             {
