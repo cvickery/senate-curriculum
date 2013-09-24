@@ -244,7 +244,7 @@ EOD;
       // The following were passed as hidden elements by login-form.
       $new_passwd = $_POST[new_password];
       $repeat_new = $_POST[repeat_new];
-      $login_error_message = 
+      $login_error_message =
           update_password($person, $new_passwd, $repeat_new);
     }
     else
@@ -298,7 +298,7 @@ EOD;
             $person->set_dept($row['department']);
             $person->finish_login();
             $_SESSION[person] = serialize($person);
-            $login_error_message = 
+            $login_error_message =
                 update_password($person, $new_passwd, $repeat_new);
           }
           else
@@ -354,13 +354,13 @@ EOD;
             {
               //  Valid person: if single dept, s/he's in
               $pending_person->set_dept($departments_list[0]);
-              $pending_person->finish_login();
               add_to_curric($pending_person);
+              $pending_person->finish_login();
               $_SESSION[person] = serialize($pending_person);
               $person = unserialize($_SESSION[person]);
               //  User might set initial passwd using the new/repeat fields
-              $login_error_message = 
-                  update_passwd($person, $new_passwd, $repeat_new);
+              $login_error_message =
+                  update_password($person, $new_passwd, $repeat_new);
             }
             else
             {
@@ -386,9 +386,9 @@ EOD;
                 $dept_name = sanitize($dept_name);
                 echo <<<EOD
         <div>
-          <input  type='radio' 
-                  id='dept-$n' 
-                  value='$dept_name' 
+          <input  type='radio'
+                  id='dept-$n'
+                  value='$dept_name'
                   name="dept-name" $checked />
           <label for='dept-$n'>{$dept_name}</label>
         </div>
@@ -424,7 +424,7 @@ EOD;
   //  Any form submitted has been processed. If not yet logged in, present the form.
   //  ------------------------------------------------------------------------------
   $login_status_msg = <<<EOD
-  
+
 
 EOD;
   if ( empty($person) && empty($pending_person) )
