@@ -293,7 +293,6 @@ EOD;
           $post_password = sanitize($_POST[password]);
           if (crypt($post_password, $row[password]) === $row[password])
           {
-error_log("post_password is $post_password; row[password] is {$row[password]}");
             $person = new Person($qc_email);
             $person->set_name($row['name']);
             $person->set_dept($row['department']);
@@ -353,7 +352,7 @@ error_log("post_password is $post_password; row[password] is {$row[password]}");
             }
             else if ($num_depts === 1)
             {
-error_log("num_depts is $num_depts on login.php line " . __LINE__);
+error_log("departments_list[0] is is {$departments_list[0]} on login.php line " . __LINE__);
               //  Valid person: if single dept, s/he's in
               $pending_person->set_dept($departments_list[0]);
               $pending_person->finish_login();
