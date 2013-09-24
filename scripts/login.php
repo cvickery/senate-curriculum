@@ -352,11 +352,10 @@ EOD;
             }
             else if ($num_depts === 1)
             {
-error_log("departments_list[0] is is {$departments_list[0]} on login.php line " . __LINE__);
               //  Valid person: if single dept, s/he's in
               $pending_person->set_dept($departments_list[0]);
-              $pending_person->finish_login();
               add_to_curric($pending_person);
+              $pending_person->finish_login();
               $_SESSION[person] = serialize($pending_person);
               $person = unserialize($_SESSION[person]);
               //  User might set initial passwd using the new/repeat fields
