@@ -457,7 +457,7 @@ EOD;
           " line " . __LINE__ . "</h1></body></html>\n");
     $w_ness       = 'Undefined';
     $suffixes     = array();
-    $is_honors    = '';
+    $is_honors    = false;
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
       $cf_course_number = $cf_row['course_number'];
@@ -472,7 +472,7 @@ EOD;
           break;
         case 'H':
           if (! in_array($suffix, $suffixes)) $suffixes[] = $suffix;
-          $is_honors = 'Honors';
+          $is_honors = true;
           break;
         default:
           if (! in_array('', $suffixes)) $suffixes[] = '';
@@ -593,6 +593,8 @@ EOD;
       }
       if ($reporting)
       {
+        //  Be sure the course is listed even if it is not currently offered.
+        if (0 === count($suffixes)) $suffixes[0] = '';
         foreach($suffixes as $suffix)
         {
           echo <<<EOD
