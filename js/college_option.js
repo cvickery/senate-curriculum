@@ -8,7 +8,8 @@
  *    prev-co           Do you transfer in any CO courses?
  *
  *  Value ids
- *    num-prev-co      Number of CO courses transferred in.
+ *    num-prev-co-credits Number of CO credits transferred in.
+ *    num-prev-co-courses Number of CO courses transferred in.
  *
  *  Row ids
  *    ask-bachelor-degree
@@ -172,7 +173,7 @@ $(function()
       {
         //  Invalid number of previous CO courses: generate error message
         msg = "You must enter a non-negative number as the number of College " +
-          "Option courses completed at another CUNY senior college.";
+          "Option credits completed at another CUNY senior college.";
         $('#result').addClass('error').html(msg);
       }
       else
