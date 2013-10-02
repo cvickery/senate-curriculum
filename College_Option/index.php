@@ -257,7 +257,7 @@ EOD;
               <label for='over-30-n'>No</label>
             </td>
             <td>
-              Are you transferring over 30 credits to Queens from another college?
+              Are you transferring more than 30 credits to Queens from another college?
             </td>
           </tr>
           <tr id='ask-if-prev-co'>
