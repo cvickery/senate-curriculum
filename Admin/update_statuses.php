@@ -12,6 +12,45 @@ if ( $can_edit )
   $is_disabled  = '';
 }
 
+//  check_dupe()
+//  -------------------------------------------------------------------------------------
+/*  Die if most recent event for a proposal matches the current agency/action.
+ */
+function check_dupe($proposal_id, $agency, $action)
+{
+  global $curric_db;
+  $query = <<<EOD
+select  e.id,
+        e.event_date  as event_date,
+        g.abbr        as agency,
+        a.full_name   as action,
+        e.entered_by  as entered_by,
+        e.entered_at  as entered_at
+FROM    events e, agencies g, actions a
+WHERE   e.id = (select max(id) from events where proposal_id = $proposal_id)
+AND     g.id = e.agency_id
+AND     a.id = e.action_id
+
+EOD;
+  $result = pg_query($curric_db, $query) or die("<h1 class='error'>".
+            "Query Failed at " . basename(__FILE__) . " line " . __LINE__ .
+            "</h1></body></html>");
+  if (($num_rows = pg_num_rows($result)) !== 1)
+  {
+    die("<h1 class='error'>Error: $num_rows most-recent " .
+        "events for proposal #$proposal_id</h1></body></html>");
+  }
+  //  Duplicate events should not occur: die if they do for now.
+  $row = pg_fetch_assoc($result);
+  if (($row['agency'] === $agency) && ($row['action'] === $action))
+  {
+    die("<h1 class='error'>Error: $agency $action event duplicates " .
+        "most-recent event for proposal #$proposal_id</h1></body></html>");
+  }            
+  return;
+}
+
+
 //  Here beginnith the web page
 //  -------------------------------------------------------------------------------------
   $mime_type = "text/html";
@@ -58,7 +97,6 @@ if ( $can_edit )
     $nav_bar
     $admin_nav
   </div>
-  <div>
     <h1>Update Statuses</h1>
     $dump_if_testing
 
@@ -91,7 +129,7 @@ EOD;
 
 EOD;
     }
-    else echo "<h2 class='error'>Error: didn’t undo any events</h2>\n";
+    else die("<h1 class='error'>Error: undo events failed</h1></div></body></html>");
 
   }
 
@@ -121,12 +159,13 @@ EOD;
       //  Generate approval event for each proposal selected
       pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
       foreach ($_POST as $key => $value)
       {
         if (strstr($key, 'geac-approved-id-'))
         {
           $proposal_id = str_replace('geac-approved-id-', '', $key);
+          check_dupe($proposal_id, $agency, $action);
           $query = <<<EOD
 INSERT INTO events
         (
@@ -159,9 +198,9 @@ VALUES (
         )
         returning id
 EOD;
-            $result = pg_query($curric_db, $query) or die("Update error: " .
+            $result = pg_query($curric_db, $query) or die("<h1 class='error'>Update error: " .
               pg_last_error($curric_db) . ' file ' . basename(__FILE__) . ' line ' .
-              __LINE__);
+              __LINE__ . "</h1></body></html>");
             $event_ids[] = pg_fetch_result($result, 0, 'id');
             $num++;
         }
@@ -173,7 +212,7 @@ EOD;
 EOD;
       pg_query($curric_db, 'COMMIT') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
     }
     catch (Exception $e)
     {
@@ -209,12 +248,13 @@ EOD;
       //  Generate approval event for each proposal selected
       pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
       foreach ($_POST as $key => $value)
       {
         if (strstr($key, 'ucc-approved-id-'))
         {
           $proposal_id = str_replace('ucc-approved-id-', '', $key);
+          check_dupe($proposal_id, $agency, $action);
           $query = <<<EOD
 INSERT INTO events
         (
@@ -261,7 +301,7 @@ EOD;
 EOD;
       pg_query($curric_db, 'COMMIT') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
     }
     catch (Exception $e)
     {
@@ -297,12 +337,13 @@ EOD;
       //  Generate approval event for each proposal selected
       pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
       foreach ($_POST as $key => $value)
       {
         if (strstr($key, 'senate-approved-id-'))
         {
           $proposal_id = str_replace('senate-approved-id-', '', $key);
+          check_dupe($proposal_id, $agency, $action);
           $query = <<<EOD
 INSERT INTO events
         (
@@ -349,7 +390,7 @@ EOD;
 EOD;
       pg_query($curric_db, 'COMMIT') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
     }
     catch (Exception $e)
     {
@@ -385,12 +426,13 @@ EOD;
       //  Generate approval event for each proposal selected
       pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
       foreach ($_POST as $key => $value)
       {
         if (strstr($key, 'ccrc-submitted-id-'))
         {
           $proposal_id = str_replace('ccrc-submitted-id-', '', $key);
+          check_dupe($proposal_id, $agency, $action);
           $query = <<<EOD
 INSERT INTO events
         (
@@ -437,7 +479,7 @@ EOD;
 EOD;
       pg_query($curric_db, 'COMMIT') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
     }
     catch (Exception $e)
     {
@@ -807,7 +849,5 @@ EOD;
 EOD;
 
 ?>
-    </div>
   </body>
 </html>
-
