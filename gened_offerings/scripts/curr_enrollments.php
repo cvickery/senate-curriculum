@@ -29,8 +29,11 @@ SELECT a.crse_id,
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b,
       octsims.erp805_class_section_dtl c
-WHERE a.crse_id = b.crse_id and a.crse_id = c.crse_id
-
+WHERE a.crse_id = b.crse_id 
+and   b.crse_id = c.crse_id
+and   b.crse_offer_nbr = c.crse_offer_nbr
+and   b.strm = c.strm
+and   b.session_code = c.session_code
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
