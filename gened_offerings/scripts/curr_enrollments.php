@@ -10,7 +10,8 @@ require_once('utils.php');
    *  semesters, apparently for approximately the calendar year that includes
    *  the current semester. */
    $enrollment_query = <<<EOD
-SELECT a.strm,
+SELECT a.crse_id,
+       a.strm,
        a.session_code,
        a.class_section,
        a.subject,
@@ -53,6 +54,7 @@ EOD;
         "term_code      NUMBER, " .
         "term_name      TEXT,   " .
         "term_abbr      TEXT,   " .
+        "course_id      NUMBER  " .
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
         "class_section  TEXT,   " .
@@ -77,6 +79,7 @@ EOD;
       "$term->code,             " .
       "'{$term->name}',         " .
       "'{$term->abbr}',         " .
+      "'{$row->CRSE_ID}',       " .
       "'{$row->SUBJECT}',       " .
       "'{$row->CATALOG_NBR}',   " .
       "'{$row->CLASS_SECTION}', " .
