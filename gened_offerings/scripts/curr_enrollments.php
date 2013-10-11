@@ -54,7 +54,7 @@ EOD;
         "term_code      NUMBER, " .
         "term_name      TEXT,   " .
         "term_abbr      TEXT,   " .
-        "course_id      NUMBER  " .
+        "course_id      NUMBER, " .
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
         "class_section  TEXT,   " .
