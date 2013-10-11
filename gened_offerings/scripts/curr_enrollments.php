@@ -25,7 +25,7 @@ SELECT a.crse_id,
        a.date_loaded,
        c.meeting_time_start,
        c.meeting_time_end,
-       c.mon, c.tue, c.wed, c.thurs, c.fri, c.sat, c.sun
+       c.mon, c.tues, c.wed, c.thurs, c.fri, c.sat, c.sun
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b,
       octsims.erp805_class_section_dtl c
@@ -101,7 +101,7 @@ EOD;
       "'{$row->MEETING_TIME_START}',  " .
       "'{$row->MEETING_TIME_END}',    " .
       "'{$row->MON}',                 " .
-      "'{$row->TUE}',                 " .
+      "'{$row->TUES}',                " .
       "'{$row->WED}',                 " .
       "'{$row->THURS}',               " .
       "'{$row->FRI}',                 " .
