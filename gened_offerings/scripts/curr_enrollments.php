@@ -28,7 +28,7 @@ SELECT a.crse_id,
        c.mon, c.tue, c.wed, c.thurs, c.fri, c.sat, c.sun
 FROM  octsims.erp805_class_section a,
       octsims.erp805_course_component b,
-      octsims.erp860_class_section_dtl
+      octsims.erp860_class_section_dtl c
 WHERE a.crse_id = b.crse_id
 
 EOD;
