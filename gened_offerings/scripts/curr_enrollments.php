@@ -22,13 +22,9 @@ SELECT a.crse_id,
        a.enrl_tot,
        a.wait_tot,
        b.ssr_component,
-       a.date_loaded,
-       c.meeting_time_start,
-       c.meeting_time_end,
-       c.mon, c.tues, c.wed, c.thurs, c.fri, c.sat, c.sun
+       a.date_loaded
 FROM  octsims.erp805_class_section a,
-      octsims.erp805_course_component b,
-      octsims.erp805_class_section_dtl c
+      octsims.erp805_course_component b
 WHERE a.crse_id = b.crse_id
 
 EOD;
@@ -64,15 +60,6 @@ EOD;
         "class_section  TEXT,   " .
         "component      TEXT,   " .
         "status         TEXT,   " .
-        "start_time     TEXT,   " .
-        "end_time       TEXT,   " .
-        "mon            TEXT,   " .
-        "tue            TEXT,   " .
-        "wed            TEXT,   " .
-        "thu            TEXT,   " .
-        "fri            TEXT,   " .
-        "sat            TEXT,   " .
-        "sun            TEXT,   " .
         "seats          NUMBER, " .
         "enrollment     NUMBER, " .
         "date_loaded    TEXT    " .
@@ -98,15 +85,6 @@ EOD;
       "'{$row->CLASS_SECTION}',       " .
       "'{$row->SSR_COMPONENT}',       " .
       "'{$row->CLASS_STAT}',          " .
-      "'{$row->MEETING_TIME_START}',  " .
-      "'{$row->MEETING_TIME_END}',    " .
-      "'{$row->MON}',                 " .
-      "'{$row->TUES}',                " .
-      "'{$row->WED}',                 " .
-      "'{$row->THURS}',               " .
-      "'{$row->FRI}',                 " .
-      "'{$row->SAT}',                 " .
-      "'{$row->SUN}',                 " .
       "{$row->ENRL_CAP},              " .
       "{$row->ENRL_TOT},              " .
       "'$date_loaded'                 " .
