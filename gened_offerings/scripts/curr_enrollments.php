@@ -21,19 +21,19 @@ SELECT a.crse_id,
        a.wait_cap,
        a.enrl_tot,
        a.wait_tot,
-       b.ssr_component,
        a.date_loaded,
-       c.meeting_time_start,
-       c.meeting_time_end,
-       c.mon, c.tues, c.wed, c.thurs, c.fri, c.sat, c.sun
+       c.ssr_component,
+       b.meeting_time_start,
+       b.meeting_time_end,
+       b.mon, b.tues, b.wed, b.thurs, b.fri, b.sat, b.sun
 FROM  octsims.erp805_class_section a,
-      octsims.erp805_course_component b,
-      octsims.erp805_class_section_dtl c
+      octsims.erp805_class_section_dtl b,
+      octsims.erp805_course_component c
 WHERE a.crse_id = b.crse_id 
 and   a.crse_id = c.crse_id
-and   a.crse_offer_nbr = c.crse_offer_nbr
-and   a.strm = c.strm
-and   a.session_code = c.session_code
+and   a.crse_offer_nbr = b.crse_offer_nbr
+and   a.strm = b.strm
+and   a.session_code = b.session_code
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
