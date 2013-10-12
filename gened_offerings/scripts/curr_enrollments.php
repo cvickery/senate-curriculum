@@ -1,4 +1,4 @@
- /usr/bin/php
+#! /usr/bin/php
 <?php
 ini_set('memory_limit', -1);  //  Big query
 require_once('utils.php');
@@ -12,7 +12,7 @@ require_once('utils.php');
    $enrollment_query = <<<EOD
 SELECT a.crse_id,
        a.strm,
-       a.session_code,#!
+       a.session_code,
        a.class_section,
        a.subject,
        a.catalog_nbr,
@@ -101,8 +101,8 @@ EOD;
       "'{$row->CLASS_SECTION}',       " .
       "'{$row->SSR_COMPONENT}',       " .
       "'{$row->CLASS_STAT}',          " .
-      "'{$row->START_TIME}',          " .
-      "'{$row->END_TIME}',            " .
+      "'{$row->MEETING_TIME_START}',  " .
+      "'{$row->MEETING_TIME_END}',    " .
       "'{$row->MON}',                 " .
       "'{$row->TUES}',                " .
       "'{$row->WED}',                 " .
