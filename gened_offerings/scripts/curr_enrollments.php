@@ -1,6 +1,6 @@
-#! /usr/bin/php
+ /usr/bin/php
 <?php
-
+ini_set('memory_limit', -1);  //  Big query
 require_once('utils.php');
   /*  This is a cron job that converts information from two 805 tables dumped
    *  from CUNY to QC each night into a local database named
@@ -12,7 +12,7 @@ require_once('utils.php');
    $enrollment_query = <<<EOD
 SELECT a.crse_id,
        a.strm,
-       a.session_code,
+       a.session_code,#!
        a.class_section,
        a.subject,
        a.catalog_nbr,
