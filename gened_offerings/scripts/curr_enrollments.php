@@ -34,6 +34,7 @@ and   a.crse_id = c.crse_id
 and   a.crse_offer_nbr = b.crse_offer_nbr
 and   a.strm = b.strm
 and   a.session_code = b.session_code
+order by a.strm, a.session_code, a.subject, a.catalog_nbr, a.class_section
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
@@ -88,6 +89,18 @@ EOD;
       $term = new Term($row->STRM, $row->SESSION_CODE);
       $date_loaded = new DateTime($row->DATE_LOADED);
       $date_loaded = $date_loaded->format('Y-m-d');
+
+      $start_time = substr($row->MEETING_TIME_START, 0, 5);
+      $end_time   = substr($row->MEETING_TIME_END, 0, 5);
+      $days = '';
+      if ($row->MON   === 'Y') $days .= 'Mon';
+      if ($row->TUES  === 'Y') $days .= ($days === '' ? '' : ', ') . 'Tue';
+      if ($row->WED   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Wed';
+      if ($row->THURS === 'Y') $days .= ($days === '' ? '' : ', ') . 'Thu';
+      if ($row->FRI   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Fri';
+      if ($row->SAT   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Sat';
+      if ($row->SUN   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Sun';
+
       //  Insert the row.
       $db->exec("INSERT INTO offerings VALUES ("  .
       "'{$row->STRM}',                " .
@@ -101,15 +114,9 @@ EOD;
       "'{$row->CLASS_SECTION}',       " .
       "'{$row->SSR_COMPONENT}',       " .
       "'{$row->CLASS_STAT}',          " .
-      "'{$row->MEETING_TIME_START}',  " .
-      "'{$row->MEETING_TIME_END}',    " .
-      "'{$row->MON}',                 " .
-      "'{$row->TUES}',                " .
-      "'{$row->WED}',                 " .
-      "'{$row->THURS}',               " .
-      "'{$row->FRI}',                 " .
-      "'{$row->SAT}',                 " .
-      "'{$row->SUN}',                 " .
+      "'$start_time',                 " .
+      "'$end_time',                   " .
+      "'$days',                       " .
       "{$row->ENRL_CAP},              " .
       "{$row->ENRL_TOT},              " .
       "'$date_loaded'                 " .
