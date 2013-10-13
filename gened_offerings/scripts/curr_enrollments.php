@@ -84,8 +84,8 @@ EOD;
       $date_loaded = new DateTime($row->DATE_LOADED);
       $date_loaded = $date_loaded->format('Y-m-d');
 
-      $start_time = substr($row->MEETING_TIME_START, 0, 5);
-      $end_time   = substr($row->MEETING_TIME_END, 0, 5);
+      $start_time = str_replace('.', ':', substr($row->MEETING_TIME_START, 0, 5));
+      $end_time   = str_replace('.', ':', substr($row->MEETING_TIME_END, 0, 5));
       $days = '';
       if ($row->MON   === 'Y') $days .= 'Mon';
       if ($row->TUES  === 'Y') $days .= ($days === '' ? '' : ', ') . 'Tue';
