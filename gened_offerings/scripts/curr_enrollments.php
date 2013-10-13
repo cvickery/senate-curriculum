@@ -29,11 +29,12 @@ SELECT a.crse_id,
 FROM  octsims.erp805_class_section a,
       octsims.erp805_class_section_dtl b,
       octsims.erp805_course_component c
-WHERE a.crse_id = b.crse_id 
-and   a.crse_id = c.crse_id
-and   a.crse_offer_nbr = b.crse_offer_nbr
-and   a.strm = b.strm
-and   a.session_code = b.session_code
+WHERE a.crse_id         = b.crse_id 
+and   a.crse_id         = c.crse_id
+and   a.strm            = b.strm
+and   a.crse_offer_nbr  = b.crse_offer_nbr
+and   a.session_code    = b.session_code
+and   a.class_section   = b.class_section
 order by a.strm, a.session_code, a.subject, a.catalog_nbr, a.class_section
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
@@ -55,8 +56,8 @@ EOD;
      */
       $file_name = './db/' . date('Y-m-d') . '_enrollments.db';
       $db = new SQLite3($file_name);
-      $db->exec("DROP TABLE IF EXISTS offerings");
-      $db->exec("CREATE TABLE offerings (" .
+      $db->exec("DROP TABLE IF EXISTS enrollments");
+      $db->exec("CREATE TABLE enrollments (" .
         "term           TEXT,   " .
         "session        TEXT,   " .
         "term_code      NUMBER, " .
@@ -96,7 +97,7 @@ EOD;
       if ($row->SUN   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Sun';
 
       //  Insert the row.
-      $db->exec("INSERT INTO offerings VALUES ("  .
+      $db->exec("INSERT INTO enrollments VALUES ("  .
       "'{$row->STRM}',                " .
       "'{$row->SESSION_CODE}',        " .
       "$term->code,                   " .
