@@ -70,13 +70,7 @@ EOD;
         "status         TEXT,   " .
         "start_time     TEXT,   " .
         "end_time       TEXT,   " .
-        "mon            TEXT,   " .
-        "tue            TEXT,   " .
-        "wed            TEXT,   " .
-        "thu            TEXT,   " .
-        "fri            TEXT,   " .
-        "sat            TEXT,   " .
-        "sun            TEXT,   " .
+        "days           TEXT,   " .
         "seats          NUMBER, " .
         "enrollment     NUMBER, " .
         "date_loaded    TEXT    " .
