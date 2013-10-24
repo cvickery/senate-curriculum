@@ -560,6 +560,7 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
+
     //  Build lists of requested and other designations. If requested list
     //  ends up empty, skip the course.
     $requested_designations = '';
