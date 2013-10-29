@@ -897,7 +897,7 @@ EOD;
         {
           if (! isset($cur_catalog->designation))
           {
-            $cur_catalog->designation = "''";
+            $cur_catalog->designation = "Unknown";
           }
           $cur_designation = $designations[$cur_catalog->designation];
           $new_designation = $designations[$new_catalog->designation];
