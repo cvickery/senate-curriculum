@@ -62,6 +62,8 @@ while ($row = pg_fetch_assoc($result))
  *  date for the event; if the effective date is non-blank but not a valid date, that
  *  event is not created.
  */
+
+    //  Validate form data
     $error_msg = '';
     $agencies = array_keys($agency_groups_by_agency);
     $remote_ip = 'Unknown Host IP';
@@ -69,17 +71,19 @@ while ($row = pg_fetch_assoc($result))
     {
       $remote_ip = $_SERVER['REMOTE_ADDR'];
     }
-    $agency = '';
-    $action = '';
-    $action_date = '';
-    $num_events = 0;
+    $agency           = '';
+    $action           = '';
+    $action_date_obj  = NULL;
+    $action_date_db   = ''; //  Formatted for db
+    $action_date_txt  = ''; //  Formatted for display
+    $num_events       = 0;
     if ($form_name === 'update-events')
     {
       try
       {
-        $action_date = new DateTime(sanitize($_POST['action_date']));
-        $action_date_db = $action_date->format('Y-m-d');
-        $action_date = $action_date->format('F j, Y');
+        $action_date_obj  = new DateTime(sanitize($_POST['action_date']));
+        $action_date_db   = $action_date_obj->format('Y-m-d');
+        $action_date_txt  = $action_date_obj->format('F j, Y');
       }
       catch (Exception $e)
       {
@@ -97,7 +101,9 @@ while ($row = pg_fetch_assoc($result))
         $error_msg .= "<div class='error'>Invalid action. Nothing saved</div>\n";
         $action = '';
       }
-      if ($action_date && $agency && $action)
+
+      //  Create new event for each select-# form element
+      if ($action_date_obj && $agency && $action)
       {
         $num_events = 0;
         foreach ($_POST as $name => $value)
@@ -113,8 +119,8 @@ while ($row = pg_fetch_assoc($result))
             {
               try
               {
-                $effective_date = new DateTime($effective_date_post);
-                $effective_date_db = $effective_date->format('Y-m-d');
+                $effective_date_obj = new DateTime($effective_date_post);
+                $effective_date_db  = $effective_date_obj->format('Y-m-d');
               }
               catch (Exception $e)
               {
@@ -127,6 +133,37 @@ EOD;
                 continue;
               }
             }
+            //  Check that this event does not duplicate the most recent event for the proposal
+            $query = <<<EOD
+select  e.id,
+        e.event_date  as event_date,
+        g.abbr        as agency,
+        a.full_name   as action,
+        e.entered_by  as entered_by,
+        e.entered_at  as entered_at
+FROM    events e, agencies g, actions a
+WHERE   e.id = (select max(id) from events where proposal_id = $proposal_id)
+AND     g.id = e.agency_id
+AND     a.id = e.action_id
+
+EOD;
+            $result = pg_query($curric_db, $query) or die("<h1 class='error'>".
+                      "Query Failed at " . basename(__FILE__) . " line " . __LINE__ .
+                      "</h1></body></html>");
+            if (($num_rows = pg_num_rows($result)) !== 1)
+            {
+              die("<h1 class='error'>Error: $num_rows most-recent " .
+                  "events for proposal #$proposal_id)</h1></body></html>");
+            }
+            //  Duplicate events should not occur: die if they do for now.
+            $row = pg_fetch_assoc($result);
+            if (($row['agency'] === $agency) && ($row['action'] === $action))
+            {
+              die("<h1 class='error'>Error: $agency $action event duplicates " .
+                  "most-recent event for proposal #$proposal_id</h1></body></html>");
+            }
+
+            //  Create the event
             $query = <<<EOD
 INSERT INTO events
         (
@@ -267,7 +304,7 @@ EOD;
               </td>
               <td>
                 <input  type='text' name='action_date' id='action_date'
-                        value='$action_date' />
+                        value='$action_date_txt' />
               </td>
             </tr>
           </table>
