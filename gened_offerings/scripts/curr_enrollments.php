@@ -20,6 +20,7 @@ SELECT a.strm,
        a.wait_cap,
        a.enrl_tot,
        a.wait_tot,
+       a.class_nbr,
        b.ssr_component,
        a.date_loaded
 FROM  octsims.erp805_class_section a,
@@ -56,6 +57,7 @@ EOD;
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
         "class_section  TEXT,   " .
+        "class_nbr      NUMBER  " ,
         "component      TEXT,   " .
         "status         TEXT,   " .
         "seats          NUMBER, " .
@@ -80,6 +82,7 @@ EOD;
       "'{$row->SUBJECT}',       " .
       "'{$row->CATALOG_NBR}',   " .
       "'{$row->CLASS_SECTION}', " .
+      "{$row->CLASS_NBR}'       " .
       "'{$row->SSR_COMPONENT}', " .
       "'{$row->CLASS_STAT}',    " .
       "{$row->ENRL_CAP},        " .
