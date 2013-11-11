@@ -1,7 +1,8 @@
 <?php
 //  Approved_Courses/index.php
 //  -------------------------------------------------------------------------------------
-/*    Generate a table designed to be displayed in a SharePoint "Page Viewer" web part.
+/*    Generate a table designed to be embedded in another page, such as an <iframe> or
+ *    SharePoint "web part."
  *    Use query string parameters to configure the generated table:
  *
  *    Option      | Default | Notes
@@ -10,7 +11,7 @@
  *                |         |
  *    show        | title   | Show title, or title with details?
  *                |         | Course is always shown. Designations are shown if multiple.
- *                |         | Options (case-insensitive):
+ *                |         | Options (case-insensitive), one of:
  *                |         |   title     - title only
  *                |         |   details   - title, hours, credits, and requisites
  *                |         |   other     - other designations besides the one(s) requested
@@ -44,12 +45,12 @@
  *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,sci,sw
  *
  *    Notes:  1. You can put spaces in the query string, but they must be "URL-encoded"
- *            as %20:
+ *            as '%20'. For example:
  *
  *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw
  *
- *            2. An alternate URL encoding for spaces is +, which means NS+L must be
- *            URL-encoded as NS%2BL:
+ *            2. An alternate URL encoding for spaces is +, which means the + in NS+L 
+ *            must be URL-encoded ('NS%2BL'). For example:
  *
  *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw,ns%2bl
  *    (Adds NS+L to the previous examples.)
@@ -101,10 +102,12 @@ while ($row = pg_fetch_assoc($result))
       'EC'    =>  array('EC-1', 'EC-2'),
       'RCC'   =>  array('EC', 'MQR', 'LPS'),
       'FCC'   =>  array('CE', 'IS', 'SW', 'USED', 'WCGI'),
-      'COPT'  =>  array('LIT', 'LANG', 'SCI', 'COPT4'),
-      'COPT4' =>  array('LPS', 'FCC', 'LIT', 'LANG', 'SCI', 'SYN'),
+      'COPT'  =>  array('COPT1', 'COPT2', 'COPT3', 'COPT4'),
+      'COPT1' =>  array('LIT'),
+      'COPT2' =>  array('LANG'),
+      'COPT3' =>  array('LPS', 'SW', 'SCI'),
+      'COPT4' =>  array('FCC', 'COPT1', 'COPT2', 'COPT3', 'SYN'),
       'PATH'  =>  array('RCC', 'FCC', 'COPT'),
-      'MNS'   =>  array('LPS', 'SW', 'SCI'),
       'AOK'   =>  array('AP', 'CV', 'NS', 'NS+L', 'RL', 'SS'),
       'CTXT'  =>  array('US', 'ET', 'WC'),
       'PLAS'  =>  array('AOK', 'CTXT', 'PI'),
@@ -113,7 +116,7 @@ while ($row = pg_fetch_assoc($result))
   $designation_atoms = array
     (
       'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
-      'LIT', 'LANG', 'SCI', 'SYN', 'COPT4',
+      'LIT', 'LANG', 'SCI', 'SYN',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
       'ET', 'WC', 'PI'
     );
@@ -125,7 +128,10 @@ while ($row = pg_fetch_assoc($result))
       'COPT'  =>  'QC College Option',
       'EC'    =>  'CUNY Required Core: English Composition',
       'MNS'   =>  'Pathways courses offered by MNS Division',
-      'COPT4' =>  'QC College Option: fourth group',
+      'COPT1' =>  'QC College Option: Literature',
+      'COPT2' =>  'QC College Option: Language',
+      'COPT3' =>  'QC College Option: Science',
+      'COPT4' =>  'QC College Option: Group 4',
       'PLAS'  =>  'QC Perspectives',
       'AOK'   =>  'QC Perspectives (PLAS) Area of Knowledge',
       'CTXT'  =>  'QC Perspectives (PLAS) Context of Experience',
@@ -457,7 +463,7 @@ EOD;
           " line " . __LINE__ . "</h1></body></html>\n");
     $w_ness       = 'Undefined';
     $suffixes     = array();
-    $is_honors    = '';
+    $is_honors    = false;
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
       $cf_course_number = $cf_row['course_number'];
@@ -472,7 +478,7 @@ EOD;
           break;
         case 'H':
           if (! in_array($suffix, $suffixes)) $suffixes[] = $suffix;
-          $is_honors = 'Honors';
+          $is_honors = true;
           break;
         default:
           if (! in_array('', $suffixes)) $suffixes[] = '';
@@ -554,6 +560,7 @@ EOD;
     $d_result = pg_query($curric_db, $d_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
+
     //  Build lists of requested and other designations. If requested list
     //  ends up empty, skip the course.
     $requested_designations = '';
@@ -593,6 +600,8 @@ EOD;
       }
       if ($reporting)
       {
+        //  Be sure the course is listed even if it is not currently offered.
+        if (0 === count($suffixes)) $suffixes[0] = '';
         foreach($suffixes as $suffix)
         {
           echo <<<EOD

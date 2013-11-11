@@ -158,7 +158,6 @@ EOD;
         font-style:italic;
       }
       #result + * { line-height:1.5em; }
-      <?php echo $student_group_report;?>
     </style>
   </head>
   <body>
@@ -244,16 +243,14 @@ EOD;
               <input  type='radio'
                       id='over-30-y'
                       name='over-30'
-                      value='y'
-                      $over_30_y />
+                      value='y' />
               <label for='over-30-y'>Yes</label>
             </td>
             <td>
               <input  type='radio'
                       id='over-30-n'
                       name='over-30'
-                      value='n'
-                      $over_30_n />
+                      value='n' />
               <label for='over-30-n'>No</label>
             </td>
             <td>
@@ -265,16 +262,14 @@ EOD;
               <input  type='radio'
                       id='prev-co-y'
                       name='prev-co'
-                      value='y'
-                      $prev_co_y />
+                      value='y' />
               <label for='prev-co-y'>Yes</label>
             </td>
             <td>
               <input  type='radio'
                       id='prev-co-n'
                       name='prev-co'
-                      value='n'
-                      $prev_co_n />
+                      value='n' />
               <label for='prev-co-n'>No</label>
             </td>
             <td>

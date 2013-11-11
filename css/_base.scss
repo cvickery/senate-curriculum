@@ -143,8 +143,12 @@ input[type="password"] {
   font-family: $sans-serif;
   font-weight: lighter;
   font-size: 12px;
-  +div {margin-top: 1em; height: $scroll-height; overflow:auto;}
-
+  @media screen {
+    +div {margin-top: 1em; height: $scroll-height; overflow:auto;}
+    }
+  @media print {
+    +div {margin-top: 1em; overflow:visible;}
+    }
   }
 
 #show-hide-instructions-button          { float:left;  margin: 0 $gutter; }
