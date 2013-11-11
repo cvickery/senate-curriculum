@@ -70,7 +70,7 @@ EOD;
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
         "class_section  TEXT,   " .
-        "class_nbr      NUMBER  " ,
+        "class_nbr      NUMBER  " .
         "component      TEXT,   " .
         "status         TEXT,   " .
         "start_time     TEXT,   " .
