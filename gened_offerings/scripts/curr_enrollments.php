@@ -45,14 +45,13 @@ EOD;
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
     " export ORACLE_HOME=\$DYLD_LIBRARY_PATH; echo "  .
     " \"$enrollment_query\"|/usr/local/bin/oci_query)"));
-    $msg = date('Y-m-d h:ia ');
+    $msg = "curr_enrollments.php: " . date('Y-m-d h:ia ');
     if (is_array($enrollment_info) && (count($enrollment_info) > 0))
     {
       $msg .= number_format(count($enrollment_info)) . " sections\n";
     }
     else $msg .= "UPDATE FAILED\n";
-    $log = fopen('curr_update.log', 'a+');
-    fputs($log, $msg);
+    echo "$msg\n";
     if (strstr($msg, 'FAIL')) exit();
 
     //  Now to create the table here
@@ -126,5 +125,4 @@ EOD;
       ")");
     }
 
-    fclose($log);
   ?>
