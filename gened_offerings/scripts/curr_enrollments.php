@@ -72,7 +72,7 @@ EOD;
         "discipline     TEXT,   " .
         "course_number  TEXT,   " .
         "class_section  TEXT,   " .
-        "class_nbr      NUMBER  " .
+        "class_nbr      NUMBER, " .
         "component      TEXT,   " .
         "status         TEXT,   " .
         "start_time     TEXT,   " .
@@ -114,6 +114,7 @@ EOD;
       "'{$row->SUBJECT}',             " .
       "'{$row->CATALOG_NBR}',         " .
       "'{$row->CLASS_SECTION}',       " .
+      "'{$row->CLASS_NBR}'            " .
       "'{$row->SSR_COMPONENT}',       " .
       "'{$row->CLASS_STAT}',          " .
       "'$start_time',                 " .
