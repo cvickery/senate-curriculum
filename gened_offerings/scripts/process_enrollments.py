@@ -47,13 +47,13 @@ offering_file = '1901-01-01'
 for file in os.listdir('../db/'):
   if re.match("\d{4}", file):
     if file > offering_file: offering_file = file
-if offering_file == '1901-01-01': exit("No offerings database found")
+if offering_file == '1901-01-01': exit("No enrollments database found")
 offering_file = '../db/' + offering_file
 print('Offerings db: {}'.format(offering_file))
 offering_conn = sqlite3.connect(offering_file)
 offering_conn.row_factory = sqlite3.Row
 offering_curs = offering_conn.cursor()
-offering_curs.execute('select date_loaded from offerings group by date_loaded')
+offering_curs.execute('select date_loaded from enrollments group by date_loaded')
 date_loaded = ''
 for row in offering_curs:
   if date_loaded != '':
