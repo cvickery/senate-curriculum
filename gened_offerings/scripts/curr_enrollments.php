@@ -45,7 +45,7 @@ EOD;
     " export ORACLE_HOME=\$DYLD_LIBRARY_PATH; echo "  .
     " \"$enrollment_query\"|/usr/local/bin/oci_query)"));
     $msg = date('Y-m-d h:ia ');
-    if (is_array($enrollment_info))
+    if (is_array($enrollment_info) && (count($enrollment_info) > 0))
     {
       $msg .= number_format(count($enrollment_info)) . " sections\n";
     }
