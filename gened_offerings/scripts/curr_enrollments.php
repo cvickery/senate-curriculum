@@ -38,6 +38,7 @@ and   a.strm            = b.strm
 and   a.crse_offer_nbr  = b.crse_offer_nbr
 and   a.session_code    = b.session_code
 and   a.class_section   = b.class_section
+and   a.ssr_component   = c.ssr_component
 order by a.strm, a.session_code, a.subject, a.catalog_nbr, a.class_section
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
