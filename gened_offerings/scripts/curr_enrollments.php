@@ -52,6 +52,7 @@ EOD;
     else $msg .= "UPDATE FAILED\n";
     $log = fopen('curr_update.log', 'a+');
     fputs($log, $msg);
+    if (strstr($msg, 'FAIL')) exit();
 
     //  Now to create the table here
     /*  We assume this script will be run 1x per day. Any more often than
