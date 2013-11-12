@@ -114,7 +114,7 @@ EOD;
       "'{$row->SUBJECT}',             " .
       "'{$row->CATALOG_NBR}',         " .
       "'{$row->CLASS_SECTION}',       " .
-      "'{$row->CLASS_NBR}'            " .
+      "'{$row->CLASS_NBR}',           " .
       "'{$row->SSR_COMPONENT}',       " .
       "'{$row->CLASS_STAT}',          " .
       "'$start_time',                 " .
