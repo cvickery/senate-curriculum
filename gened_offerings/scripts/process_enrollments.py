@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 """
-  Process the latest offerings table to give current # of sections/seats/enrollment
+  Process the latest enrollments table to give current # of sections/seats/enrollment
   for each approved gened course.
 """
 
 """
-CREATE TABLE offerings (
+CREATE TABLE enrollments (
     term           TEXT,
     session        TEXT,
     term_code      NUMBER,
@@ -25,12 +25,12 @@ import os
 import re
 import sqlite3
 import psycopg2
-import collections
+from pprint import pprint
 from collections import namedtuple
 from psycopg2.extras import NamedTupleConnection
 
 # Determine what curric db to use and connect to it
-parser = argparse.ArgumentParser(description='Process Offerings db')
+parser = argparse.ArgumentParser(description='Process enrollments db')
 parser.add_argument('-d', '--db_name', nargs='?', default='test_curric')
 args = parser.parse_args()
 curric_name = args.db_name
@@ -42,31 +42,37 @@ curric_curs = curric_db.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
 print('Curriculum db: {}'.format(curric_name))
 
-# Find latest offerings db, and open it
-offering_file = '1901-01-01'
+# Find latest enrollments db, and open it
+enrollment_file = '1901-01-01'
 for file in os.listdir('../db/'):
   if re.match("\d{4}", file):
-    if file > offering_file: offering_file = file
-if offering_file == '1901-01-01': exit("No enrollments database found")
-offering_file = '../db/' + offering_file
-print('Offerings db: {}'.format(offering_file))
-offering_conn = sqlite3.connect(offering_file)
-offering_conn.row_factory = sqlite3.Row
-offering_curs = offering_conn.cursor()
-offering_curs.execute('select date_loaded from enrollments group by date_loaded')
+    if file > enrollment_file: enrollment_file = file
+if enrollment_file == '1901-01-01': exit("No enrollments database found")
+enrollment_file = '../db/' + enrollment_file
+print('enrollments db: {}'.format(enrollment_file))
+enrollment_conn = sqlite3.connect(enrollment_file)
+enrollment_conn.row_factory = sqlite3.Row
+enrollment_curs = enrollment_conn.cursor()
+enrollment_curs.execute('select date_loaded from enrollments group by date_loaded')
 date_loaded = ''
-for row in offering_curs:
+for row in enrollment_curs:
   if date_loaded != '':
     print('Warning: replacing date_loaded({}) with{}.'.format(date_loaded, row['date_loaded']))
   date_loaded = row['date_loaded']
 if date_loaded == '': exit("Unable to determine date_loaded")
-print("Offerings last updated on", date_loaded)
+print("enrollments last updated on", date_loaded)
 curric_curs.execute("""
     update update_log
     set updated_date = '{}'
     where table_name = 'enrollments'
     """.format(date_loaded))
-offering_curs.execute('select term_code, term_name from offerings group by term,term_name')
+enrollment_curs.execute('select term_code, term_name from enrollments group by term,term_name')
+
+# Get list of current disciplines: others will be disregarded
+disciplines = set()
+curric_curs.execute("select abbr from cf_academic_organizations")
+for row in curric_curs:
+  disciplines.add(row.abbr)
 
 # Recreate the curric.terms table
 curric_curs.execute('drop table if exists enrollment_terms cascade')
@@ -75,36 +81,96 @@ create table enrollment_terms (
   term_code integer primary key,
   term_name text)
 """)
-for row in offering_curs:
+for row in enrollment_curs:
   curric_curs.execute("insert into enrollment_terms values({}, '{}')".format(row['term_code'],
                                                                   row['term_name']))
 
+# Create tuple of sections, seats, enrollment for each section/component of each course, plus total
+# for the course, for every semester of record.
+
 # Create curric.enrollments for courses of interest
-curric_curs.execute('drop table if exists enrollments')
+curric_curs.execute('drop table if exists course_enrollments')
 curric_curs.execute("""
-create  table enrollments(
+create  table course_enrollments(
         term_code     integer references enrollment_terms,
         discipline    text    references cf_academic_organizations(abbr),
         course_number integer not null,
+        component     text    not null,
         suffixes      text    default '',
-        section       integer,
-        seats         integer,
-        enrollment    integer,
-        primary key   (term_code, discipline, course_number))
+        num_sections  integer not null,
+        num_seats     integer not null,
+        enrollment    integer not null,
+        primary key   (term_code, discipline, course_number, component))
 """)
 
-# Create dictionary, indexed by term_code, discipline, course_number, of enrollment info
-courses = {}
-offering_curs.execute('select * from offerings')
-for row in offering_curs:
-  term_code = row['term_code']
-  discipline = row['discipline']
-  empty, course_number, suffix = re.split('(\d+)', row['course_number'])
-  course_key = (term_code, discipline, course_number)
-  if course_key not in courses:
-    courses[course_key] = namedtuple('Course', 'suffixes etc')
-    courses[course_key].suffixes = set()
-  courses[course_key].suffixes.add(suffix)
+# Create dictionaries of enrollment info
+# Accumulate # of sections, seats, and enrollment separately for each course and for each
+# section of a course. Courses are indexed by {term, discipline, number}; sections by
+# {term, discipline, number, section, component}
+# Each row is a separate section; all sections of a course are contiguous, by semester.
+
+
+#courses       = {}     # Dictionary indexed by term_code, discipline, course_number
+#sections      = {}     # Dictionary indexed by course_key + section, component
+term_code     = 0
+discipline    = ''
+course_number = 0
+component     = ''
+suffixes      = set()   # Set of suffixes: {'', 'W', 'H'}
+num_sections  = 0
+num_seats     = 0
+enrollment    = 0
+this_index    = ''      # term_code + discipline + course_number
+
+enrollment_curs.execute('select * from enrollments order by term_code, discipline, course_number, component')
+for row in enrollment_curs:
+  new_discipline  = row['discipline']
+  if new_discipline not in disciplines:
+    continue
+  new_term_code   = row['term_code']
+  empty, new_course_number, suffix = re.split('(\d+)', row['course_number'])
+  if suffix == '':
+    suffix = '-'
+  section         = row['class_section']
+  new_component   = row['component']
+  seats           = row['seats']
+  enrollment      = row['enrollment']
+  new_index       = '{} {} {} {}'.format(new_term_code,
+                                         new_discipline,
+                                         new_course_number,
+                                         new_component)
+  if new_index != this_index:
+    if this_index != '':
+      # Write course data to curric.course_enrollments
+      suffix_str = ''
+      for suffix in sorted(suffixes):
+        suffix_str += suffix
+      curric_curs.execute("""
+  insert into course_enrollments values(
+          {},   --  term_code
+          '{}', --  discipline
+          {},   --  course_number
+          '{}', --  component
+          '{}', --  suffixes
+          {},   --  num_sections
+          {},   --  num_seats
+          {})   --  enrollment
+""".format(term_code, discipline, course_number, component,
+           suffix_str, num_sections, num_seats, enrollment))
+    this_index    = new_index
+    term_code     = new_term_code
+    discipline    = new_discipline
+    course_number = new_course_number
+    component     = new_component
+    suffixes      = set(suffix)
+    num_sections  = 1
+    num_seats     = seats
+    enrollment    = enrollment
+  else:
+    suffixes.add(suffix)
+    num_sections  +=  1
+    num_seats     +=  seats
+    enrollment    +=  enrollment
 
 curric_curs.close()
 curric_db.commit()
