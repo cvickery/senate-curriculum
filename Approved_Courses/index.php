@@ -18,6 +18,14 @@
  *                |         |   all       - title, details, and other
  *                |         |   reporting - Separate row for each suffix; separate col for
  *                |         |               discipline and number
+ *    enrollments | latest  | Comma-separated list of term_codes. Keywords 'latest'
+ *                |         | and 'all' allowed. Term codes can be CF terms (CYYM)
+ *                |         | or term_codes (YYYYMMS).
+ *                |         | MM: 01 = Winter; 02 = Spring; 04 = Summer 1; 06 = Summer 2;
+ *                |         |     09 = Fall
+ *                |         | S: 0 when MM = 01, 02, or 09; 1 = short and 2 = long for summer
+ *                |         | Include an Enrollment column with sections/seats/enrollment
+ *                |         | for each course component.
  *                |         |
  *    width       | 800     | Width in pixels of the page.
  *                |         | Set this to the width of the target web part.
@@ -49,7 +57,7 @@
  *
  *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw
  *
- *            2. An alternate URL encoding for spaces is +, which means the + in NS+L 
+ *            2. An alternate URL encoding for spaces is +, which means the + in NS+L
  *            must be URL-encoded ('NS%2BL'). For example:
  *
  *    http://senate.qc.cuny.edu/Curriculum/Approved_courses?desig=lps,%20sci%20sw,ns%2bl
@@ -60,12 +68,12 @@
 //  --------------------------------------------------------------------------------------
 date_default_timezone_set('America/New_York');
 require_once('../include/titlecase.inc');
-
 require_once('credentials.inc');
-$curric_db                    = curric_connect() or die('Unable to access curriculum db');
-$cf_catalog_update_date       = 'Unknown';
-$approved_courses_update_date = 'Unknown';
 
+$curric_db                      = curric_connect() or die('Unable to access curriculum db');
+$cf_catalog_update_date         = 'Unknown';
+$approved_courses_update_date   = 'Unknown';
+$course_enrollments_update_date = 'Unknown';
 $query = 'select * from update_log';
 $result = pg_query($curric_db, $query) or die('update_log query failed');
 while ($row = pg_fetch_assoc($result))
@@ -79,6 +87,9 @@ while ($row = pg_fetch_assoc($result))
       break;
     case 'approved_courses':
       $approved_courses_update_date = $date_str;
+      break;
+    case 'course_enrollments':
+      $course_enrollments_update_date = $date_str;
       break;
     default:
       ; //  ignore other tables that might be there
@@ -250,17 +261,19 @@ while ($row = pg_fetch_assoc($result))
   //  ===================================================================================
 
   //  Default values
-  $page_title         = '2013 CUNY Core Approved Courses';
-  $page_width         = '800px';
-  $show_details       = false;
-  $show_other         = true;
-  $reporting          = false;
+  $page_title               = 'Approved General Education Courses';
+  $page_width               = '800px';
+  $show_details             = false;
+  $show_other               = true;
+  $reporting                = false;
+  $show_course_enrollments  = false;
 
   //  Make the option keys case-insensitive and canonical
   /*  s = s*    Show (title or title and details)
    *  d = d*    Designation
    *  t = t*    Page title
    *  w = w*    Page width
+   *  e = e*    Enrollment info
    */
   foreach ($_GET as $key => $value)
   {
@@ -281,6 +294,9 @@ while ($row = pg_fetch_assoc($result))
       case 'w':
         $_GET['width']        = $value;
         break;
+      case 'e':
+        $_GET['enrollments']  = $value;
+        break;
       default:
         die("<h1>Unrecognized option: $key</h1>");
     }
@@ -289,6 +305,98 @@ while ($row = pg_fetch_assoc($result))
   if (isset($_GET['title']))
   {
     $page_title = sanitize($_GET['title']);
+  }
+
+  //  Enrollments?
+  $enrollment_heading = '';
+  $enrollment_query   = '';
+  $enrollment_str     = '';
+  if (isset($_GET['enrollments']))
+  {
+    $show_course_enrollments = true;
+    $enrollment_heading = '<th>Enrollments</th>';
+    $term_codes = preg_split('/[, ]+/', $_GET['enrollments']);
+
+    //  Get list of currently available term codes
+    $enrollment_terms = array();
+    $query = "select * from enrollment_terms order by term_code";
+    $result = pg_query($curric_db, $query)
+              or die("<h1 class='error'>Query Failed:" . basename(__FILE__) .
+                                " line " . __LINE__ . "</h1>");
+    while ($row = pg_fetch_assoc($result))
+    {
+      $enrollment_terms[$row['term_code']] = $row['term_name'];
+    }
+
+    //  Create query string and enrollment_str from URL query string
+    $requested_terms = array();
+    foreach ($term_codes as $term_code)
+    {
+      if ($term_code === '') $term_code = 'latest';
+      if ('latest' === strtolower($term_code))
+      {
+        $requested_terms[] = end(array_keys($enrollment_terms));
+      }
+      elseif ('all' === strtolower($term_code))
+      {
+        $requested_terms = array_keys($enrollment_terms);
+      }
+      else
+      {
+        if (is_numeric($term_code))
+        {
+          switch (strlen($term_code))
+          {
+            case 4: // Convert to term_code
+              $century  = 1900 + $term_code[0] * 100;
+              $year     = $century + substr($term_code, 1, 2);
+              $month    = '0' . $term_code[3];
+              $session  = '0';
+              if ($month === '04' || $month === '06') $session = '1'; // short
+              $request = "$year$month$session";
+              if (array_key_exists($request, $enrollment_terms))
+              {
+                $requested_terms[] = $request;
+              }
+              else die("<h1 class='error'>No enrollment data for $term_code</h1>");
+              break;
+            case 7:
+              if (array_key_exists($term_code, $enrollment_terms))
+              {
+                $requested_terms[] = $term_code;
+              }
+              else die("<h1 class='error'>No enrollment data for $term_code</h1>");
+              break;
+            default:
+              die("<h1 class='error'>Invalid term code: $term_code</h1>");
+          }
+        }
+        else die("<h1 class='error'>Non-numeric term code: $term_code</h1>");
+      }
+    }
+
+    //  Convert the enrollment_terms array to query clause and message string
+    $suffix = 's';
+    if (count($requested_terms) === 1) $suffix = '';
+    $first = true;
+    $enrollment_str = "<br/>Showing enrollment information for the following term$suffix: ";
+    foreach ($requested_terms as $requested_term)
+    {
+      $separator = '';
+      $or_clause = ' and ';
+      if ($first)
+      {
+        $first = false;
+      }
+      else
+      {
+        $separator = ', ';
+        $or_clause = ' or ';
+      }
+      $enrollment_str   .= "$separator{$enrollment_terms[$requested_term]}";
+      $enrollment_query .= $or_clause . "(term_code = $requested_term)";
+    }
+    $enrollment_str .= ".";
   }
 
   if (isset($_GET['show']))
@@ -347,7 +455,7 @@ while ($row = pg_fetch_assoc($result))
     $desig_str = str_replace(',', ' ', $_GET['designations']);
     $desig_str = preg_replace('/\s+/', ' ', $desig_str);
     $desig_array = explode(' ', strtoupper($desig_str));
-    if ($page_title === '2013 CUNY Core Approved Courses')
+    if ($page_title === 'Approved General Education Courses')
     {
       $page_title = 'Courses that can satisfy ' . or_list($desig_array);
     }
@@ -418,12 +526,15 @@ while ($row = pg_fetch_assoc($result))
       Approval data last updated $approved_courses_update_date.
       <br/>
       CUNYfirst catalog data last updated $cf_catalog_update_date.
+      <br/>
+      Course enrollment data as of $course_enrollments_update_date.
+      $enrollment_str
     </em></p>
     <table>
       <tr>
         $course_heading
         <th>$catalog_heading</th>
-        $designation_heading $other_heading
+        $enrollment_heading $designation_heading $other_heading
       </tr>
 EOD;
 
@@ -578,6 +689,48 @@ EOD;
         $other_designations .= "<span title='$this_title'>$this_designation</span> ";
       }
     }
+    $enrollment_info = '';
+    if ($show_course_enrollments)
+    {
+      $e_query = <<<EOD
+select * from course_enrollments
+where discipline = '$discipline'
+and   course_number = '$course_number'
+$enrollment_query
+EOD;
+      $e_result = pg_query($curric_db, $e_query) or die("</table><h1 class='error'>Query Failed: "
+                                  . basename(__FILE__) . ' line ' . __LINE__ . "</h1></body></html>");
+      $num_sections = array();
+      $num_seats    = array();
+      $enrollments  = array();
+      while ($e_row = pg_fetch_assoc($e_result))
+      {
+        $component = $e_row['component'];
+        if (isset($enrollments[$component]))
+        {
+          $num_sections[$component] += $e_row['num_sections'];
+          $num_seats[$component]    += $e_row['num_seats'];
+          $enrollments[$component]  += $e_row['enrollment'];
+        }
+        else
+        {
+          $num_sections[$component] = $e_row['num_sections'];
+          $num_seats[$component]    = $e_row['num_seats'];
+          $enrollments[$component]  = $e_row['enrollment'];
+        }
+      }
+      $enrollment_info = '<td>';
+      foreach ($enrollments as $component => $enrollment)
+      {
+        $seats = $num_seats[$component];
+        $sections = $num_sections[$component];
+        if ($sections > 0)
+        {
+          $enrollment_info .= "<div>$component: $sections, $seats, $enrollment</div>";
+        }
+      }
+      $enrollment_info .= '</td>';
+    }
     if ($requested_designations !== '')
     {
       $course_info = $title;
@@ -608,6 +761,7 @@ EOD;
   <tr>
     <td><span title='$discipline_name'>$discipline</span></td><td>$course_number$suffix</td>
     <td>$course_info</td>
+    $enrollment_info
     $requested_designations
     $others
   </tr>
@@ -621,6 +775,7 @@ EOD;
   <tr>
     <td><span title='$discipline_name'>$discipline</span> $course_numbers</td>
     <td>$course_info</td>
+    $enrollment_info
     $requested_designations
     $others
   </tr>
