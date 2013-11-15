@@ -88,7 +88,7 @@ while ($row = pg_fetch_assoc($result))
     case 'approved_courses':
       $approved_courses_update_date = $date_str;
       break;
-    case 'course_enrollments':
+    case 'enrollments':
       $course_enrollments_update_date = $date_str;
       break;
     default:
@@ -309,12 +309,13 @@ while ($row = pg_fetch_assoc($result))
 
   //  Enrollments?
   $enrollment_heading = '';
-  $enrollment_query   = '';
   $enrollment_str     = '';
+  $terms_sql          = '';
   if (isset($_GET['enrollments']))
   {
+    $enrollment_str = "<br/>Enrollments as of $course_enrollments_update_date.";
     $show_course_enrollments = true;
-    $enrollment_heading = '<th>Enrollments</th>';
+    $enrollment_heading = '<th>Enrollments<br/>(Sections, Seats, Enrolled)</th>';
     $term_codes = preg_split('/[, ]+/', $_GET['enrollments']);
 
     //  Get list of currently available term codes
@@ -379,11 +380,12 @@ while ($row = pg_fetch_assoc($result))
     $suffix = 's';
     if (count($requested_terms) === 1) $suffix = '';
     $first = true;
-    $enrollment_str = "<br/>Showing enrollment information for the following term$suffix: ";
+    $enrollment_str .= "<br/>Showing enrollment information for the following term$suffix: ";
+    $terms_sql       = "";
     foreach ($requested_terms as $requested_term)
     {
       $separator = '';
-      $or_clause = ' and ';
+      $or_clause = ' and (';
       if ($first)
       {
         $first = false;
@@ -394,9 +396,10 @@ while ($row = pg_fetch_assoc($result))
         $or_clause = ' or ';
       }
       $enrollment_str   .= "$separator{$enrollment_terms[$requested_term]}";
-      $enrollment_query .= $or_clause . "(term_code = $requested_term)";
+      $terms_sql        .= $or_clause . "(term_code = $requested_term)";
     }
     $enrollment_str .= ".";
+    $terms_sql      .= ")";
   }
 
   if (isset($_GET['show']))
@@ -526,8 +529,6 @@ while ($row = pg_fetch_assoc($result))
       Approval data last updated $approved_courses_update_date.
       <br/>
       CUNYfirst catalog data last updated $cf_catalog_update_date.
-      <br/>
-      Course enrollment data as of $course_enrollments_update_date.
       $enrollment_str
     </em></p>
     <table>
@@ -696,7 +697,7 @@ EOD;
 select * from course_enrollments
 where discipline = '$discipline'
 and   course_number = '$course_number'
-$enrollment_query
+$terms_sql
 EOD;
       $e_result = pg_query($curric_db, $e_query) or die("</table><h1 class='error'>Query Failed: "
                                   . basename(__FILE__) . ' line ' . __LINE__ . "</h1></body></html>");
@@ -726,7 +727,7 @@ EOD;
         $sections = $num_sections[$component];
         if ($sections > 0)
         {
-          $enrollment_info .= "<div>$component: $sections, $seats, $enrollment</div>";
+          $enrollment_info .= "<div>$component: ($sections, $seats, $enrollment)</div>";
         }
       }
       $enrollment_info .= '</td>';
