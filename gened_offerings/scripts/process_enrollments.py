@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/local/bin/python3
 """
   Process the latest enrollments table to give current # of sections/seats/enrollment
   for each approved gened course.
