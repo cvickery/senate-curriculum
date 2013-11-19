@@ -72,7 +72,6 @@ disciplines = set()
 enrollment_curs.execute("select discipline from enrollments group by discipline order by discipline")
 for row in enrollment_curs:
   disciplines.add(row['discipline'])
-  print(row['discipline'])
 
 ignore_disciplines = set(['CLUBS', 'ELI'])
 
