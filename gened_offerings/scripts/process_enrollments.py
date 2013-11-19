@@ -66,13 +66,17 @@ curric_curs.execute("""
     set updated_date = '{}'
     where table_name = 'enrollments'
     """.format(date_loaded))
-enrollment_curs.execute('select term_code, term_name from enrollments group by term,term_name')
 
-# Get list of current disciplines: others will be disregarded
+# Get list of disciplines with scheduled courses: others will be disregarded
 disciplines = set()
-curric_curs.execute("select abbr from cf_academic_organizations")
-for row in curric_curs:
-  disciplines.add(row.abbr)
+enrollment_curs.execute("select discipline from enrollments group by discipline order by discipline")
+for row in enrollment_curs:
+  disciplines.add(row['discipline'])
+  print(row['discipline'])
+
+ignore_disciplines = set(['CLUBS', 'ELI'])
+
+enrollment_curs.execute('select term_code, term_name from enrollments group by term,term_name')
 
 # Recreate the curric.terms table
 curric_curs.execute('drop table if exists enrollment_terms cascade')
@@ -89,11 +93,11 @@ for row in enrollment_curs:
 # for the course, for every semester of record.
 
 # Create curric.enrollments for courses of interest
-curric_curs.execute('drop table if exists course_enrollments')
+curric_curs.execute('drop table if exists course_enrollments cascade')
 curric_curs.execute("""
 create  table course_enrollments(
         term_code     integer references enrollment_terms,
-        discipline    text    references cf_academic_organizations(abbr),
+        discipline    text    references discp_dept_div(discipline),
         course_number integer not null,
         component     text    not null,
         suffixes      text    default '',
@@ -125,7 +129,7 @@ this_index    = ''      # term_code + discipline + course_number
 enrollment_curs.execute('select * from enrollments order by term_code, discipline, course_number, component')
 for row in enrollment_curs:
   new_discipline  = row['discipline']
-  if new_discipline not in disciplines:
+  if new_discipline not in disciplines or new_discipline in ignore_disciplines:
     continue
   new_term_code   = row['term_code']
   empty, new_course_number, suffix = re.split('(\d+)', row['course_number'])
