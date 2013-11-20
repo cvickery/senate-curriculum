@@ -5,7 +5,7 @@
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
       );
-      
+
     // TODO: Use the curric.cf_components table to populate this array.
     $components = array(
           'LEC', 'LAB', 'REC', 'SEM', 'CHR'
@@ -16,7 +16,7 @@
 class Term
 {
   public $code, $name, $abbr;
-  
+
   // Constructor
   //  ------------------------------------------------------------------------
   /*  Convert CUNYfirst term code (CYYM) and session code (1, WIN,
@@ -38,7 +38,7 @@ class Term
    *  name:  'Name 4-digit-year'
    *  abbr:  'Abbreviation2-digit-year'
    */
- 
+
   function __construct($cf_term, $cf_sess)
   {
     global $months;
@@ -63,7 +63,7 @@ class Term
         {
           //  Probably Summer Session, but just give the month
           $term_name = $months[-1 + $month] . ' '. $year;
-          $term_abbr = substr($months[-1 + $month], 0, 3) 
+          $term_abbr = substr($months[-1 + $month], 0, 3)
               . substr($year, 2, 2);
         }
         break;
@@ -75,22 +75,22 @@ class Term
         break;
       case '4W1':
         $term = $year . '041';
-        $term_name = 'Summer 1 short ' . $year;
+        $term_name = "Summer 1 $year short";
         $term_abbr = 'S1s' . substr($year, 2,  2);
         break;
       case '4W2':
         $term = $year . '042';
-        $term_name = 'Summer 1 long ' . $year;
+        $term_name = "Summer 1 $year long";
         $term_abbr = 'S1l' . substr($year, 2,  2);
         break;
       case '6W1':
         $term = $year . '061';
-        $term_name = 'Summer 2 short ' . $year;
+        $term_name = "Summer 2 $year short";
         $term_abbr = 'S2s' . substr($year, 2,  2);
         break;
       case '6W2':
         $term = $year . '062';
-        $term_name = 'Summer 2 long ' . $year;
+        $term_name = "Summer 2 $year long";
         $term_abbr = 'S2l' . substr($year, 2,  2);
         break;
       default:
@@ -98,7 +98,7 @@ class Term
         //  using the month, as in the regular session case (1) above.
         $term = $year.$month.'0';
         $term_name = $months[-1 + $month] . ' '. $year;
-        $term_abbr = substr($months[-1 + $month], 0, 3) 
+        $term_abbr = substr($months[-1 + $month], 0, 3)
             . substr($year, 2, 2);
         //die("Bad switch on $cf_sess\n");
         break;
