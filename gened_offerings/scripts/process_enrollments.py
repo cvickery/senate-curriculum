@@ -91,7 +91,7 @@ for row in enrollment_curs:
 # Create tuple of sections, seats, enrollment for each section/component of each course, plus total
 # for the course, for every semester of record.
 
-# Create curric.enrollments for courses of interest
+# Create curric.enrollments for courses of interest, and two views thereof.
 curric_curs.execute('drop table if exists course_enrollments cascade')
 curric_curs.execute("""
 create  table course_enrollments(
@@ -103,7 +103,41 @@ create  table course_enrollments(
         num_sections  integer not null,
         num_seats     integer not null,
         enrollment    integer not null,
-        primary key   (term_code, discipline, course_number, component))
+        primary key   (term_code, discipline, course_number, component));
+
+drop view if exists gened_offerings;
+drop view if exists offered_courses;
+
+create view offered_courses as (
+
+select  term_code,
+        discipline,
+        course_number,
+        component,
+        sum(num_sections)                 as sections,
+        sum(num_seats)                    as seats,
+        sum(num_seats) - sum(enrollment)  as openings
+from      course_enrollments
+group by  term_code, discipline, course_number, component
+having    sum(num_sections) > 0
+order by  term_code, discipline, course_number, component
+);
+
+create view gened_offerings as (
+
+select  o.term_code,
+        m.discipline,
+        m.course_number,
+        o.component,
+        t.abbr            as designation,
+        m.is_primary,
+        o.openings > 0    as is_open
+from  course_designation_mappings m, proposal_types t, offered_courses o
+where t.id = m.designation_id
+and   m.discipline    = o.discipline
+and   m.course_number = o.course_number
+order by discipline, course_number, designation
+);
 """)
 
 # Create dictionaries of enrollment info
