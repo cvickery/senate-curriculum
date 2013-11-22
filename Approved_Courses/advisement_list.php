@@ -29,15 +29,14 @@ order by  a.discipline, a.course_number
 
 EOD;
 
-    //  TODO: suffixes
-echo "<tr><td>$query</td></tr>";
+    //  TODO: suffixes and enrollments
     $result = pg_query($curric_db, $query)
     or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
     if (pg_num_rows($result) > 0)
     {
       while ($row = pg_fetch_assoc($result))
       {
-        $info = "{$row['discipline']} {$row['course_number']} {$row['course_title']}";
+        $info = "<td>{$row['discipline']} {$row['course_number']}</td><td>{$row['course_title']}</td>";
         echo "<tr>$info</tr>\n";
       }
     }
@@ -137,11 +136,11 @@ echo "<tr><td>$query</td></tr>";
     <h2>Pathways Courses</h2>
     <h3>Required Core: College Writing 1 (EC-1)</h3>
     <table>
-      <?php course_rows('EC1'); ?>
+      <?php course_rows('EC-1'); ?>
     </table>
     <h3>Required Core: College Writing 2 (EC-2)</h3>
     <table>
-      <?php course_rows('EC2'); ?>
+      <?php course_rows('EC-2'); ?>
     </table>
     <h3>Required Core: Mathematics and Quantitative Reasoning (MQR)</h3>
     <table>
