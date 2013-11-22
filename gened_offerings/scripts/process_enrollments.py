@@ -5,6 +5,7 @@
 """
 
 """
+The 805-based enrollments table:
 CREATE TABLE enrollments (
     term           TEXT,
     session        TEXT,
@@ -116,6 +117,7 @@ create view offered_courses as
             discipline,
             course_number,
             component,
+            suffixes,
             sum(num_sections)   as sections,
             sum(num_seats)      as seats,
             sum(enrollment)     as enrollment
@@ -131,6 +133,7 @@ create view offered_gened as
           m.discipline,
           m.course_number,
           o.component,
+          o.suffixes,
           t.abbr            as designation,
           m.is_primary,
           o.sections,
@@ -140,7 +143,7 @@ create view offered_gened as
   where t.id = m.designation_id
   and   m.discipline    = o.discipline
   and   m.course_number = o.course_number
-  order by discipline, course_number, designation
+  order by discipline, course_number, component, designation
 );
 """)
 
