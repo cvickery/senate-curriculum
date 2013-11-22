@@ -122,7 +122,7 @@ create view offered_courses as
             sum(num_seats)      as seats,
             sum(enrollment)     as enrollment
   from      course_enrollments
-  group by  term_code, discipline, course_number, component
+  group by  term_code, discipline, course_number, component, suffixes
   having    sum(num_sections) > 0
   order by  term_code, discipline, course_number, component
 );
