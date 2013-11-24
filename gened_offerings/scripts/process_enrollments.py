@@ -6,19 +6,26 @@
 
 """
 The 805-based enrollments table:
-CREATE TABLE enrollments (
-    term           TEXT,
-    session        TEXT,
-    term_code      NUMBER,
-    term_name      TEXT,
-    term_abbr      TEXT,
-    discipline     TEXT,
-    course_number  TEXT,
-    class_section  TEXT,  --  Added 2013-07-20
-    component      TEXT,
-    status         TEXT,
-    seats          NUMBER,
-    enrollment     NUMBER  );
+  $db->exec("CREATE TABLE enrollments (" .
+    "term           TEXT,   " .
+    "session        TEXT,   " .
+    "term_code      NUMBER, " .
+    "term_name      TEXT,   " .
+    "term_abbr      TEXT,   " .
+    "course_id      NUMBER, " .
+    "discipline     TEXT,   " .
+    "course_number  TEXT,   " .
+    "class_section  TEXT,   " .
+    "class_nbr      NUMBER, " .
+    "component      TEXT,   " .
+    "status         TEXT,   " .
+    "start_time     TEXT,   " .
+    "end_time       TEXT,   " .
+    "days           TEXT,   " .
+    "seats          NUMBER, " .
+    "enrollment     NUMBER, " .
+    "date_loaded    TEXT    " .
+  ")");
 """
 
 import argparse
@@ -79,6 +86,7 @@ ignore_disciplines = set(['CLUBS', 'ELI'])
 enrollment_curs.execute('select term_code, term_name from enrollments group by term,term_name')
 
 # Recreate the curric.terms table
+# TODO: Instead of replacing the table, add terms as they become available
 curric_curs.execute('drop table if exists enrollment_terms cascade')
 curric_curs.execute("""
 create table enrollment_terms (
@@ -163,10 +171,12 @@ component     = ''
 suffixes      = set()   # Set of suffixes: {'', 'W', 'H'}
 num_sections  = 0
 num_seats     = 0
-enrollment    = 0
+num_enrolled  = 0
 this_index    = ''      # term_code + discipline + course_number
 
-enrollment_curs.execute('select * from enrollments order by term_code, discipline, course_number, component')
+enrollment_curs.execute("""
+select * from enrollments order by term_code, discipline, course_number, component
+""")
 for row in enrollment_curs:
   new_discipline  = row['discipline']
   if new_discipline not in disciplines or new_discipline in ignore_disciplines:
@@ -187,8 +197,8 @@ for row in enrollment_curs:
     if this_index != '':
       # Write course data to curric.course_enrollments
       suffix_str = ''
-      for suffix in sorted(suffixes):
-        suffix_str += suffix
+      for a_suffix in sorted(suffixes):
+        suffix_str += a_suffix
       curric_curs.execute("""
   insert into course_enrollments values(
           {},   --  term_code
@@ -200,7 +210,7 @@ for row in enrollment_curs:
           {},   --  num_seats
           {})   --  enrollment
 """.format(term_code, discipline, course_number, component,
-           suffix_str, num_sections, num_seats, enrollment))
+           suffix_str, num_sections, num_seats, num_enrolled))
     this_index    = new_index
     term_code     = new_term_code
     discipline    = new_discipline
@@ -209,12 +219,12 @@ for row in enrollment_curs:
     suffixes      = set(suffix)
     num_sections  = 1
     num_seats     = seats
-    enrollment    = enrollment
+    num_enrolled  = enrollment
   else:
     suffixes.add(suffix)
     num_sections  +=  1
     num_seats     +=  seats
-    enrollment    +=  enrollment
+    num_enrolled  +=  enrollment
 
 curric_curs.close()
 curric_db.commit()
