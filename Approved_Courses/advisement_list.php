@@ -15,6 +15,7 @@
 select    a.discipline,
           a.course_number,
           a.course_title,
+          o.suffixes,
           sum(o.sections)   as sections,
           sum(o.seats)      as seats,
           sum(o.enrollment) as enrollment
@@ -24,20 +25,59 @@ and       o.designation   = '$rd'
 and       a.discipline    = o.discipline
 and       a.course_number = o.course_number
 group by  a.discipline, a.course_number, a.course_title,
-          o.sections, o.seats, o.enrollment
+          o.suffixes, o.sections, o.seats, o.enrollment
 order by  a.discipline, a.course_number
 
 EOD;
 
-    //  TODO: suffixes and enrollments
+    //  TODO: enrollments; PLAS
     $result = pg_query($curric_db, $query)
     or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
     if (pg_num_rows($result) > 0)
     {
       while ($row = pg_fetch_assoc($result))
       {
-        $info = "<td>{$row['discipline']} {$row['course_number']}</td><td>{$row['course_title']}</td>";
-        echo "<tr>$info</tr>\n";
+        $course_number_str = $row['course_number'];
+        $suffixes = $row['suffixes'];
+        //  - should appear before H should appear before W, but enforce it
+        $suffix_str = '';
+        if (strpos($suffixes, '-') !== False) $suffix_str .= '-';
+        if (strpos($suffixes, 'H') !== False) $suffix_str .= 'H';
+        if (strpos($suffixes, 'W') !== False) $suffix_str .= 'W';
+        switch ($suffix_str)
+        {
+          case '-':
+            break;
+          case 'H':
+            $course_number_str .= 'H';
+            break;
+          case 'W':
+            $course_number_str .= 'W';
+            break;
+          case '-H':
+            $course_number_str .= "/{$course_number_str}H";
+            break;
+          case '-W':
+            $course_number_str .= "/{$course_number_str}W";
+            break;
+          case 'HW':
+            $course_number_str .= "H/{$course_number_str}W";
+            break;
+          case '-HW':
+            $course_number_str .= "/{$course_number_str}W/{$course_number_str}H";
+            break;
+          default:
+            die("Bad suffix_str ($suffix_str) at " . basename(__FILE__) . " line " . __LINE__);
+        }
+
+        $course_info      = "<td>{$row['discipline']} $course_number_str</td><td>{$row['course_title']}</td>";
+        $seats            = $row['seats'];
+        $enrollment       = $row['enrollment'];
+        $status                                 = " class='open'";
+        if ($enrollment > 0.9 * $seats) $status = " class='warn'";
+        if ($enrollment >= $seats)      $status = " class='closed'";
+        $enrollment_info  = "<td>({$row['sections']}, $seats, $enrollment)</td>";
+        echo "<tr$status>$course_info $enrollment_info</tr>\n";
       }
     }
     else
@@ -46,15 +86,10 @@ EOD;
     }
   }
 
-  $term_name        = 'Unknown';
   $enrollment_date  = 'Unknown';
   $curric_db        = curric_connect() or die('Unable to access db');
 
-//  process query string
-/*    term-code:  The term/session to report.
- *                  YYYYMMS, where S is 0, 1, or 2
- *                Default is latest term available.
- */
+  //  Default term_code is latest one available.
   $result = pg_query($curric_db, "select * from enrollment_terms order by term_code")
   or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
   $term_codes = array();
@@ -64,10 +99,17 @@ EOD;
   }
   end($term_codes);
   $term_code = key($term_codes);
+  $term_name = $term_codes[$term_code];
+
+  //  process query string if present
+  /*    term-code:  The term/session to report.
+   *                  YYYYMMS, where S is 0, 1, or 2
+   */
   //  Convert first query string name starting with 't' or 'T' to 'term-code'
   foreach ($_GET as $name => $value)
   {
-
+    //  $value might be junk, but it's not used unless it matches one of the
+    //  term_code numeric values in the db.
     if (strtolower($name[0]) === 't')
     {
       $_GET['term-code'] = $value;
@@ -125,6 +167,11 @@ EOD;
 <html <?php echo $html_attributes;?>>
   <head>
     <title>General Education Course Offerings</title>
+    <style type='text/css'>
+      .open   {color:green;}
+      .warn   {color:#990;}
+      .closed {color:red;}
+    </style>
   </head>
   <body>
     <h1>General Education Course Offerings</h1>
@@ -188,5 +235,45 @@ EOD;
       <?php course_rows('SYN'); ?>
     </table>
     <h2>Perspectives (PLAS) Courses</h2>
+    <h3>Appreciating and Participating in the Arts (AP)</h3>
+    <table>
+      <?php course_rows('AP'); ?>
+    </table>
+    <h3>Cultures and Values (CV)</h3>
+    <table>
+      <?php course_rows('CV'); ?>
+    </table>
+    <h3>Natural Science (NS)</h3>
+    <table>
+      <?php course_rows('NS'); ?>
+    </table>
+    <h3>Natural Science with Lab (NS+L)</h3>
+    <table>
+      <?php course_rows('NS+L'); ?>
+    </table>
+    <h3>Reading Literature (RL)</h3>
+    <table>
+      <?php course_rows('RL'); ?>
+    </table>
+    <h3>Analyzing Social Structures (SS)</h3>
+    <table>
+      <?php course_rows('SS'); ?>
+    </table>
+    <h3>United States (US)</h3>
+    <table>
+      <?php course_rows('US'); ?>
+    </table>
+    <h3>European Traditions (ET)</h3>
+    <table>
+      <?php course_rows('ET'); ?>
+    </table>
+    <h3>World Cultures (WC)</h3>
+    <table>
+      <?php course_rows('WC'); ?>
+    </table>
+    <h3>Pre-Industrial Society (PI)</h3>
+    <table>
+      <?php course_rows('PI'); ?>
+    </table>
   </body>
 </html>
