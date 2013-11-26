@@ -30,7 +30,6 @@ order by  a.discipline, a.course_number
 
 EOD;
 
-    //  TODO: enrollments; PLAS
     $result = pg_query($curric_db, $query)
     or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
     if (pg_num_rows($result) > 0)
@@ -120,10 +119,11 @@ EOD;
   //  Update $term_code and $term_name if specified.
   if (array_key_exists('term-code', $_GET))
   {
-    $term_code = $_GET['term-code'];
+    $term_code_value = $_GET['term-code'];
 
-    if (array_key_exists($term_code, $term_codes))
+    if (array_key_exists($term_code_value, $term_codes))
     {
+      $term_code = $term_code_value;
       $term_name = $term_codes[$term_code];
     }
     else
@@ -171,109 +171,162 @@ EOD;
       .open   {color:green;}
       .warn   {color:#990;}
       .closed {color:red;}
+      #other-term-links {
+        font-size: 0.7em;
+      }
+      #other-term-links ul {
+        list-style-type: none;
+      }
+      #other-term-links li {
+        display: inline-block;
+      }
+      #other-term-links a {
+        display:block;
+        text-decoration: none;
+        margin: 0.5em 1em;
+        padding:0.2em;
+        width:10em;
+        background-color: #ccc;
+        border: 1px solid black;
+        border-radius: 0.25em;
+        color:black;
+        font-family: sans-serif;
+        text-align:center;
+      }
+      #other-term-links a:hover {
+        background-color:black;
+        color:#ccc;
+      }
+      @media print {
+        #other-term-links {display:none;}
+        .course-list {
+          column-count:3;
+          font-size: 8pt;
+        }
+      }
     </style>
   </head>
   <body>
     <h1>General Education Course Offerings</h1>
     <div>
-      The following General Education courses are scheduled to be offered during the
-      <strong><?php echo $term_name; ?></strong> semester. Numbers in parentheses are (number of sections,
-      total number of seats, current enrollment) as of <?php echo $enrollment_date; ?>.
+      <p>
+        The following General Education courses are scheduled to be offered during the
+        <strong><?php echo $term_name; ?></strong> semester.
+      </p>
+      <p>
+        Numbers in parentheses are (number of sections,
+        total number of seats, current enrollment) as of <?php echo $enrollment_date; ?>.
+      </p>
+      <div id='other-term-links'>
+        <h2>Other Semesters Available</h2>
+        <?php
+          echo "<ul id='other-term-links'>\n";
+          foreach ($term_codes as $other_term_code => $other_term_name)
+          {
+            if ($term_code != $other_term_code)
+            {
+              echo "<li><a href='./advisement_list.php?t=$other_term_code'>$other_term_name</a></li>\n";
+            }
+          }
+            echo "</ul>\n</div>\n";
+      ?>
     </div>
-    <h2>Pathways Courses</h2>
-    <h3>Required Core: College Writing 1 (EC-1)</h3>
-    <table>
-      <?php course_rows('EC-1'); ?>
-    </table>
-    <h3>Required Core: College Writing 2 (EC-2)</h3>
-    <table>
-      <?php course_rows('EC-2'); ?>
-    </table>
-    <h3>Required Core: Mathematics and Quantitative Reasoning (MQR)</h3>
-    <table>
-      <?php course_rows('MQR'); ?>
-    </table>
-    <h3>Required Core: Life and Physical Sciences (LPS)</h3>
-    <table>
-      <?php course_rows('LPS'); ?>
-    </table>
-    <h3>Flexible Core: World Cultures and Global Issues (WCGI)</h3>
-    <table>
-      <?php course_rows('WCGI'); ?>
-    </table>
-    <h3>Flexible Core: U.S. Experience in its Diversity (USED)</h3>
-    <table>
-      <?php course_rows('USED'); ?>
-    </table>
-    <h3>Flexible Core: Creative Expression (CE)</h3>
-    <table>
-      <?php course_rows('CE'); ?>
-    </table>
-    <h3>Flexible Core: Individual and Society (IS)</h3>
-    <table>
-      <?php course_rows('IS'); ?>
-    </table>
-    <h3>Flexible Core: Scientific World (SW)</h3>
-    <table>
-      <?php course_rows('SW'); ?>
-    </table>
-    <h3>College Option: Literature (LIT)</h3>
-    <table>
-      <?php course_rows('LIT'); ?>
-    </table>
-    <h3>College Option: Language (LANG)</h3>
-    <table>
-      <?php course_rows('LANG'); ?>
-    </table>
-    <h3>College Option: Science (SCI)</h3>
-    <table>
-      <?php course_rows('SCI'); ?>
-    </table>
-    <h3>College Option: Other</h3>
-    Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
-    <table>
-      <?php course_rows('SYN'); ?>
-    </table>
-    <h2>Perspectives (PLAS) Courses</h2>
-    <h3>Appreciating and Participating in the Arts (AP)</h3>
-    <table>
-      <?php course_rows('AP'); ?>
-    </table>
-    <h3>Cultures and Values (CV)</h3>
-    <table>
-      <?php course_rows('CV'); ?>
-    </table>
-    <h3>Natural Science (NS)</h3>
-    <table>
-      <?php course_rows('NS'); ?>
-    </table>
-    <h3>Natural Science with Lab (NS+L)</h3>
-    <table>
-      <?php course_rows('NS+L'); ?>
-    </table>
-    <h3>Reading Literature (RL)</h3>
-    <table>
-      <?php course_rows('RL'); ?>
-    </table>
-    <h3>Analyzing Social Structures (SS)</h3>
-    <table>
-      <?php course_rows('SS'); ?>
-    </table>
-    <h3>United States (US)</h3>
-    <table>
-      <?php course_rows('US'); ?>
-    </table>
-    <h3>European Traditions (ET)</h3>
-    <table>
-      <?php course_rows('ET'); ?>
-    </table>
-    <h3>World Cultures (WC)</h3>
-    <table>
-      <?php course_rows('WC'); ?>
-    </table>
-    <h3>Pre-Industrial Society (PI)</h3>
-    <table>
-      <?php course_rows('PI'); ?>
-    </table>
+    <div class='course-list'>
+      <h2>Pathways Courses</h2>
+      <h3>Required Core: College Writing 1 (EC-1)</h3>
+      <table>
+        <?php course_rows('EC-1'); ?>
+      </table>
+      <h3>Required Core: College Writing 2 (EC-2)</h3>
+      <table>
+        <?php course_rows('EC-2'); ?>
+      </table>
+      <h3>Required Core: Mathematics and Quantitative Reasoning (MQR)</h3>
+      <table>
+        <?php course_rows('MQR'); ?>
+      </table>
+      <h3>Required Core: Life and Physical Sciences (LPS)</h3>
+      <table>
+        <?php course_rows('LPS'); ?>
+      </table>
+      <h3>Flexible Core: World Cultures and Global Issues (WCGI)</h3>
+      <table>
+        <?php course_rows('WCGI'); ?>
+      </table>
+      <h3>Flexible Core: U.S. Experience in its Diversity (USED)</h3>
+      <table>
+        <?php course_rows('USED'); ?>
+      </table>
+      <h3>Flexible Core: Creative Expression (CE)</h3>
+      <table>
+        <?php course_rows('CE'); ?>
+      </table>
+      <h3>Flexible Core: Individual and Society (IS)</h3>
+      <table>
+        <?php course_rows('IS'); ?>
+      </table>
+      <h3>Flexible Core: Scientific World (SW)</h3>
+      <table>
+        <?php course_rows('SW'); ?>
+      </table>
+      <h3>College Option: Literature (LIT)</h3>
+      <table>
+        <?php course_rows('LIT'); ?>
+      </table>
+      <h3>College Option: Language (LANG)</h3>
+      <table>
+        <?php course_rows('LANG'); ?>
+      </table>
+      <h3>College Option: Science (SCI)</h3>
+      <table>
+        <?php course_rows('SCI'); ?>
+      </table>
+      <h3>College Option: Other</h3>
+      Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
+      <table>
+        <?php course_rows('SYN'); ?>
+      </table>
+      <h2>Perspectives (PLAS) Courses</h2>
+      <h3>Appreciating and Participating in the Arts (AP)</h3>
+      <table>
+        <?php course_rows('AP'); ?>
+      </table>
+      <h3>Cultures and Values (CV)</h3>
+      <table>
+        <?php course_rows('CV'); ?>
+      </table>
+      <h3>Natural Science (NS)</h3>
+      <table>
+        <?php course_rows('NS'); ?>
+      </table>
+      <h3>Natural Science with Lab (NS+L)</h3>
+      <table>
+        <?php course_rows('NS+L'); ?>
+      </table>
+      <h3>Reading Literature (RL)</h3>
+      <table>
+        <?php course_rows('RL'); ?>
+      </table>
+      <h3>Analyzing Social Structures (SS)</h3>
+      <table>
+        <?php course_rows('SS'); ?>
+      </table>
+      <h3>United States (US)</h3>
+      <table>
+        <?php course_rows('US'); ?>
+      </table>
+      <h3>European Traditions (ET)</h3>
+      <table>
+        <?php course_rows('ET'); ?>
+      </table>
+      <h3>World Cultures (WC)</h3>
+      <table>
+        <?php course_rows('WC'); ?>
+      </table>
+      <h3>Pre-Industrial Society (PI)</h3>
+      <table>
+        <?php course_rows('PI'); ?>
+      </table>
+    </div>
   </body>
 </html>
