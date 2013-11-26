@@ -225,7 +225,7 @@ EOD;
           {
             if ($term_code != $other_term_code)
             {
-              echo "<li><a href='./advisement_list.php?t=$other_term_code'>$other_term_name</a></li>\n";
+              echo "<li><a href='./offered_gened.php?t=$other_term_code'>$other_term_name</a></li>\n";
             }
           }
             echo "</ul>\n</div>\n";
