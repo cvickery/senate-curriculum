@@ -472,14 +472,14 @@ while ($row = pg_fetch_assoc($result))
   {
     $show_designations = true;
     $designation_heading = '<th>Designation(s)</th>';
-    $hover_msg =
+    $hover_message =
     "<p id='hover-msg'>hover over discipline and designation abbreviations for translations</p>\n";
   }
   else
   {
     $show_designations = false;
     $designation_heading = '';
-    $hover_msg =
+    $hover_message =
     "<p id='hover-msg'>hover over discipline abbreviations for translations</p>\n";
   }
 
@@ -522,15 +522,33 @@ while ($row = pg_fetch_assoc($result))
   <body>
 <?php
   $course_heading = $reporting ? '<th>Discipline</th><th>Number</th>' : '<th>Course</th>';
+  $special_message = '';
+  $last_add_date = new DateTime('2014-02-05');
+  $today = new DateTime();
+  if ($today < $last_add_date && in_array('LPS', $designations))
+  {
+    $special_message = <<<EOD
+    <div style="color:#c00; margin:auto; width:80%; font-size:1.1em;">
+      <h2 style="margin: 0.1em;">New LPS Course for Spring 2014</h2>
+      <p style="margin: 0.1em 0 1em;">
+        Are you looking for a course that will satisfy your Pathways Life and Physical Sciences
+        (LPS) requirement, but is designed for non-science majors? We’ve just added Biology 14
+        to the Spring schedule. <a href='http://gened.qc.cuny.edu/files/2013/12/Biology-14.pdf'>
+        Check it out!</a>
+      </p>
+    </div>
+EOD;
+  }
   echo <<<EOD
     <h1>$page_title</h1>
-    $hover_msg
+    $hover_message
     <p><em>
       Approval data last updated $approved_courses_update_date.
       <br/>
       CUNYfirst catalog data last updated $cf_catalog_update_date.
       $enrollment_str
     </em></p>
+    $special_message
     <table>
       <tr>
         $course_heading
