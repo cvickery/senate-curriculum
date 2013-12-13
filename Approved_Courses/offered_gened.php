@@ -14,8 +14,9 @@
     $query = <<<EOD
 select    a.discipline,
           a.course_number,
-          a.course_title,
           o.suffixes,
+          o.component,
+          a.course_title,
           sum(o.sections)   as sections,
           sum(o.seats)      as seats,
           sum(o.enrollment) as enrollment
@@ -25,8 +26,8 @@ and       o.designation   = '$rd'
 and       a.discipline    = o.discipline
 and       a.course_number = o.course_number
 group by  a.discipline, a.course_number, a.course_title,
-          o.suffixes, o.sections, o.seats, o.enrollment
-order by  a.discipline, a.course_number
+          o.suffixes, o.sections, o.seats, o.enrollment, o.component
+order by  a.discipline, a.course_number, o.component desc
 
 EOD;
 
@@ -36,7 +37,10 @@ EOD;
     {
       while ($row = pg_fetch_assoc($result))
       {
-        $course_number_str = $row['course_number'];
+        $discipline         = $row['discipline'];
+        $course_number      = $row['course_number'];
+        $if_lab             = ($row['component'] === 'LAB') ? ' (Lab)' : '';
+        $course_number_str  = $course_number;
         $suffixes = $row['suffixes'];
         //  - should appear before H should appear before W, but enforce it
         $suffix_str = '';
@@ -69,19 +73,42 @@ EOD;
             die("Bad suffix_str ($suffix_str) at " . basename(__FILE__) . " line " . __LINE__);
         }
 
-        $course_info      = "<td>{$row['discipline']} $course_number_str</td><td>{$row['course_title']}</td>";
+        $course_info      = "<span>$discipline $course_number_str$if_lab. {$row['course_title']}</span>";
         $seats            = $row['seats'];
         $enrollment       = $row['enrollment'];
         $status                                 = " class='open'";
         if ($enrollment > 0.9 * $seats) $status = " class='warn'";
         if ($enrollment >= $seats)      $status = " class='closed'";
-        $enrollment_info  = "<td>({$row['sections']}, $seats, $enrollment)</td>";
-        echo "<tr$status>$course_info $enrollment_info</tr>\n";
+        $enrollment_info  = "<span>({$row['sections']}, $seats, $enrollment)</span>";
+
+        //  List other designations satisfied, if any
+        $other_query = <<<EOD
+  select abbr as designation
+  from proposal_types
+  where id in ( select  designation_id
+                from    course_designation_mappings
+                where   discipline    = '$discipline'
+                and     course_number = $course_number )
+
+EOD;
+        $other_result = pg_query($curric_db, $other_query)
+        or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+        $other_designations = "";
+        while ($other_row = pg_fetch_assoc($other_result))
+        {
+          $other_designation = $other_row['designation'];
+          if ($other_designation != $rd) $other_designations .= "$other_designation, ";
+        }
+        if ($other_designations !== '')
+        {
+          $other_designations = '(' . rtrim($other_designations, ', ') . ')';
+        }
+        echo "<div $status>$course_info $other_designations</div>\n";
       }
     }
     else
     {
-    echo "<tr><td>None</td></tr>";
+    echo "<div>None</div>";
     }
   }
 
@@ -168,9 +195,7 @@ EOD;
   <head>
     <title>General Education Course Offerings</title>
     <style type='text/css'>
-      .open   {color:green;}
-      .warn   {color:#990;}
-      .closed {color:red;}
+      .warn, .closed {font-style: italic;}
       #other-term-links {
         font-size: 0.7em;
       }
@@ -197,12 +222,19 @@ EOD;
         background-color:black;
         color:#ccc;
       }
+      .course-list {
+        -moz-column-count: 3;
+        -moz-column-gap: 1em;
+        -moz-column-rule: 1px solid black;
+        -webkit-column-count: 3;
+        -webkit-column-gap: 1em;
+        -webkit-column-rule: 1px solid black;
+      }
       @media print {
-        #other-term-links {display:none;}
-        .course-list {
-          column-count:3;
-          font-size: 8pt;
+        #other-term-links {
+          display:none;
         }
+        font-size: 4pt;
       }
     </style>
   </head>
@@ -212,10 +244,6 @@ EOD;
       <p>
         The following General Education courses are scheduled to be offered during the
         <strong><?php echo $term_name; ?></strong> semester.
-      </p>
-      <p>
-        Numbers in parentheses are (number of sections,
-        total number of seats, current enrollment) as of <?php echo $enrollment_date; ?>.
       </p>
       <div id='other-term-links'>
         <h2>Other Semesters Available</h2>
@@ -228,105 +256,66 @@ EOD;
               echo "<li><a href='./offered_gened.php?t=$other_term_code'>$other_term_name</a></li>\n";
             }
           }
-            echo "</ul>\n</div>\n";
-      ?>
+            echo "</ul>\n";
+        ?>
+      </div>
+      <p>
+        <em>
+          Courses in italics had fewer than 10% of their seats open
+          as of <strong><?php echo $enrollment_date; ?></strong>.
+        </em>
+      </p>
     </div>
     <div class='course-list'>
       <h2>Pathways Courses</h2>
       <h3>Required Core: College Writing 1 (EC-1)</h3>
-      <table>
         <?php course_rows('EC-1'); ?>
-      </table>
       <h3>Required Core: College Writing 2 (EC-2)</h3>
-      <table>
         <?php course_rows('EC-2'); ?>
-      </table>
       <h3>Required Core: Mathematics and Quantitative Reasoning (MQR)</h3>
-      <table>
         <?php course_rows('MQR'); ?>
-      </table>
       <h3>Required Core: Life and Physical Sciences (LPS)</h3>
-      <table>
         <?php course_rows('LPS'); ?>
-      </table>
       <h3>Flexible Core: World Cultures and Global Issues (WCGI)</h3>
-      <table>
         <?php course_rows('WCGI'); ?>
-      </table>
       <h3>Flexible Core: U.S. Experience in its Diversity (USED)</h3>
-      <table>
         <?php course_rows('USED'); ?>
-      </table>
       <h3>Flexible Core: Creative Expression (CE)</h3>
-      <table>
         <?php course_rows('CE'); ?>
-      </table>
       <h3>Flexible Core: Individual and Society (IS)</h3>
-      <table>
         <?php course_rows('IS'); ?>
-      </table>
       <h3>Flexible Core: Scientific World (SW)</h3>
-      <table>
         <?php course_rows('SW'); ?>
-      </table>
       <h3>College Option: Literature (LIT)</h3>
-      <table>
         <?php course_rows('LIT'); ?>
-      </table>
       <h3>College Option: Language (LANG)</h3>
-      <table>
         <?php course_rows('LANG'); ?>
-      </table>
       <h3>College Option: Science (SCI)</h3>
-      <table>
         <?php course_rows('SCI'); ?>
-      </table>
       <h3>College Option: Other</h3>
       Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
-      <table>
         <?php course_rows('SYN'); ?>
-      </table>
       <h2>Perspectives (PLAS) Courses</h2>
       <h3>Appreciating and Participating in the Arts (AP)</h3>
-      <table>
         <?php course_rows('AP'); ?>
-      </table>
       <h3>Cultures and Values (CV)</h3>
-      <table>
         <?php course_rows('CV'); ?>
-      </table>
       <h3>Natural Science (NS)</h3>
-      <table>
         <?php course_rows('NS'); ?>
-      </table>
       <h3>Natural Science with Lab (NS+L)</h3>
-      <table>
         <?php course_rows('NS+L'); ?>
-      </table>
       <h3>Reading Literature (RL)</h3>
-      <table>
         <?php course_rows('RL'); ?>
-      </table>
       <h3>Analyzing Social Structures (SS)</h3>
-      <table>
         <?php course_rows('SS'); ?>
-      </table>
       <h3>United States (US)</h3>
-      <table>
         <?php course_rows('US'); ?>
-      </table>
       <h3>European Traditions (ET)</h3>
-      <table>
         <?php course_rows('ET'); ?>
-      </table>
       <h3>World Cultures (WC)</h3>
-      <table>
         <?php course_rows('WC'); ?>
-      </table>
       <h3>Pre-Industrial Society (PI)</h3>
-      <table>
         <?php course_rows('PI'); ?>
-      </table>
     </div>
   </body>
 </html>
