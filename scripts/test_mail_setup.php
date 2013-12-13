@@ -15,7 +15,7 @@ $text_msg = <<<EOD
 EOD;
   $mail = new Senate_Mail('Christopher Vickery<Christopher.Vickery@qc.cuny.edu>',
       'Christopher.Vickery@qc.cuny.edu', "'testing' don’t question authority",
-      sanitize($text_msg), sanitize($html_msg));
+      $text_msg, $html_msg);
   $mail->add_cc('vickery@babbage.cs.qc.cuny.edu');
   $mail->add_bcc('cvickery@gmail.com', 'Charles Christopher Vickery');
   echo "<pre>\n"; var_dump($mail); echo "</pre>\n";
