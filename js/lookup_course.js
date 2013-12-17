@@ -1,4 +1,4 @@
-//  enter_course.js
+//  lookup_course.js
 
 $(function()
 {

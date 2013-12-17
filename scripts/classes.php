@@ -262,7 +262,7 @@ EOD;
       }
       $this->type_id    = $proposal_type_abbr2type_id[$type_abbr];
       $this->class_id   = $proposal_type_id2class_id[$this->type_id];
-      $this->agency_id   = $proposal_type_id2agency_id[$this->type_id];
+      $this->agency_id  = $proposal_type_id2agency_id[$this->type_id];
       $this->type_abbr  = $type_abbr;
       $this->class_abbr = $proposal_classes[$this->class_id]['abbr'];
       $this->num_justifications_needed = 0;
@@ -385,9 +385,9 @@ EOD;
       global $curric_db, $dept_ids, $div_ids, $disciplines;
       //  Verify that old code, which allowed deferred proposal type setting, is not
       //  causing mischief
-      assert('$this->type_id  != 0');
+      assert('$this->type_id   != 0');
       assert('$this->agency_id != 0');
-      assert('$this->class_id != 0'); // not actually part of db record
+      assert('$this->class_id  != 0'); // not actually part of db record
 
       //  Prepare for db
       $cur_catalog    = $_SESSION[cur_catalog];
@@ -398,7 +398,7 @@ EOD;
       {
         //  No id available yet: insert into db
         $query = <<<EOD
-  INSERT INTO proposals VALUES 
+  INSERT INTO proposals VALUES
   (
               default,                        -- id
               '{$this->type_id}',             -- type_id
@@ -526,14 +526,15 @@ class Component
    */
     function __construct($row = null)
     {
-      global $components, $designations, $curric_db, $geac_db, $cf_update_date;
+      global  $components, $basic_designations, $common_core_designations, $curric_db,
+              $geac_db, $cf_update_date;
 
       $this->components = array();
       foreach ($components as $abbr => $full_name)
       {
         $this->components[$abbr] = new Component(0.0);
       }
-      $this->designation_approvals = array();
+      $this->designation_approvals = '';
 
       if ($row)
       {
@@ -549,7 +550,6 @@ class Component
           unset($row);
           $row = $new_row;
         }
-
         $this->course_id                      = $row['course_id'];
         $this->offer_nbr                      = $row['offer_nbr'];
         $this->effective_date                 = $row['effective_date'];
@@ -600,29 +600,65 @@ class Component
           $this->cf_info_date = $cf_update_date;
         }
 
-        //  Look up requirement designations approved by Academic Senate
+        //  Look up all designations for which this course has already been approved.
+        preg_match('/(\d+)/', $this->course_number, $matches);
+        if (is_array($matches) && count($matches) > 1)
+        {
+          $numeric_part = $matches[1];
+          $this->designation_approvals = lookup_designations($this->discipline, $numeric_part);
+        }
+        else die('Invalid course number at ' . basename(__FILE__) . ' line ' . __LINE__ .
+                 "Please notify $webmaster_email of this error.");
+/*
         $query = <<<EOD
-    SELECT proposal_classes.abbr  prop_class,
-           proposal_types.abbr    prop_type,
-           event_date             approval_date
-      FROM proposals,
-           proposal_classes,
-           proposal_types,
-           events
-     WHERE events.discipline = '$this->discipline'
-       AND ltrim(events.course_number, '0') = '$this->course_number'
-       AND events.agency_id = (SELECT id FROM agencies WHERE abbr = 'Senate')
-       AND events.action_id = (SELECT id FROM actions WHERE full_name = 'Approve')
-       AND proposals.id = events.proposal_id
-       AND proposal_types.id = proposals.type_id
-       AND proposal_classes.id = proposal_types.class_id
+select t.abbr, t.full_name, m.reason
+from course_designation_mappings m, proposal_types t
+where m.designation_id = t.id
+and m.discipline = '{$this->discipline}'
+and m.course_number = '{$this->course_number}'
 
 EOD;
         $result = pg_query($curric_db, $query);
         while ($desig = pg_fetch_assoc($result))
         {
-          $this->designation_approvals[] = $desig;
+          $desig_abbr = $desig['abbr'];
+          $desig_name = $desig['full_name'];
+          if (in_array($desig_abbr, array('LIT', 'LANG', 'SCI', 'COPT4')))
+          {
+            $desig_name = 'College Option ' . $desig_name;
+          }
+          switch ($desig['reason'])
+          {
+            case 'LIST':  $desig_reason = 'Senate-approved list';
+                          break;
+            case 'STEM':  $desig_reason = 'STEM variant';
+                          break;
+            case 'PLAS':  $desig_reason = 'Perspectives (PLAS)';
+                          break;
+            case 'CCRC':
+            case 'OAA':   $desig_reason = 'CUNY-approved';
+                          break;
+            case 'LANG':
+            case 'LIT':
+            case 'SCI':
+            case 'SYN':   $desig_reason = 'Senate-approved College Option proposal';
+                          break;
+            case 'RL':    $desig_reason = 'Perspectives RL course';
+                          break;
+            case 'NS':
+            case 'NS+L':  $desig_reason = 'Perspectives NS or NS+L course';
+                          break;
+            case 'LPS':
+            case 'SW':    $desig_reason = 'LPS or SW course';
+                          break;
+
+            default: die('Bad switch at ' . basename(__FILE__) . ' line ' . __LINE__ .
+                         ". Please notify $webmaster_email");
+          }
+
+          $this->designation_approvals["<th>$desig_abbr</th>"] = "<td>$desig_name</td><td>$desig_reason</td>";
         }
+*/
       }
       else
       {
@@ -692,7 +728,7 @@ EOD;
    */
     function toHTML($with_approvals = false, $with_radio = false, $index = null)
     {
-      global $components, $designations;
+      global $components, $basic_designations, $common_core_designations;
       //  If with_approvals is true, this call is to show the current information for
       //  the course in CUNYfirst. If course_id is 0, there is nothing to report.
       if ($this->course_id === 0 and $with_approvals)
@@ -741,50 +777,89 @@ EOD;
         $returnVal = "<p class='line-one'>$line_one</p>\n";
       }
 
-      //  Designation. Draw attention if not 'Regular Liberal Arts'
-      $designation_class = '';
+      //  Requirement Designation. Draw attention if not 'Regular Liberal Arts'
+      $designation_class = " class='warning'";
       $designation_msg   = '';
-      if ($this->is_undergraduate && $this->designation !== 'RLA')
+      if ($this->is_undergraduate)
       {
-        $designation_class = " class='warning'";
-        $designation_msg = <<<EOD
+        if (array_key_exists($this->designation, $basic_designations))
+        {
+          $designation = sanitize($basic_designations[$this->designation]);
+          if ($this->designation === 'RLA')
+          {
+            $designation_class = '';
+          }
+          else
+          {
+            $designation_msg = <<<EOD
     <p class='designation-msg warning'>
       <strong>Note: </strong>courses submitted for General Education designations must be
       “Regular Liberal Arts” (RLA).
     </p>
 
 EOD;
+          }
+        }
+        elseif (array_key_exists($this->designation, $common_core_designations))
+        {
+          $designation      = sanitize($common_core_designations[$this->designation]);
+          $designation_msg  = <<<EOD
+    <p class='designation-msg warning'>
+      <strong>Note: </strong>This course has already been assigned the {$this->designation}
+      designation. Courses cannot be approved for two CUNY Common Core designations.
+    </p>
+
+EOD;
+        }
+        elseif ($this->designation === 'COPR')
+        {
+          $designation      = 'Queens Core (LIT, LANG, SCI, or Other)';
+          $designation_msg  = <<<EOD
+    <p class='designation-msg warning'>
+      <strong>Note: </strong>This course is already a College Option course at Queens
+      College (Literature, Language, Science, or Synthesis). Consult <a
+      href='http://senate.qc.cuny.edu/Curriculum/Approved_Courses' target='_blank'>the
+      list of all approved courses and their basic_designations</a> for more information.
+    </p>
+EOD;
+        }
+        else
+        {
+          $designation     = 'Unknown Designation';
+          $designation_msg = <<<EOD
+    <p class='designation-msg warning'>
+      <strong>Note: </strong>courses submitted for General Education designations must be
+      “Regular Liberal Arts” (RLA).
+    </p>
+
+EOD;
+        }
         if (strpos(getcwd(), 'Proposal_Manager') !== false)
         {
           $designation_msg .= <<<EOD
     <p class='designation-msg warning'>
-      If you have not already done so, you need to create another proposal to request the
-      Registrar to fix the CUNYfirst data for this course so it has the RLA designation.
-      “Fix CUNYfirst catalog data” is one of the proposal types in the Create Proposal
-      section above.
+      If you think that this Requirement Designation is incorrect, you should create an additional
+      proposal of type "FIX" for the course. In that proposal, explain the problem so the QC Registrar
+      can fix the CUNYfirst catalog entry for the course.
     </p>
 
 EOD;
         }
       }
-      if (isset($designations[$this->designation]))
-      {
-        $designation        = sanitize($designations[$this->designation]);
-      }
-      else $designation     = 'Unknown Designation';
+
       $catalog_description  = sanitize($this->catalog_description);
       $returnVal .= <<<EOD
     <p class='catalog-description'>
       {$catalog_description}
     </p>
-    <p><strong>Liberal Arts Designation: </strong><span$designation_class>{$designation}</span></p>
+    <p><strong>Requirement Designation: </strong><span$designation_class>{$designation}</span></p>
     $designation_msg
 
 EOD;
       //  Display designation approvals if asked and appropriate to do so
       if ($with_approvals && ($this->course_id !== 0) && $this->is_undergraduate)
       {
-        if (count($this->designation_approvals) > 0)
+        if ($this->designation_approvals !== '')
         {
           $returnVal .= <<<EOD
       <p>
@@ -792,19 +867,11 @@ EOD;
         College or University requirement designations:
       </p>
       <table id='designation-approvals'>
-        <tr><th>Designation</th><th>Senate approval</th></tr>
-
+        <tr><th>Abbr.</th><th>Designation</th><th>Approval Basis</th></tr>
+        {$this->designation_approvals}
+      </table>
 EOD;
 
-          foreach ($this->designation_approvals as $desig)
-          {
-            $desig_str = "{$desig['prop_type']} ({$desig['prop_class']})";
-            $date = $desig['approval_date'];
-            $date = new DateTime($date);
-            $date = $date->format('F j, Y');
-            $returnVal .= "      <tr><td>$desig_str</td><td>$date</td></tr>\n";
-          }
-          $returnVal .= "    </table>\n";
         }
         else
         {
@@ -823,13 +890,15 @@ EOD;
       }
       return $returnVal;
     }
+
+
     //  diffs_to_html()
     //  ----------------------------------------------------------------------------------
     /*  Returns an HTML description of the changes between two Course objects.
      */
       public static function diffs_to_html($cur_catalog, $new_catalog)
       {
-        global $components, $designations;
+        global $components, $basic_designations, $common_core_designations;
         $edit_diffs = '';
         // title
         if ($cur_catalog->course_title !== $new_catalog->course_title)
@@ -895,12 +964,20 @@ EOD;
         // designation
         if ($cur_catalog->designation !== $new_catalog->designation)
         {
-          if (! isset($designations[$cur_catalog->designation]))
+          if ( isset($basic_designations[$cur_catalog->designation]) )
+          {
+            $cur_designation = $basic_designations[$cur_catalog->designation];
+            $new_designation = $basic_designations[$new_catalog->designation];
+          }
+          elseif ( isset($common_core_designations[$cur_catalog->designation]))
+          {
+            $cur_designation = $common_core_designations[$cur_catalog->designation];
+            $new_designation = $common_core_designations[$new_catalog->designation];
+          }
+          else
           {
             $cur_catalog->designation = "Unknown";
           }
-          $cur_designation = $designations[$cur_catalog->designation];
-          $new_designation = $designations[$new_catalog->designation];
           $edit_diffs .= <<<EOD
           <h3>Course Designation</h3>\n
           <div>
