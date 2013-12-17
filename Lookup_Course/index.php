@@ -182,7 +182,21 @@ EOD;
         {
           $prerequisites = "No prerequisites";
         }
-        echo <<<EOD
+        $designation_table = '';
+        $designations = lookup_designations($discipline, $course_number);
+        if ($designations !== '')
+        {
+          $designation_table = <<<EOD
+      <p>$course has been approved for the following requirement designations:</p>
+      <table>
+        <tr><th>Abbr.</th><th>Designation</th><th>Approval Basis</th></tr>
+        $designations
+      </table>
+
+EOD;
+        }
+      }
+      echo <<<EOD
       <h2>$course: $title. $uc_component</h2>
       <div>
         <table>
@@ -210,12 +224,13 @@ EOD;
         <p>${hours}hr${component}; ${credits}cr; $prerequisites</p>
         <h3>Catalog Description:</h3>
         <p>$catalog_description</p>
+        $designation_table
       </div>
 
 EOD;
-      }
     }
   }
+
 ?>
   </body>
 </html>

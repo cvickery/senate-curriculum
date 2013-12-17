@@ -187,17 +187,24 @@ while ($row = pg_fetch_assoc($result))
    }
  }
 
-//  designations (liberal arts or not)
-/*  There is a table of requirement designations, but these are the only ones that
- *  matter for now. Besides, CUNYfirst is being updated to use this field to indicate what
- *  Pathways requirements a course satisfies. Maybe.
- */
-$designations = array(
+//  Basic designations (Not CUNY core)
+$basic_designations = array(
   'Unknown' => 'Unknown Designation',
   'RLA'     => 'Regular Liberal Arts',
   'RNL'     => 'Regular Non-Liberal Arts',
   'GLA'     => 'Graduate Liberal Arts',
   'GNL'     => 'Graduate Non-Liberal Arts'
+  );
+//  CUNY core designations
+$common_core_designations = array(
+  'RECR'    =>  'EC-1 or EC-2 (English Composition)',
+  'RMQR'    =>  'MQR (Mathematics and Quantitative Reasoning)',
+  'RLPR'    =>  'LPS (Life and Physical Sciences)',
+  'FCER'    =>  'CE (Creative Expression)',
+  'FISR'    =>  'IS (Individual and Society)',
+  'FSWR'    =>  'SW (Scientific World)',
+  'FUSR'    =>  'USED (US Experience in its Diversity)',
+  'FWGR'    =>  'WCGI (World Cultures and Global Experience)'
   );
 
 //  "regular" components (lecture, lab, etc)
@@ -315,7 +322,9 @@ $past_tense = array(
   'Table'     => 'Tabled',
   'Close'     => 'Closed',
   'Accept'    => 'Accepted',
+  'Reopen'    =>  'Reopened',
   );
+
 
 //  Utility functions
 //  =====================================================================================
@@ -384,6 +393,67 @@ EOD;
     }
     return $returnVal;
   }
+
+//  lookup_designations()
+//  ---------------------------------------------------------------------------
+function lookup_designations($discipline, $course_number)
+{
+  global $curric_db;
+  //  Look up all designations for which this course has already been approved.
+  //  Return a string with table rows for each one, if any.
+  $returnVal = '';
+  $query = <<<EOD
+select t.abbr, t.full_name, m.reason
+from course_designation_mappings m, proposal_types t
+where m.designation_id = t.id
+and m.discipline = '$discipline'
+and m.course_number = '$course_number'
+
+EOD;
+  $result = pg_query($curric_db, $query);
+  while ($desig = pg_fetch_assoc($result))
+  {
+    $desig_abbr = $desig['abbr'];
+    $desig_name = $desig['full_name'];
+    if (in_array($desig_abbr, array('LIT', 'LANG', 'SCI', 'COPT4')))
+    {
+      $desig_name = 'College Option ' . $desig_name;
+    }
+    switch ($desig['reason'])
+    {
+      case 'LIST':  $desig_reason = 'Senate-approved list';
+                    break;
+      case 'STEM':  $desig_reason = 'STEM variant';
+                    break;
+      case 'PLAS':  $desig_reason = 'Perspectives (PLAS)';
+                    break;
+      case 'CCRC':
+      case 'OAA':   $desig_reason = 'CUNY-approved';
+                    break;
+      case 'LANG':
+      case 'LIT':
+      case 'SCI':
+      case 'SYN':   $desig_reason = 'Senate-approved College Option proposal';
+                    break;
+      case 'RL':    $desig_reason = 'Perspectives RL course';
+                    break;
+      case 'NS':
+      case 'NS+L':  $desig_reason = 'Perspectives NS or NS+L course';
+                    break;
+      case 'LPS':
+      case 'SW':    $desig_reason = 'LPS or SW course';
+                    break;
+
+      default: die('Bad switch at ' . basename(__FILE__) . ' line ' . __LINE__ .
+                   ". Please notify $webmaster_email");
+    }
+
+    $returnVal .= "<tr><th>$desig_abbr</th><td>$desig_name</td><td>$desig_reason</td></tr>\n";
+  }
+  return $returnVal;
+}
+
+
 
 //  title_case()
 //  ---------------------------------------------------------------------------
