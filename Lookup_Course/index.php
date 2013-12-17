@@ -90,7 +90,7 @@ $course_number_value  = $course_number  = '';
       }
     </style>
     <script type="text/javascript" src="../js/jquery.min.js"></script>
-    <script type="text/javascript" src="../js/enter_course.js"></script>
+    <script type="text/javascript" src="../js/lookup_course.js"></script>
     <script type="text/javascript" src="../js/scrollIntoView.min.js"></script>
   </head>
   <body>
@@ -234,4 +234,3 @@ EOD;
 ?>
   </body>
 </html>
-
