@@ -581,7 +581,7 @@ EOD;
         if ($criteria_group === 'QC' || $criteria_group === 'LPS')
         {
           $pre_approved = '';
-          foreach ($cur_catalog->designation_approvals as $approval)
+          foreach ($cur_catalog->plas_approvals as $approval)
           {
             if (isset($approval['prop_class']) && $approval['prop_class'] === 'PLAS')
             {

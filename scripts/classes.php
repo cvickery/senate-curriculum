@@ -534,7 +534,8 @@ class Component
       {
         $this->components[$abbr] = new Component(0.0);
       }
-      $this->designation_approvals = '';
+      $this->designation_approvals  = '';
+      $this->plas_approvals         = array();
 
       if ($row)
       {
@@ -552,7 +553,7 @@ class Component
         }
         $this->course_id                      = $row['course_id'];
         $this->offer_nbr                      = $row['offer_nbr'];
-        $this->effective_date                 = $row['effective_date'];
+        $this->effective_date                 = $row['catalog_eff_date'];
         $this->discipline                     = $row['discipline'];
         $this->course_number                  = $row['course_number'];
         $this->course_title                   = sanitize($row['course_title']);
@@ -601,6 +602,7 @@ class Component
         }
 
         //  Look up all designations for which this course has already been approved.
+        //  Disregard suffixes (W and H), because they don't matter.
         preg_match('/(\d+)/', $this->course_number, $matches);
         if (is_array($matches) && count($matches) > 1)
         {
@@ -609,6 +611,33 @@ class Component
         }
         else die('Invalid course number at ' . basename(__FILE__) . ' line ' . __LINE__ .
                  "Please notify $webmaster_email of this error.");
+
+        //  Record PLAS RDs approved by Academic Senate
+        $query = <<<EOD
+    SELECT proposal_classes.abbr  prop_class,
+           proposal_types.abbr    prop_type,
+           event_date             approval_date
+      FROM proposals,
+           proposal_classes,
+           proposal_types,
+           events
+     WHERE events.discipline = '$this->discipline'
+       AND ltrim(events.course_number, '0') = '$this->course_number'
+       AND proposal_classes.abbr = 'PLAS'
+       AND events.agency_id = (SELECT id FROM agencies WHERE abbr = 'Senate')
+       AND events.action_id = (SELECT id FROM actions WHERE full_name = 'Approve')
+       AND proposals.id = events.proposal_id
+       AND proposal_types.id = proposals.type_id
+       AND proposal_classes.id = proposal_types.class_id
+
+EOD;
+        $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed at ".
+                  basename(__FILE__) . ' line ' . __LINE__ . "</h1>" .
+                  "<p>Please notify $webmaster_email of this error.</p>");
+        while ($desig = pg_fetch_assoc($result))
+        {
+          $this->plas_approvals[] = $desig;
+        }
 /*
         $query = <<<EOD
 select t.abbr, t.full_name, m.reason
