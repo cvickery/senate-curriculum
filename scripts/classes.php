@@ -638,56 +638,6 @@ EOD;
         {
           $this->plas_approvals[] = $desig;
         }
-/*
-        $query = <<<EOD
-select t.abbr, t.full_name, m.reason
-from course_designation_mappings m, proposal_types t
-where m.designation_id = t.id
-and m.discipline = '{$this->discipline}'
-and m.course_number = '{$this->course_number}'
-
-EOD;
-        $result = pg_query($curric_db, $query);
-        while ($desig = pg_fetch_assoc($result))
-        {
-          $desig_abbr = $desig['abbr'];
-          $desig_name = $desig['full_name'];
-          if (in_array($desig_abbr, array('LIT', 'LANG', 'SCI', 'COPT4')))
-          {
-            $desig_name = 'College Option ' . $desig_name;
-          }
-          switch ($desig['reason'])
-          {
-            case 'LIST':  $desig_reason = 'Senate-approved list';
-                          break;
-            case 'STEM':  $desig_reason = 'STEM variant';
-                          break;
-            case 'PLAS':  $desig_reason = 'Perspectives (PLAS)';
-                          break;
-            case 'CCRC':
-            case 'OAA':   $desig_reason = 'CUNY-approved';
-                          break;
-            case 'LANG':
-            case 'LIT':
-            case 'SCI':
-            case 'SYN':   $desig_reason = 'Senate-approved College Option proposal';
-                          break;
-            case 'RL':    $desig_reason = 'Perspectives RL course';
-                          break;
-            case 'NS':
-            case 'NS+L':  $desig_reason = 'Perspectives NS or NS+L course';
-                          break;
-            case 'LPS':
-            case 'SW':    $desig_reason = 'LPS or SW course';
-                          break;
-
-            default: die('Bad switch at ' . basename(__FILE__) . ' line ' . __LINE__ .
-                         ". Please notify $webmaster_email");
-          }
-
-          $this->designation_approvals["<th>$desig_abbr</th>"] = "<td>$desig_name</td><td>$desig_reason</td>";
-        }
-*/
       }
       else
       {
