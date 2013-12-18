@@ -529,12 +529,18 @@ while ($row = pg_fetch_assoc($result))
   {
     $special_message = <<<EOD
     <div style="color:#c00; margin:auto; width:80%; font-size:1.1em;">
-      <h2 style="margin: 0.1em;">New LPS Course for Spring 2014</h2>
+      <h2 style="margin: 0.1em;">New LPS Courses for Spring 2014</h2>
       <p style="margin: 0.1em 0 1em;">
         Are you looking for a course that will satisfy your Pathways Life and Physical Sciences
-        (LPS) requirement, but is designed for non-science majors? We’ve just added Biology 14
-        to the Spring schedule. <a href='http://gened.qc.cuny.edu/files/2013/12/Biology-14.pdf'>
-        Check it out!</a>
+        (LPS) requirement, but is designed for non-science majors?
+      </p>
+      <p>
+        We’ve just added <a href='http://gened.qc.cuny.edu/files/2013/12/Biology-14.pdf'>Biology 14</a>
+        and <a href='http://gened.qc.cuny.edu/files/2013/12/ENSCI-99.pdf'>Environmental Science 99</a>
+        to the Spring schedule.
+      </p>
+      <p>
+        Check them out!
       </p>
     </div>
 EOD;
