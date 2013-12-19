@@ -150,7 +150,7 @@ EOD;
       while ($row = pg_fetch_assoc($result))
       {
         $course_id      = $row['course_id'];
-        $effective_date = new DateTime($row['catalog_eff_date']);
+        $effective_date = new DateTime($row['effective_date']);
         $effective_date = $effective_date->format('F d, Y');
         $is_active      = ('A' === $row['status']) ? 'yes' : 'no';
         $can_schedule   = ('Y' === $row['schedule']) ? 'yes' : 'no';

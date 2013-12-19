@@ -553,7 +553,7 @@ class Component
         }
         $this->course_id                      = $row['course_id'];
         $this->offer_nbr                      = $row['offer_nbr'];
-        $this->effective_date                 = $row['catalog_eff_date'];
+        $this->effective_date                 = $row['effective_date'];
         $this->discipline                     = $row['discipline'];
         $this->course_number                  = $row['course_number'];
         $this->course_title                   = sanitize($row['course_title']);
