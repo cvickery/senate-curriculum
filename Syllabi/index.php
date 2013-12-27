@@ -50,7 +50,7 @@ require_once('syllabus_utils.php');
   <div>
     <h1>Course Syllabi</h1>
     <h2>
-      All syllabi copyright © Queens College of CUNY all rights reserved unless otherwise
+      All syllabi Copyright © Queens College of CUNY, all rights reserved unless otherwise
       noted.
     </h2>
     $dump_if_testing
