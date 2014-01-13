@@ -27,7 +27,8 @@ SELECT a.crse_id,
        c.ssr_component,
        b.meeting_time_start,
        b.meeting_time_end,
-       b.mon, b.tues, b.wed, b.thurs, b.fri, b.sat, b.sun
+       b.mon, b.tues, b.wed, b.thurs, b.fri, b.sat, b.sun,
+       b.facility_id
 FROM  octsims.erp805_class_section a,
       octsims.erp805_class_section_dtl b,
       octsims.erp805_course_component c
@@ -78,6 +79,7 @@ EOD;
         "days           TEXT,   " .
         "seats          NUMBER, " .
         "enrollment     NUMBER, " .
+        "room           TEXT,   " .
         "date_loaded    TEXT    " .
       ")");
     //  Populate the table
@@ -120,6 +122,7 @@ EOD;
       "'$days',                       " .
       "{$row->ENRL_CAP},              " .
       "{$row->ENRL_TOT},              " .
+      "'{$row->facility_id}',         " .
       "'$date_loaded'                 " .
       ")");
     }
