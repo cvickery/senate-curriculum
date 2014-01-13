@@ -122,7 +122,7 @@ EOD;
       "'$days',                       " .
       "{$row->ENRL_CAP},              " .
       "{$row->ENRL_TOT},              " .
-      "'{$row->facility_id}',         " .
+      "'{$row->FACILITY_ID}',         " .
       "'$date_loaded'                 " .
       ")");
     }
