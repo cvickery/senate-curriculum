@@ -535,12 +535,11 @@ while ($row = pg_fetch_assoc($result))
         (LPS) requirement, but is designed for non-science majors?
       </p>
       <p>
-        We’ve just added <a href='http://gened.qc.cuny.edu/files/2013/12/Biology-14.pdf'>Biology 14</a>
-        and <a href='http://gened.qc.cuny.edu/files/2013/12/ENSCI-99.pdf'>Environmental Science 99</a>
+        We’ve added <a href='http://gened.qc.cuny.edu/files/2013/12/ENSCI-99.pdf'>Environmental Science 99</a>
         to the Spring schedule.
       </p>
       <p>
-        Check them out!
+        Check it out!
       </p>
     </div>
 EOD;
