@@ -529,6 +529,7 @@ while ($row = pg_fetch_assoc($result))
   {
     $special_message = <<<EOD
     <div style="color:#c00; margin:auto; width:80%; font-size:1.1em;">
+    <!--
       <h2 style="margin: 0.1em;">New LPS Course for Spring 2014</h2>
       <p style="margin: 0.1em 0 1em;">
         Are you looking for a course that will satisfy your Pathways Life and Physical Sciences
@@ -541,6 +542,7 @@ while ($row = pg_fetch_assoc($result))
       <p>
         Check it out!
       </p>
+    -->
     </div>
 EOD;
   }
