@@ -206,6 +206,7 @@ $common_core_designations = array(
   'FUSR'    =>  'USED (US Experience in its Diversity)',
   'FWGR'    =>  'WCGI (World Cultures and Global Experience)'
   );
+$all_designations = array($basic_designation, $common_core_designations);
 
 //  "regular" components (lecture, lab, etc)
 $query = "SELECT * FROM cf_components WHERE type = 'regular' ORDER BY display_order";

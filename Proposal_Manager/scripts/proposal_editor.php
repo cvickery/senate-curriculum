@@ -298,13 +298,15 @@ EOD;
           <label for='designation'>Liberal Arts Designation:</label>
           <select id='designation' name='designation'>
 EOD;
-    foreach ($designations as $abbr => $full_name)
+    foreach ($all_designations as $abbr => $full_name)
     {
       //  Hack awaiting definitive designation determination
       /*  For now, the full name of a designation starts with 'Regular' for undergraduate
        *  courses, and 'Graduate' for graduate-level courses. But the form uses the
        *  abbreviations RLA, GLA, etc. CUNY will be embedding RCC and FCC areas in these
        *  names, and this code will need to be adjusted to accommodate the new names.
+       *  2014-02-28: We're using basic_ and common_core_ designations now. The two, merged,
+       *  make up all_designations.
        */
       if (  ($cur_catalog->is_undergraduate && substr($full_name, 0, 7) === 'Regular') ||
             (!$cur_catalog->is_undergraduate && substr($full_name, 0, 8) === 'Graduate') )
