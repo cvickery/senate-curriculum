@@ -206,8 +206,7 @@ $common_core_designations = array(
   'FUSR'    =>  'USED (US Experience in its Diversity)',
   'FWGR'    =>  'WCGI (World Cultures and Global Experience)'
   );
-$all_designations = array($basic_designations, $common_core_designations);
-
+$all_designations = array_merge($basic_designations, $common_core_designations);
 //  "regular" components (lecture, lab, etc)
 $query = "SELECT * FROM cf_components WHERE type = 'regular' ORDER BY display_order";
 $result = pg_query($curric_db, $query) or die('Unable to get components list');
