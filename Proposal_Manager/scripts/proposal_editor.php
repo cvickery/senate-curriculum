@@ -6,6 +6,7 @@
  *
  */
 
+require_once('utils.php');
   // This code is included only on a page load with the user logged in
   assert('isset($_SESSION[person])');
   //  ... and a proposal selected
