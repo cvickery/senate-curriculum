@@ -46,7 +46,7 @@ EOD;
   {
     die("<h1 class='error'>Error: $agency $action event duplicates " .
         "most-recent event for proposal #$proposal_id</h1></body></html>");
-  }            
+  }
   return;
 }
 
@@ -645,7 +645,7 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        no proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
+        No proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
       </h2>
 
 EOD;
