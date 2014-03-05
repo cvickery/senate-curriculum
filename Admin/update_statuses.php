@@ -645,7 +645,7 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        no proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
+        No proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
       </h2>
 
 EOD;
