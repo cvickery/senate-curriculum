@@ -121,7 +121,7 @@ EOD;
       //  Generate approval event for each proposal selected
       pg_query($curric_db, 'BEGIN') or die("<h1 class='error'>Query Failed: "
           . pg_last_error($curric_db) . " File " . __FILE__ . " " . __LINE__
-          . "</h2></body></html>\n");
+          . "</h1></body></html>\n");
       foreach ($_POST as $key => $value)
       {
         if (strstr($key, 'geac-approved-id-'))
@@ -603,7 +603,7 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        no proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
+        No proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
       </h2>
 
 EOD;
