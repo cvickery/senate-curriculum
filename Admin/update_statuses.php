@@ -129,7 +129,7 @@ EOD;
 
 EOD;
     }
-    else die("<h1 class='error'>Error: undo events failed</h1></div></body></html>");
+    else die("<h1 class='error'>Error: undo events failed</h1></body></html>");
 
   }
 
@@ -595,7 +595,7 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        $num proposal$suffix that $copula approved by {GEAC, WSC, AQRAC}, but not by UCC
+        $num proposal$suffix that $copula approved by {GEAC, WSC, AQRAC}, but not yet approved by UCC
       </h2>
       <form name='ucc-approved-form' action='./update_statuses.php' method='post'>
         <input type='hidden' name='form-name' value='ucc-approved-form' />
@@ -634,7 +634,7 @@ EOD;
                   value='today'
                   id='ucc-approved-date' />
           <button type='submit' id='ucc-approved-button'$is_disabled>
-            The UCC approved no proposals
+            No proposals selected
           </button>
         </fieldset>
       </form>
@@ -645,21 +645,83 @@ EOD;
   {
     echo <<<EOD
       <h2>
-        No proposals approved by {GEAC, WSC, AQRAQ} have been approved by the UCC
+        No proposals approved by {GEAC, WSC, AQRAQ} are awaiting UCC approval.
       </h2>
 
 EOD;
   }
 
-  //  Course proposals not yet approved by the UCC
-  //  --------------------------------------------
-  echo <<<EOD
+  //  Course (catalog change) proposals not yet approved by the UCC
+  //  -------------------------------------------------------------
+  $query = 'select * from ucc_cat_pending';
+  $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: "
+      . pg_last_error($curric_db) . ' File ' . __FILE__ . ' ' . __LINE__
+      . "</h1></body></html>");
+  $num = pg_num_rows($result);
+  $suffix = 's';
+  $copula = 'have';
+  if ($num == 1)
+  {
+    $suffix = '';
+    $copula = 'has';
+  }
+  if ($num > 0)
+  {
+    echo <<<EOD
       <h2>
-        Proposals for new or revised courses not yet approved by the UCC
-        <span class='warning'>(not implemented yet)</span>
+        $num catalog-change proposal$suffix {NEW-U; REV-U} that $copula not been approved by the UCC
+      </h2>
+      <form name='ucc-approved-form' action='./update_statuses.php' method='post'>
+        <input type='hidden' name='form-name' value='ucc-approved-form' />
+        <table id='ucc-approved-table'>
+          <tr>
+            <th>Select</th>
+            <th>ID</th>
+            <th>Course</th>
+            <th>Type</th>
+            <th>Submitted</th>
+          </tr>
+EOD;
+    while ($row = pg_fetch_assoc($result))
+    {
+      $id = $row['proposal_id'];
+      echo <<<EOD
+          <tr>
+            <td>
+              <input type='checkbox' name='ucc-approved-id-$id'$is_disabled />
+            </td>
+            <td><a href='../Proposals?id=$id'>$id</a></td>
+            <td>{$row['course']}</td>
+            <td>{$row['type']}</td>
+            <td>{$row['submitted']}</td>
+          </tr>
+EOD;
+    }
+    echo <<<EOD
+        </table>
+        <fieldset><legend>Submit UCC approvals</legend>
+          <label for='ucc-approved-date'>UCC Approval Date</label>
+          <input  type='text'
+                  name='ucc-approved-date'
+                  value='today'
+                  id='ucc-approved-date' />
+          <button type='submit' id='ucc-approved-button'$is_disabled>
+            No proposals selected
+          </button>
+        </fieldset>
+      </form>
+
+EOD;
+  }
+  else
+  {
+    echo <<<EOD
+      <h2>
+        No catalog-change proposals are awaiting UCC approval.
       </h2>
 
 EOD;
+  }
 
   //  Proposals that are approved by UCC, but not by Senate
   //  ------------------------------------------------------
