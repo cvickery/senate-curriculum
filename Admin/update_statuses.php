@@ -579,7 +579,7 @@ EOD;
 
   //  Proposals that are approved by {GEAC, WSC, AQRAC} but not by UCC
   //  ----------------------------------------------------------------
-  $query = 'select * from ucc_pending order by subcommittee_name, subcommittee_approved';
+  $query = 'select * from ucc_sub_pending order by subcommittee_name, subcommittee_approved';
   $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: "
       . pg_last_error($curric_db) . ' File ' . __FILE__ . ' ' . __LINE__
       . "</h1></body></html>");
