@@ -43,7 +43,7 @@ order by a.strm, a.session_code, a.subject, a.catalog_nbr, a.class_section
 EOD;
     $enrollment_info = json_decode(exec("(export "    .
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
-    " export ORACLE_HOME=\$DYLD_LIBRARY_PATH; echo "  .
+    " export ORACLE_HOME=/opt/oracle/instanclient; echo "  .
     " \"$enrollment_query\"|/usr/local/bin/oci_query)"));
     $msg = "curr_enrollments.php: " . date('Y-m-d h:ia ');
     if (is_array($enrollment_info) && (count($enrollment_info) > 0))
