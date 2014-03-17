@@ -83,8 +83,11 @@ EOD;
         "date_loaded    TEXT    " .
       ")");
     //  Populate the table
+    $debug_count = 0;
     foreach ($enrollment_info as $row)
     {
+      var_dump($row);
+      if ($debug_count++ > 0) exit("debuggerize that\n");
       //  Convert the STRM and SESSION_CODE columns into a single,
       //  chronologically-correct numerical column in the form YYYYTTT.
       $term = new Term($row->STRM, $row->SESSION_CODE);
