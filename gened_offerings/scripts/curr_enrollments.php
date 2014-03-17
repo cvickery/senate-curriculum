@@ -10,6 +10,31 @@ require_once('utils.php');
    *  semesters, apparently for approximately the calendar year that includes
    *  the current semester. */
    $enrollment_query = <<<EOD
+col CRSE_ID             format a20;
+col STRM                format a20;
+col SESSION_CODE        format a20;
+col CLASS_SECTION       format a20;
+col CLASS_NBR           format a20;
+col SUBJECT             format a20;
+col CATALOG_NBR         format a20;
+col CLASS_STAT          format a20;
+col ENRL_CAP            format a20;
+col WAIT_CAP            format a20;
+col ENRL_TOT            format a20;
+col WAIT_TOT            format a20;
+col SSR_COMPONENT       format a20;
+col DATE_LOADED         format a20;
+col COMPONENT           format a20;
+col MEETING_TIME_START  format a20;
+col MEETING_TIME_END    format a20;
+col MON                 format a20;
+col TUES                format a20;
+col WED                 format a20;
+col THURS               format a20;
+col FRI                 format a20;
+col SAT                 format a20;
+col SUN                 format a20;
+col FACILITY_ID         format a20;
 SELECT a.crse_id        CRSE_ID,
        a.strm           STRM,
        a.session_code   SESSION_CODE,
