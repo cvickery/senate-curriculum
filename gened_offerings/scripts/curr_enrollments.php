@@ -45,14 +45,14 @@ EOD;
     " DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; " .
     " export ORACLE_HOME=/opt/oracle/instanclient; echo "  .
     " \"$enrollment_query\"|/usr/local/bin/oci_query)"));
-    $msg = "curr_enrollments.php: " . date('Y-m-d h:ia ');
+    $msg = "curr_enrollments.php: ";
     if (is_array($enrollment_info) && (count($enrollment_info) > 0))
     {
       $msg .= number_format(count($enrollment_info)) . " sections\n";
     }
     else $msg .= "UPDATE FAILED\n";
-    echo "$msg\n";
-    if (strstr($msg, 'FAIL')) exit();
+    echo "$msg";
+    if (strstr($msg, 'FAIL')) exit("curr_enrollments.php: no changes made\n");
 
     //  Now to create the table here
     /*  We assume this script will be run 1x per day. Any more often than
@@ -126,5 +126,5 @@ EOD;
       "'$date_loaded'                 " .
       ")");
     }
-
+    echo "curr_enrollments.php: $file_name written\n";
   ?>
