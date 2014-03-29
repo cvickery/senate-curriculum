@@ -30,15 +30,22 @@ group by  a.discipline, a.course_number, a.course_title,
 order by  a.discipline, a.course_number, o.component desc
 
 EOD;
-
     $result = pg_query($curric_db, $query)
-    or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+    or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ .
+           pg_last_error($curric_db) .
+           "</h1>");
     if (pg_num_rows($result) > 0)
     {
       while ($row = pg_fetch_assoc($result))
       {
         $discipline         = $row['discipline'];
         $course_number      = $row['course_number'];
+        if ($row['component'] === 'LAB')
+        {
+          //  Do not display lab sections: it makes students think that's
+          //  all they have to take.
+          continue;
+        }
         $if_lab             = ($row['component'] === 'LAB') ? ' (Lab)' : '';
         $course_number_str  = $course_number;
         $suffixes = $row['suffixes'];
@@ -195,40 +202,58 @@ EOD;
   <head>
     <title>General Education Course Offerings</title>
     <style type='text/css'>
-      .warn, .closed {font-style: italic;}
+      h2 {
+        text-align:       center;
+        font-size:        2em;
+        border-bottom:    2px solid black;
+        width:            80%;
+        margin:           1em auto;
+        font-family:      sans-serif;
+      }
+      .warn, .closed {
+        font-style:       italic;
+      }
       #other-term-links {
-        font-size: 0.7em;
+        font-size:        0.7em;
       }
       #other-term-links ul {
-        list-style-type: none;
+        list-style-type:  none;
       }
       #other-term-links li {
-        display: inline-block;
+        display:          inline-block;
       }
       #other-term-links a {
-        display:block;
-        text-decoration: none;
-        margin: 0.5em 1em;
-        padding:0.2em;
-        width:10em;
+        display:          block;
+        text-decoration:  none;
+        margin:           0.5em 1em;
+        padding:          0.2em;
+        width:            10em;
         background-color: #ccc;
-        border: 1px solid black;
-        border-radius: 0.25em;
-        color:black;
-        font-family: sans-serif;
-        text-align:center;
+        border:           1px solid black;
+        border-radius:    0.25em;
+        color:            black;
+        font-family:      sans-serif;
+        text-align:       center;
       }
       #other-term-links a:hover {
-        background-color:black;
-        color:#ccc;
+        background-color: black;
+        color:            #ccc;
       }
+      #other-term-links h2 {
+        margin:1em;
+        text-align:left;
+      }
+
       .course-list {
-        -moz-column-count: 3;
-        -moz-column-gap: 1em;
-        -moz-column-rule: 1px solid black;
+        column-count:         3;
+        column-gap:           1em;
+        column-rule:          1px solid black;
+        -moz-column-count:    3;
+        -moz-column-gap:      1em;
+        -moz-column-rule:     1px solid black;
         -webkit-column-count: 3;
-        -webkit-column-gap: 1em;
-        -webkit-column-rule: 1px solid black;
+        -webkit-column-gap:   1em;
+        -webkit-column-rule:  1px solid black;
       }
       @media print {
         #other-term-links {
@@ -266,8 +291,8 @@ EOD;
         </em>
       </p>
     </div>
+    <h2>Pathways Courses</h2>
     <div class='course-list'>
-      <h2>Pathways Courses</h2>
       <h3>Required Core: College Writing 1 (EC-1)</h3>
         <?php course_rows('EC-1'); ?>
       <h3>Required Core: College Writing 2 (EC-2)</h3>
@@ -295,7 +320,9 @@ EOD;
       <h3>College Option: Other</h3>
       Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
         <?php course_rows('SYN'); ?>
-      <h2>Perspectives (PLAS) Courses</h2>
+    </div>
+    <h2>Perspectives (PLAS) Courses</h2>
+    <div class='course-list'>
       <h3>Appreciating and Participating in the Arts (AP)</h3>
         <?php course_rows('AP'); ?>
       <h3>Cultures and Values (CV)</h3>
@@ -316,6 +343,8 @@ EOD;
         <?php course_rows('WC'); ?>
       <h3>Pre-Industrial Society (PI)</h3>
         <?php course_rows('PI'); ?>
+      <h3>Abstract or Quantitative Reasoning (AQR)</h3>
+        <?php course_rows('AQR'); ?>
     </div>
   </body>
 </html>
