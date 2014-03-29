@@ -75,22 +75,22 @@ class Term
         break;
       case '4W1':
         $term = $year . '041';
-        $term_name = "Summer 1 $year short";
+        $term_name = "Summer 1 short $year";
         $term_abbr = 'S1s' . substr($year, 2,  2);
         break;
       case '4W2':
         $term = $year . '042';
-        $term_name = "Summer 1 $year long";
+        $term_name = "Summer 1 long $year";
         $term_abbr = 'S1l' . substr($year, 2,  2);
         break;
       case '6W1':
         $term = $year . '061';
-        $term_name = "Summer 2 $year short";
+        $term_name = "Summer 2 short $year";
         $term_abbr = 'S2s' . substr($year, 2,  2);
         break;
       case '6W2':
         $term = $year . '062';
-        $term_name = "Summer 2 $year long";
+        $term_name = "Summer 2 long $year";
         $term_abbr = 'S2l' . substr($year, 2,  2);
         break;
       default:
