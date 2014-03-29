@@ -213,7 +213,7 @@ EOD;
       .warn, .closed {
         font-style:       italic;
       }
-      #other-term-links {
+      #semester-info {
         font-size:        0.7em;
       }
       #other-term-links ul {
@@ -239,11 +239,14 @@ EOD;
         background-color: black;
         color:            #ccc;
       }
-      #other-term-links h2 {
-        margin:1em;
+      #semester-info h2 {
+        margin:0;
         text-align:left;
+        border-bottom: none;
       }
-
+      #semester-info h2 em {
+        color:#933;
+      }
       .course-list {
         column-count:         3;
         column-gap:           1em;
@@ -256,22 +259,33 @@ EOD;
         -webkit-column-rule:  1px solid black;
       }
       @media print {
-        #other-term-links {
+        h1, h1+*, #semester-info {
           display:none;
         }
-        font-size: 4pt;
+        h2 {
+          font-size:16pt;
+        }
+        h2:nth-of-type(2) {
+          page-break-before: always;
+        }
+        h3 {
+          page-break-after: avoid;
+        }
+        .course-list {
+          font-size: 10pt;
+        }
       }
     </style>
   </head>
   <body>
     <h1>General Education Course Offerings</h1>
     <div>
-      <p>
-        The following General Education courses are scheduled to be offered during the
-        <strong><?php echo $term_name; ?></strong> semester.
-      </p>
-      <div id='other-term-links'>
-        <h2>Other Semesters Available</h2>
+      <div id='semester-info'>
+        <h2>
+          The following General Education courses are scheduled to be offered during the
+          <em><?php echo $term_name; ?></em> semester.
+        </h2>
+        <h2>Other Semesters Available:</h2>
         <?php
           echo "<ul id='other-term-links'>\n";
           foreach ($term_codes as $other_term_code => $other_term_name)
@@ -291,7 +305,7 @@ EOD;
         </em>
       </p>
     </div>
-    <h2>Pathways Courses</h2>
+    <h2><?php echo $term_name;?> Pathways Courses</h2>
     <div class='course-list'>
       <h3>Required Core: College Writing 1 (EC-1)</h3>
         <?php course_rows('EC-1'); ?>
@@ -321,7 +335,7 @@ EOD;
       Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
         <?php course_rows('SYN'); ?>
     </div>
-    <h2>Perspectives (PLAS) Courses</h2>
+    <h2><?php echo $term_name;?> Perspectives (PLAS) Courses</h2>
     <div class='course-list'>
       <h3>Appreciating and Participating in the Arts (AP)</h3>
         <?php course_rows('AP'); ?>
