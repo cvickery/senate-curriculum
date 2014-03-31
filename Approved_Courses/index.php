@@ -42,7 +42,7 @@
  *                |         |   MNS   = LPS, SW, SCI
  *                |         |   AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
  *                |         |   CTXT  = US, ET, WC                (Context of Experience)
- *                |         |   PLAS  = AOK, CTXT, PI
+ *                |         |   PLAS  = AOK, CTXT, PI, AQR
  *
  *  Options may be abbreviated to their unique prefixes. For example, title = t;
  *  designation = d; details = det; default = def; full = f.
@@ -121,7 +121,7 @@ while ($row = pg_fetch_assoc($result))
       'PATH'  =>  array('RCC', 'FCC', 'COPT'),
       'AOK'   =>  array('AP', 'CV', 'NS', 'NS+L', 'RL', 'SS'),
       'CTXT'  =>  array('US', 'ET', 'WC'),
-      'PLAS'  =>  array('AOK', 'CTXT', 'PI'),
+      'PLAS'  =>  array('AOK', 'CTXT', 'PI', 'AQR'),
     );
   //  Designation Atoms
   $designation_atoms = array
@@ -129,7 +129,7 @@ while ($row = pg_fetch_assoc($result))
       'EC-1', 'EC-2', 'MQR', 'LPS', 'CE', 'IS', 'SW', 'USED', 'WCGI',
       'LIT', 'LANG', 'SCI', 'SYN',
       'AP', 'CV', 'NS', 'NS+L', 'RL', 'SS', 'US',
-      'ET', 'WC', 'PI'
+      'ET', 'WC', 'PI', 'AQR'
     );
     $designation_titles = array
     (
@@ -168,7 +168,8 @@ while ($row = pg_fetch_assoc($result))
       'US'    =>  'QC Perspectives: United States',
       'ET'    =>  'QC Perspectives: European Traditions',
       'WC'    =>  'QC Perspectives: World Cultures',
-      'PI'    =>  'QC Perspectives: Pre-industrial'
+      'PI'    =>  'QC Perspectives: Pre-industrial',
+      'AQR'   =>  'QC Perspectives: Abstract or Quantitative Reasoning'
     );
 
 //  sanitize()
