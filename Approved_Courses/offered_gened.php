@@ -4,6 +4,21 @@
   session_start();
   require_once('credentials.inc');
 
+//  Which lists(s) to show
+$show_path = false;
+$show_plas = false;
+foreach ($_GET as $name => $value)
+{
+  if (substr(strtolower($name), 0, 4) === 'path') $show_path = true;
+  if (substr(strtolower($name), 0, 4) === 'plas') $show_plas = true;
+  if (substr(strtolower($name), 0, 5) === 'persp') $show_plas = true;
+}
+if (! ($show_path || $show_plas))
+{
+  error_log("neither set");
+  $show_path = $show_plas = true;
+}
+
 //  course_rows()
 //  -----------------------------------------------------------------------------------------------
 /*  Echo list of courses that satisfy the specified RD and are offered during $term_code.
@@ -201,81 +216,7 @@ EOD;
 <html <?php echo $html_attributes;?>>
   <head>
     <title>General Education Course Offerings</title>
-    <style type='text/css'>
-      h2 {
-        text-align:       center;
-        font-size:        2em;
-        border-bottom:    2px solid black;
-        width:            80%;
-        margin:           1em auto;
-        font-family:      sans-serif;
-      }
-      .warn, .closed {
-        font-style:       italic;
-      }
-      #semester-info {
-        font-size:        0.7em;
-      }
-      #other-term-links ul {
-        list-style-type:  none;
-      }
-      #other-term-links li {
-        display:          inline-block;
-      }
-      #other-term-links a {
-        display:          block;
-        text-decoration:  none;
-        margin:           0.5em 1em;
-        padding:          0.2em;
-        width:            10em;
-        background-color: #ccc;
-        border:           1px solid black;
-        border-radius:    0.25em;
-        color:            black;
-        font-family:      sans-serif;
-        text-align:       center;
-      }
-      #other-term-links a:hover {
-        background-color: black;
-        color:            #ccc;
-      }
-      #semester-info h2 {
-        margin:0;
-        text-align:left;
-        border-bottom: none;
-      }
-      #semester-info h2 em {
-        color:#933;
-      }
-      .course-list {
-        column-count:         3;
-        column-gap:           1em;
-        column-rule:          1px solid black;
-        -moz-column-count:    3;
-        -moz-column-gap:      1em;
-        -moz-column-rule:     1px solid black;
-        -webkit-column-count: 3;
-        -webkit-column-gap:   1em;
-        -webkit-column-rule:  1px solid black;
-      }
-      @media print {
-        h1, h1+*, #semester-info {
-          display:none;
-        }
-        h2 {
-          font-size:16pt;
-        }
-        h2:nth-of-type(2) {
-          page-break-before: always;
-        }
-        h3 {
-          page-break-after: avoid;
-        }
-        .course-list {
-          font-size: 10pt;
-        }
-      }
-    </style>
+    <link rel='stylesheet' type='text/css' href="css/offered_gened.css" />
   </head>
   <body>
     <h1>General Education Course Offerings</h1>
@@ -298,14 +239,15 @@ EOD;
             echo "</ul>\n";
         ?>
       </div>
-      <p>
-        <em>
-          Courses in italics had fewer than 10% of their seats open
-          as of <strong><?php echo $enrollment_date; ?></strong>.
-        </em>
-      </p>
     </div>
-    <h2><?php echo $term_name;?> Pathways Courses</h2>
+    <?php if ($show_path) { ?>
+    <h2><?php echo $term_name;?> Scheduled Pathways Courses</h2>
+    <p>
+      <em>
+        Last updated on <strong><?php echo $enrollment_date; ?></strong>.
+        Courses in italics had fewer than 10% of their seats open on that date.
+      </em>
+    </p>
     <div class='course-list'>
       <h3>Required Core: College Writing 1 (EC-1)</h3>
         <?php course_rows('EC-1'); ?>
@@ -335,7 +277,16 @@ EOD;
       Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
         <?php course_rows('SYN'); ?>
     </div>
-    <h2><?php echo $term_name;?> Perspectives (PLAS) Courses</h2>
+
+    <?php }
+      if ($show_plas) { ?>
+    <h2><?php echo $term_name;?> Scheduled Perspectives (PLAS) Courses</h2>
+    <p>
+      <em>
+        Last updated on <strong><?php echo $enrollment_date; ?></strong>.
+        Courses in italics had fewer than 10% of their seats open on that date.
+      </em>
+    </p>
     <div class='course-list'>
       <h3>Appreciating and Participating in the Arts (AP)</h3>
         <?php course_rows('AP'); ?>
@@ -360,5 +311,6 @@ EOD;
       <h3>Abstract or Quantitative Reasoning (AQR)</h3>
         <?php course_rows('AQR'); ?>
     </div>
+    <?php } ?>
   </body>
 </html>

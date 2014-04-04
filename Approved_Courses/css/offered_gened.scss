@@ -1,0 +1,78 @@
+  h2 {
+    text-align:       center;
+    font-size:        2em;
+    border-bottom:    2px solid black;
+    width:            80%;
+    margin:           1em auto;
+    font-family:      sans-serif;
+  }
+  .warn, .closed {
+    font-style:       italic;
+  }
+  #semester-info {
+    font-size:        0.7em;
+    h2 {
+      margin:0;
+      text-align:left;
+      border-bottom: none;
+      em {
+      color:#933;
+      }
+    }
+  }
+  #other-term-links {
+    ul {
+      list-style-type:  none;
+    }
+    li {
+      display:          inline-block;
+    }
+    a {
+      display:          block;
+      text-decoration:  none;
+      margin:           0.5em 1em;
+      padding:          0.2em;
+      width:            10em;
+      background-color: #ccc;
+      border:           1px solid black;
+      border-radius:    0.25em;
+      color:            black;
+      font-family:      sans-serif;
+      text-align:       center;
+    }
+    a:hover {
+      background-color: black;
+      color:            #ccc;
+    }
+  }
+  .course-list {
+    column-count:         3;
+    column-gap:           1em;
+    column-rule:          1px solid black;
+    -moz-column-count:    3;
+    -moz-column-gap:      1em;
+    -moz-column-rule:     1px solid black;
+    -webkit-column-count: 3;
+    -webkit-column-gap:   1em;
+    -webkit-column-rule:  1px solid black;
+  }
+  @media print {
+    h1, #semester-info {
+      display:none;
+    }
+    h2 {
+      font-size:16pt;
+      border: none;
+    }
+    h2:nth-of-type(2) {
+      page-break-before: always;
+    }
+    h3 {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .course-list, p {
+      font-size: 8pt;
+    }
+  }
+
