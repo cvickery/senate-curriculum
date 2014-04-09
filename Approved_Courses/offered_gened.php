@@ -361,8 +361,9 @@ EOD;
     </p>
     <p>
       Each course may be used to satisfy just one area requirement (AP, CV, NS, NS+L, RL, or SS), but some courses
-      may also satisfy an context of experience requirement (US, ET, or WC), and/or an extended requirement (PI or
-      AQR). Courses that are listed in multiple areas show the abbreviations of their other areas in parentheses.
+      may also satisfy a context of experience requirement (US, ET, or WC), and/or an extended requirement (PI or
+      AQR). Courses that can satisfy multiple requirements show the abbreviations of their other requirements in
+      parentheses following the course title.
     </p>
     </div>
     <div class='course-list'>
