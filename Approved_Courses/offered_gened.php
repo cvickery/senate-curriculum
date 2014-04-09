@@ -4,6 +4,38 @@
   session_start();
   require_once('credentials.inc');
 
+//  Requirement designations and their names
+$path_rds = array
+(
+  'EC-1' =>     'Required Core: College Writing 1',
+  'EC-2' =>     'Required Core: College Writing 2',
+  'MQR'  =>     'Required Core: Mathematics and Quantitative Reasoning',
+  'LPS'  =>     'Required Core: Life and Physical Sciences',
+  'WCGI' =>     'Flexible Core: World Cultures and Global Issues',
+  'USED' =>     'Flexible Core: U.S. Experience in its Diversity',
+  'CE'   =>     'Flexible Core: Creative Expression',
+  'IS'   =>     'Flexible Core: Individual and Society',
+  'SW'   =>     'Flexible Core: Scientific World',
+  'LIT'  =>     'College Option: Literature',
+  'LANG' =>     'College Option: Language',
+  'SCI'  =>     'College Option: Science',
+  'SYN'  =>     'College Option: Other'
+);
+$plas_rds = array
+(
+  'AP'   =>     'Appreciating and Participating in the Arts',
+  'CV'   =>     'Cultures and Values',
+  'NS'   =>     'Natural Science',
+  'NS+L' =>     'Natural Science with Lab',
+  'RL'   =>     'Reading Literature',
+  'SS'   =>     'Analyzing Social Structures',
+  'US'   =>     'United States',
+  'ET'   =>     'European Traditions',
+  'WC'   =>     'World Cultures',
+  'PI'   =>     'Pre-Industrial Society',
+  'AQR'  =>     'Abstract or Quantitative Reasoning',
+);
+
 //  Which lists(s) to show
 $show_path = false;
 $show_plas = false;
@@ -23,9 +55,19 @@ if (! ($show_path || $show_plas))
 //  -----------------------------------------------------------------------------------------------
 /*  Echo list of courses that satisfy the specified RD and are offered during $term_code.
  */
-  function course_rows($rd)
+  function course_rows($rd, $msg = NULL)
   {
-    global $curric_db, $term_code;
+    global $curric_db, $term_code, $plas_rds, $path_rds;
+    if (array_key_exists($rd, $plas_rds))
+    {
+      $is_plas = true;
+      echo "      <h3>{$plas_rds[$rd]} ($rd)</h3>\n";
+    }
+    else
+    {
+      echo "      <h3>{$path_rds[$rd]} ($rd)</h3>\n";
+    }
+    if ($msg) echo "      <p>$msg</p>\n";
     $query = <<<EOD
 select    a.discipline,
           a.course_number,
@@ -119,18 +161,24 @@ EOD;
         while ($other_row = pg_fetch_assoc($other_result))
         {
           $other_designation = $other_row['designation'];
-          if ($other_designation != $rd) $other_designations .= "$other_designation, ";
+          if ($other_designation != $rd)
+          {
+            if ( ($is_plas && array_key_exists($other_designation, $plas_rds)) ||
+                 (!$is_plas && array_key_exists($other_designation, $path_rds))
+               )
+            $other_designations .= "$other_designation, ";
+          }
         }
         if ($other_designations !== '')
         {
           $other_designations = '(' . rtrim($other_designations, ', ') . ')';
         }
-        echo "<div $status>$course_info $other_designations</div>\n";
+        echo "      <div $status>$course_info $other_designations</div>\n";
       }
     }
     else
     {
-    echo "<div>None</div>";
+    echo "      <div>None</div>";
     }
   }
 
@@ -240,77 +288,99 @@ EOD;
         ?>
       </div>
     </div>
-    <?php if ($show_path) { ?>
-    <h2><?php echo $term_name;?> Scheduled Pathways Courses</h2>
+    <?php
+    if ($show_path)
+    {
+      echo <<<EOD
+    <h2>$term_name Scheduled Pathways Courses</h2>
+    <div class='preamble'>
+      <p>
+        Students who entered Queens College in fall 2013 or later follow the Pathways curriculum.
+      </p>
+      <p>
+        The following courses satisfy Pathways requirements <em>and</em> are scheduled to be offered
+        during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
+        additional courses are scheduled or if scheduled courses are canceled during the enrollment
+        period.
+      </p>
     <p>
       <em>
-        Last updated on <strong><?php echo $enrollment_date; ?></strong>.
-        Courses in italics had fewer than 10% of their seats open on that date.
+        Courses in italics had fewer than 10% open seats as of $enrollment_date.
       </em>
     </p>
-    <div class='course-list'>
-      <h3>Required Core: College Writing 1 (EC-1)</h3>
-        <?php course_rows('EC-1'); ?>
-      <h3>Required Core: College Writing 2 (EC-2)</h3>
-        <?php course_rows('EC-2'); ?>
-      <h3>Required Core: Mathematics and Quantitative Reasoning (MQR)</h3>
-        <?php course_rows('MQR'); ?>
-      <h3>Required Core: Life and Physical Sciences (LPS)</h3>
-        <?php course_rows('LPS'); ?>
-      <h3>Flexible Core: World Cultures and Global Issues (WCGI)</h3>
-        <?php course_rows('WCGI'); ?>
-      <h3>Flexible Core: U.S. Experience in its Diversity (USED)</h3>
-        <?php course_rows('USED'); ?>
-      <h3>Flexible Core: Creative Expression (CE)</h3>
-        <?php course_rows('CE'); ?>
-      <h3>Flexible Core: Individual and Society (IS)</h3>
-        <?php course_rows('IS'); ?>
-      <h3>Flexible Core: Scientific World (SW)</h3>
-        <?php course_rows('SW'); ?>
-      <h3>College Option: Literature (LIT)</h3>
-        <?php course_rows('LIT'); ?>
-      <h3>College Option: Language (LANG)</h3>
-        <?php course_rows('LANG'); ?>
-      <h3>College Option: Science (SCI)</h3>
-        <?php course_rows('SCI'); ?>
-      <h3>College Option: Other</h3>
-      Any LPS or Flexible Core course listed above, plus the following Synthesis (SYN) courses.
-        <?php course_rows('SYN'); ?>
+    <p class='print-only'>
+      The current version of this list is available online at http://bit.ly/R20mGz .
+    </p>
+    <p>
+      Each course may be used to satisfy just one requirement, but some courses appear in multiple areas.
+      In those cases, you may choose to have the course satisfy any one of those areas. See an advisor in
+      the Advising Center (Kiely 217) for more information on this option. Courses that are listed in multiple
+      areas show the abbreviations of their other areas in parentheses following the course title.
+    </p>
     </div>
+    <div class='course-list'>
 
-    <?php }
-      if ($show_plas) { ?>
-    <h2><?php echo $term_name;?> Scheduled Perspectives (PLAS) Courses</h2>
+EOD;
+      course_rows('EC-1');
+      course_rows('EC-2');
+      course_rows('MQR');
+      course_rows('LPS');
+      course_rows('WCGI');
+      course_rows('USED');
+      course_rows('CE');
+      course_rows('IS');
+      course_rows('SW');
+      course_rows('LIT');
+      course_rows('LANG');
+      course_rows('SCI');
+      course_rows('SYN', 'Any LPS or Flexible Core course listed above, plus the following Synthesis courses.');
+
+      echo "    </div>\n";
+    }
+    if ($show_plas)
+    {
+      echo <<<EOD
+    <h2>$term_name Scheduled Perspectives (PLAS) Courses</h2>
+    <div class='preamble'>
+      <p>
+        Students who entered Queens College after the Fall 2009 semester but before the Fall 2013 semester follow
+        the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum.
+      </p>
+      <p>
+        The following courses satisfy Perspectives (PLAS) requirements <em>and</em> are scheduled to be offered
+        during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
+        additional courses are scheduled or if scheduled courses are canceled during the enrollment period.
+      </p>
     <p>
       <em>
-        Last updated on <strong><?php echo $enrollment_date; ?></strong>.
-        Courses in italics had fewer than 10% of their seats open on that date.
+        Courses in italics had fewer than 10% open seats as of $enrollment_date.
       </em>
     </p>
-    <div class='course-list'>
-      <h3>Appreciating and Participating in the Arts (AP)</h3>
-        <?php course_rows('AP'); ?>
-      <h3>Cultures and Values (CV)</h3>
-        <?php course_rows('CV'); ?>
-      <h3>Natural Science (NS)</h3>
-        <?php course_rows('NS'); ?>
-      <h3>Natural Science with Lab (NS+L)</h3>
-        <?php course_rows('NS+L'); ?>
-      <h3>Reading Literature (RL)</h3>
-        <?php course_rows('RL'); ?>
-      <h3>Analyzing Social Structures (SS)</h3>
-        <?php course_rows('SS'); ?>
-      <h3>United States (US)</h3>
-        <?php course_rows('US'); ?>
-      <h3>European Traditions (ET)</h3>
-        <?php course_rows('ET'); ?>
-      <h3>World Cultures (WC)</h3>
-        <?php course_rows('WC'); ?>
-      <h3>Pre-Industrial Society (PI)</h3>
-        <?php course_rows('PI'); ?>
-      <h3>Abstract or Quantitative Reasoning (AQR)</h3>
-        <?php course_rows('AQR'); ?>
+    <p class='print-only'>
+      The current version of this list is available online at http://bit.ly/R20mGz .
+    </p>
+    <p>
+      Each course may be used to satisfy just one area requirement (AP, CV, NS, NS+L, RL, or SS), but some courses
+      may also satisfy an context of experience requirement (US, ET, or WC), and/or an extended requirement (PI or
+      AQR). Courses that are listed in multiple areas show the abbreviations of their other areas in parentheses.
+    </p>
     </div>
-    <?php } ?>
+    <div class='course-list'>
+
+EOD;
+      course_rows('AP');
+      course_rows('CV');
+      course_rows('NS');
+      course_rows('NS+L');
+      course_rows('RL');
+      course_rows('SS');
+      course_rows('US');
+      course_rows('ET');
+      course_rows('WC');
+      course_rows('PI');
+      course_rows('AQR');
+      echo "    </div>\n";
+    }
+    ?>
   </body>
 </html>

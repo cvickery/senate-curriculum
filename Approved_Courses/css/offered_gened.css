@@ -2,7 +2,6 @@ h2 {
   text-align: center;
   font-size: 2em;
   border-bottom: 2px solid black;
-  width: 80%;
   margin: 1em auto;
   font-family: sans-serif; }
 
@@ -49,6 +48,9 @@ h2 {
   -webkit-column-gap: 1em;
   -webkit-column-rule: 1px solid black; }
 
+.print-only {
+  display: none; }
+
 @media print {
   h1, #semester-info {
     display: none; }
@@ -65,4 +67,7 @@ h2 {
     break-after: avoid; }
 
   .course-list, p {
-    font-size: 8pt; } }
+    font-size: 8pt; }
+
+  .print-only {
+    display: block; } }
