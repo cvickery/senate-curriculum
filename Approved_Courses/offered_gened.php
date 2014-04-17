@@ -440,6 +440,10 @@ EOD;
 EOD;
       $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at " . basename(__FILE__) .
                                                     " line " . __LINE__ . "</h1>\n");
+      if (0 === pg_num_rows($result))
+      {
+        echo "<h2>No Writing-intensive Courses are scheduled to be offered during $term_name</h2>\n";
+      }
       while ($row = pg_fetch_assoc($result))
       {
         $discipline         = $row['discipline'];
