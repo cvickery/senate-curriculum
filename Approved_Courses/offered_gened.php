@@ -469,12 +469,13 @@ EOD;
                 and     course_number = $course_number_num )
 
 EOD;
+error_log($other_query);
           $other_result = pg_query($curric_db, $other_query)
           or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
           $other_designations = "";
           while ($other_row = pg_fetch_assoc($other_result))
           {
-            $other_designation = $other_row['designation'];
+            $other_designations .= $other_row['designation'] . ', ';
           }
           if ($other_designations !== '')
           {
