@@ -37,18 +37,19 @@ $plas_rds = array
 );
 
 //  Which lists(s) to show
-$show_path = false;
-$show_plas = false;
+$show_path  = false;
+$show_plas  = false;
+$show_w     = false;
 foreach ($_GET as $name => $value)
 {
-  if (substr(strtolower($name), 0, 4) === 'path') $show_path = true;
-  if (substr(strtolower($name), 0, 4) === 'plas') $show_plas = true;
-  if (substr(strtolower($name), 0, 5) === 'persp') $show_plas = true;
+  if (substr(strtolower($name), 0, 4) === 'path')   $show_path  = true;
+  if (substr(strtolower($name), 0, 4) === 'plas')   $show_plas  = true;
+  if (substr(strtolower($name), 0, 5) === 'persp')  $show_plas  = true;
+  if (substr(strtolower($name), 0, 1) === 'w')      $show_w     = true;
 }
-if (! ($show_path || $show_plas))
+if (! ($show_path || $show_plas || $show_w))
 {
-  error_log("neither set");
-  $show_path = $show_plas = true;
+  $show_path = $show_plas = $show_w = true;
 }
 
 //  course_rows()
@@ -58,14 +59,22 @@ if (! ($show_path || $show_plas))
   function course_rows($rd, $msg = NULL)
   {
     global $curric_db, $term_code, $plas_rds, $path_rds;
+    $is_plas = false;
+    $is_path = false;
     if (array_key_exists($rd, $plas_rds))
     {
       $is_plas = true;
       echo "      <h3>{$plas_rds[$rd]} ($rd)</h3>\n";
     }
+    else if (array_key_exists($rd, $path_rds))
+    {
+      $is_path = true;
+      echo "      <h3>{$path_rds[$rd]} ($rd)</h3>\n";
+    }
     else
     {
-      echo "      <h3>{$path_rds[$rd]} ($rd)</h3>\n";
+      die("<h1 class='error'>Error: unrecognized RD ($rd) at " . basename(__FILE__) . " line " .
+          __LINE__ . "</h1>\n");
     }
     if ($msg) echo "      <p>$msg</p>\n";
     $query = <<<EOD
@@ -295,7 +304,7 @@ EOD;
     <h2>$term_name Scheduled Pathways Courses</h2>
     <div class='preamble'>
       <p>
-        Students who entered Queens College in fall 2013 or later follow the Pathways curriculum.
+        Students who entered Queens College in the Fall 2013 semester or later follow the Pathways curriculum.
       </p>
       <p>
         The following courses satisfy Pathways requirements <em>and</em> are scheduled to be offered
@@ -337,6 +346,7 @@ EOD;
 
       echo "    </div>\n";
     }
+
     if ($show_plas)
     {
       echo <<<EOD
@@ -381,6 +391,99 @@ EOD;
       course_rows('PI');
       course_rows('AQR');
       echo "    </div>\n";
+    }
+
+    if ($show_w)
+    {
+      echo <<<EOD
+      <h2>$term_name Scheduled Writing-Intensive (W) Courses</h2>
+      <div class='preamble'>
+        <p>
+          Students who entered Queens College after the Fall 2009 semester but before the Fall 2013 semester follow
+          the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum, and must complete three Writing-Intensive
+          (W) courses in order to graduate. Perspectives students may elect to take a Pathways EC-2 (College Writing 2)
+          course as one of their three W courses.
+        </p>
+        <p>
+          Students who entered Queens College in the Fall 2013 semester or later follow the Pathways curriculum,
+          and must complete two W courses in order to graduate.
+        </p>
+        <p>
+          To avoid the need to take extra courses, students should plan their course of study at Queens in a way that
+          maximizes the overlap between W courses and courses taken to complete the requirements for their Major or
+          other General Education requirements. Students who transfer from institutions that do not indicate
+          writing-intensive courses on the transcript should make sure they receive credit for having completed the
+          proper number of W courses. Contact the Advising Center (Kiely 217) if there are problems.
+        </p>
+        <p>
+          The following writing-intensive courses are scheduled to be offered
+          during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
+          additional courses are scheduled or if scheduled courses are canceled during the enrollment period.
+        </p>
+        <p>
+          <em>
+            Courses in italics had fewer than 10% open seats as of $enrollment_date.
+          </em>
+          (Abbreviations in parentheses give Perspectives and Pathways requirements also satisfied by each
+                    course.)
+        </p>
+        <p class='print-only'>
+          The current version of this list is available online at http://bit.ly/R20mGz .
+        </p>
+      </div>
+      <div class='course-list'>
+
+EOD;
+      $query = <<<EOD
+  select * from w_enrollments
+  where term_code = '$term_code'
+EOD;
+      $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at " . basename(__FILE__) .
+                                                    " line " . __LINE__ . "</h1>\n");
+      while ($row = pg_fetch_assoc($result))
+      {
+        $discipline         = $row['discipline'];
+        $course_number_str  = $row['course_number'];
+        $course_number_num  = intval($course_number_str); // Drop the W
+        $course_info        = "<span>$discipline $course_number_str. {$row['course_title']}</span>";
+        $seats              = $row['seats'];
+        $enrollment         = $row['enrollment'];
+        $status                                 = " class='open'";
+        if ($enrollment > 0.9 * $seats) $status = " class='warn'";
+        if ($enrollment >= $seats)      $status = " class='closed'";
+        $enrollment_info  = "<span>({$row['sections']}, $seats, $enrollment)</span>";
+
+        //  List other designations satisfied, if any
+        $other_query = <<<EOD
+  select abbr as designation
+  from proposal_types
+  where id in ( select  designation_id
+                from    course_designation_mappings
+                where   discipline    = '$discipline'
+                and     course_number = $course_number_num )
+
+EOD;
+        $other_result = pg_query($curric_db, $other_query)
+        or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+        $other_designations = "";
+        while ($other_row = pg_fetch_assoc($other_result))
+        {
+          $other_designation = $other_row['designation'];
+          if ($other_designation != $rd)
+          {
+            if ( ($is_plas && array_key_exists($other_designation, $plas_rds)) ||
+                 (!$is_plas && array_key_exists($other_designation, $path_rds))
+               )
+            $other_designations .= "$other_designation, ";
+          }
+        }
+        if ($other_designations !== '')
+        {
+          $other_designations = '(' . rtrim($other_designations, ', ') . ')';
+        }
+        echo "      <div $status>$course_info $other_designations</div>\n";
+      }
+      echo "</div>\n";
     }
     ?>
   </body>
