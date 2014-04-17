@@ -475,13 +475,6 @@ EOD;
           while ($other_row = pg_fetch_assoc($other_result))
           {
             $other_designation = $other_row['designation'];
-            if ($other_designation != $rd)
-            {
-              if ( ($is_plas && array_key_exists($other_designation, $plas_rds)) ||
-                   (!$is_plas && array_key_exists($other_designation, $path_rds))
-                 )
-              $other_designations .= "$other_designation, ";
-            }
           }
           if ($other_designations !== '')
           {
