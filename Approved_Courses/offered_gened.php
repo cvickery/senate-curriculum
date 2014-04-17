@@ -431,7 +431,6 @@ EOD;
           The current version of this list is available online at http://bit.ly/R20mGz .
         </p>
       </div>
-      <div class='course-list'>
 
 EOD;
       $query = <<<EOD
@@ -444,21 +443,24 @@ EOD;
       {
         echo "<h2>No Writing-intensive Courses are scheduled to be offered during $term_name</h2>\n";
       }
-      while ($row = pg_fetch_assoc($result))
+      else
       {
-        $discipline         = $row['discipline'];
-        $course_number_str  = $row['course_number'];
-        $course_number_num  = intval($course_number_str); // Drop the W
-        $course_info        = "<span>$discipline $course_number_str. {$row['course_title']}</span>";
-        $seats              = $row['seats'];
-        $enrollment         = $row['enrollment'];
-        $status                                 = " class='open'";
-        if ($enrollment > 0.9 * $seats) $status = " class='warn'";
-        if ($enrollment >= $seats)      $status = " class='closed'";
-        $enrollment_info  = "<span>({$row['sections']}, $seats, $enrollment)</span>";
+        echo "      <div class='course-list'>\n";
+        while ($row = pg_fetch_assoc($result))
+        {
+          $discipline         = $row['discipline'];
+          $course_number_str  = $row['course_number'];
+          $course_number_num  = intval($course_number_str); // Drop the W
+          $course_info        = "<span>$discipline $course_number_str. {$row['course_title']}</span>";
+          $seats              = $row['seats'];
+          $enrollment         = $row['enrollment'];
+          $status                                 = " class='open'";
+          if ($enrollment > 0.9 * $seats) $status = " class='warn'";
+          if ($enrollment >= $seats)      $status = " class='closed'";
+          $enrollment_info  = "<span>({$row['sections']}, $seats, $enrollment)</span>";
 
-        //  List other designations satisfied, if any
-        $other_query = <<<EOD
+          //  List other designations satisfied, if any
+          $other_query = <<<EOD
   select abbr as designation
   from proposal_types
   where id in ( select  designation_id
@@ -467,27 +469,28 @@ EOD;
                 and     course_number = $course_number_num )
 
 EOD;
-        $other_result = pg_query($curric_db, $other_query)
-        or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
-        $other_designations = "";
-        while ($other_row = pg_fetch_assoc($other_result))
-        {
-          $other_designation = $other_row['designation'];
-          if ($other_designation != $rd)
+          $other_result = pg_query($curric_db, $other_query)
+          or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+          $other_designations = "";
+          while ($other_row = pg_fetch_assoc($other_result))
           {
-            if ( ($is_plas && array_key_exists($other_designation, $plas_rds)) ||
-                 (!$is_plas && array_key_exists($other_designation, $path_rds))
-               )
-            $other_designations .= "$other_designation, ";
+            $other_designation = $other_row['designation'];
+            if ($other_designation != $rd)
+            {
+              if ( ($is_plas && array_key_exists($other_designation, $plas_rds)) ||
+                   (!$is_plas && array_key_exists($other_designation, $path_rds))
+                 )
+              $other_designations .= "$other_designation, ";
+            }
           }
+          if ($other_designations !== '')
+          {
+            $other_designations = '(' . rtrim($other_designations, ', ') . ')';
+          }
+          echo "      <div $status>$course_info $other_designations</div>\n";
         }
-        if ($other_designations !== '')
-        {
-          $other_designations = '(' . rtrim($other_designations, ', ') . ')';
-        }
-        echo "      <div $status>$course_info $other_designations</div>\n";
+        echo "</div>\n";
       }
-      echo "</div>\n";
     }
     ?>
   </body>
