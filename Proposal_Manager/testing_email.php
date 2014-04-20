@@ -33,7 +33,7 @@ EOD;
     "And a Happy Easter Day to you!",
      $text_msg, $html_msg);
   $mail->send() or die( "<h1>Email Failed" . $mail->getMessage() . "</h1>");
-  echo "<h1>Hot diggity dog</h1>";
+  echo "<h1>Hot diggity dog, $submitter_email</h1>";
 }
 
 //  Here beginneth the web page
@@ -67,7 +67,8 @@ EOD;
   </head>
   <body>
 <?php
-  sendme('Christopher.Vickery@qc.cuny.edu')
+  sendme('Christopher.Vickery@qc.cuny.edu');
+  sendme('cvickery@gmail.com');
 ?>
   </body>
 </html>
