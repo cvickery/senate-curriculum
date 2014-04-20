@@ -196,7 +196,7 @@ EOD;
   //  redirect to the congratulations page
   $goto = str_replace(basename($_SERVER['SCRIPT_FILENAME']),
                       'sent_verification.php',
-                      $_SERVER['SCRIPT_URI']);
+                      $_SERVER['REQUEST_URI']);
   header("Location: $goto");
   exit;
 }
