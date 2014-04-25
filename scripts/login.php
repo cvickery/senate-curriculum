@@ -324,7 +324,7 @@ EOD;
           //  Use oci_query to run the query.
           $result = json_decode(exec(
                 "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "
-              . "export ORACLE_HOME=\$DYLD_LIBRARY; "
+              . "export ORACLE_HOME=/opt/oracle/instantclient/; "
               . "echo \"$login_query\"|bin/oci_query)"));
           if (is_array($result) && count($result) !== 0)
           {
