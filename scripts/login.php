@@ -322,10 +322,15 @@ EOD;
             . "      REGEXP_LIKE(cu_email_addr_c3, '$qc_email', 'i') OR "
             . "      REGEXP_LIKE(cu_email_addr_c4, '$qc_email', 'i')    ";
           //  Use oci_query to run the query.
-          $result = json_decode(exec(
-                "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "
-              . " export ORACLE_HOME=/opt/oracle/instantclient/; "
-              . "echo \"$login_query\"|bin/oci_query)"));
+          $result = json_decode
+                    (
+                      exec
+                      (
+                        "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "  .
+                        " export ORACLE_HOME=/opt/oracle/instantclient/; "        .
+                        "echo \"$login_query\"|bin/oci_query)"
+                      )
+                    );
           if (is_array($result) && count($result) !== 0)
           {
             //  OCT lookup succeeded, now build Person object
