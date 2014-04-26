@@ -331,6 +331,7 @@ EOD;
                         "echo \"$login_query\"|bin/oci_query)"
                       )
                     );
+          var_dump($result);
           if (is_array($result) && count($result) !== 0)
           {
             //  OCT lookup succeeded, now build Person object
