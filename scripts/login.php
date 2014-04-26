@@ -415,7 +415,7 @@ EOD;
           else
           {
             //  In neither curric nor 856
-            $login_error_message = "'{$_POST[qc_email]}': " . bad_email;
+            $login_error_message = $result . "'{$_POST[qc_email]}': " . bad_email;
           }
         }   //  if in 856
       }     //  if in curric
