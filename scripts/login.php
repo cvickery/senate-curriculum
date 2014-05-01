@@ -326,9 +326,9 @@ EOD;
                     (
                       exec
                       (
-                        "(export DYLD_LIBRARY_PATH=/opt/oracle/instantclient/; "  .
-                        " export ORACLE_HOME=/opt/oracle/instantclient/; "        .
-                        "echo \"$login_query\"|bin/oci_query)"
+                        "(export TNS_ADMIN=$ORACLE_HOME; " .
+                        " export DYLD_LIBRARY_PATH=$ORACLE_HOME; " .
+                        " echo \"$login_query\"|bin/oci_query)"
                       )
                     );
           if (is_array($result) && count($result) !== 0)
@@ -415,7 +415,7 @@ EOD;
           else
           {
             //  In neither curric nor 856
-            $login_error_message = $result . "'{$_POST[qc_email]}': " . bad_email;
+            $login_error_message = "'{$_POST[qc_email]}': " . bad_email;
           }
         }   //  if in 856
       }     //  if in curric
