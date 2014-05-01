@@ -326,7 +326,8 @@ EOD;
                     (
                       exec
                       (
-                        "(export TNS_ADMIN=$ORACLE_HOME; " .
+                        "(export ORACLE_HOME=/opt/oracle/instantclient/; " .
+                        " export TNS_ADMIN=$ORACLE_HOME; " .
                         " export DYLD_LIBRARY_PATH=$ORACLE_HOME; " .
                         " echo \"$login_query\"|bin/oci_query)"
                       )
