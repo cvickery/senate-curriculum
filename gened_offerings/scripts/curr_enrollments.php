@@ -50,7 +50,7 @@ EOD;
     $enrollment_info = json_decode(exec("(export "    .
     " export ORACLE_HOME=/opt/oracle/instantclient;"  .
     " echo  \"$enrollment_query\" | "                 .
-    " DYLD_LIBRARY_PATH=\$ORACLE_HOME /usr/local/bin/oci_query)"));
+    " DYLD_LIBRARY_PATH=\$ORACLE_HOME TNS_ADMIN=\$ORACLE_HOME /usr/local/bin/oci_query)"));
     $msg = "curr_enrollments.php: ";
     if (is_array($enrollment_info) && (count($enrollment_info) > 0))
     {
