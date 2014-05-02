@@ -80,7 +80,7 @@ EOD;
         "class_section      TEXT,   " .
         "class_nbr          NUMBER, " .
         "component          TEXT,   " .
-        "instruction_mode   TEXT, " .
+        "instruction_mode   TEXT,   " .
         "status             TEXT,   " .
         "start_time         TEXT,   " .
         "end_time           TEXT,   " .
@@ -111,29 +111,32 @@ EOD;
       if ($row->SUN   === 'Y') $days .= ($days === '' ? '' : ', ') . 'Sun';
 
       //  Insert the row.
-
-      $db->exec("INSERT INTO enrollments VALUES ("  .
-      "'{$row->STRM}',                " .
-      "'{$row->SESSION_CODE}',        " .
-      "$term->code,                   " .
-      "'{$term->name}',               " .
-      "'{$term->abbr}',               " .
-      "{$row->CRSE_ID},               " .
-      "'{$row->SUBJECT}',             " .
-      "'{$row->CATALOG_NBR}',         " .
-      "'{$row->CLASS_SECTION}',       " .
-      "'{$row->CLASS_NBR}',           " .
-      "'{$row->SSR_COMPONENT}',       " .
-      "'{$row->INSTRUCTION_MODE}'     " .
-      "'{$row->CLASS_STAT}',          " .
-      "'$start_time',                 " .
-      "'$end_time',                   " .
-      "'$days',                       " .
-      "{$row->ENRL_CAP},              " .
-      "{$row->ENRL_TOT},              " .
-      "'{$row->FACILITY_ID}',         " .
-      "'$date_loaded'                 " .
-      ")");
+      $query = <<<EOD
+  INSERT INTO enrollments VALUES
+  (
+    '{$row->STRM}',
+    '{$row->SESSION_CODE}',
+    $term->code,
+    '{$term->name}',
+    '{$term->abbr}',
+    {$row->CRSE_ID},
+    '{$row->SUBJECT}',
+    '{$row->CATALOG_NBR}',
+    '{$row->CLASS_SECTION}',
+    '{$row->CLASS_NBR}',
+    '{$row->SSR_COMPONENT}',
+    '{$row->INSTRUCTION_MODE}',
+    '{$row->CLASS_STAT}',
+    '$start_time',
+    '$end_time',
+    '$days',
+    {$row->ENRL_CAP},
+    {$row->ENRL_TOT},
+    '{$row->FACILITY_ID}',
+    '$date_loaded'
+  )
+EOD;
+      $db->exec($query);
     }
     echo "curr_enrollments.php: $file_name written\n";
   ?>
