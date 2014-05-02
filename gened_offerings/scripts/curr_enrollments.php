@@ -10,31 +10,32 @@ require_once('utils.php');
    *  semesters, apparently for approximately the calendar year that includes
    *  the current semester. */
    $enrollment_query = <<<EOD
-SELECT a.crse_id        CRSE_ID,
-       a.strm           STRM,
-       a.session_code   SESSION_CODE,
-       a.class_section  CLASS_SECTION,
-       a.class_nbr      CLASS_NBR,
-       a.subject        SUBJECT,
-       a.catalog_nbr    CATALOG_NBR,
-       a.class_stat     CLASS_STAT,
-       a.enrl_cap       ENRL_CAP,
-       a.wait_cap       WAIT_CAP,
-       a.enrl_tot       ENRL_TOT,
-       a.wait_tot       WAIT_TOT,
-       a.ssr_component  SSR_COMPONENT,
-       a.date_loaded    DATE_LOADED,
-       c.ssr_component  COMPONENT,
+SELECT a.crse_id              CRSE_ID,
+       a.strm                 STRM,
+       a.session_code         SESSION_CODE,
+       a.class_section        CLASS_SECTION,
+       a.class_nbr            CLASS_NBR,
+       a.subject              SUBJECT,
+       a.catalog_nbr          CATALOG_NBR,
+       a.class_stat           CLASS_STAT,
+       a.enrl_cap             ENRL_CAP,
+       a.wait_cap             WAIT_CAP,
+       a.enrl_tot             ENRL_TOT,
+       a.wait_tot             WAIT_TOT,
+       a.ssr_component        SSR_COMPONENT,
+       a.date_loaded          DATE_LOADED,
+       a.instruction_mode     INSTRUCTION_MODE,
+       c.ssr_component        COMPONENT,
        b.meeting_time_start   MEETING_TIME_START,
        b.meeting_time_end     MEETING_TIME_END,
-       b.mon            MON,
-       b.tues           TUES,
-       b.wed            WED,
-       b.thurs          THURS,
-       b.fri            FRI,
-       b.sat            SAT,
-       b.sun            SUN,
-       b.facility_id    FACILITY_ID
+       b.mon                  MON,
+       b.tues                 TUES,
+       b.wed                  WED,
+       b.thurs                THURS,
+       b.fri                  FRI,
+       b.sat                  SAT,
+       b.sun                  SUN,
+       b.facility_id          FACILITY_ID
 FROM  octsims.erp805_class_section a,
       octsims.erp805_class_section_dtl b,
       octsims.erp805_course_component c
@@ -68,25 +69,26 @@ EOD;
       $db = new SQLite3($file_name);
       $db->exec("DROP TABLE IF EXISTS enrollments");
       $db->exec("CREATE TABLE enrollments (" .
-        "term           TEXT,   " .
-        "session        TEXT,   " .
-        "term_code      NUMBER, " .
-        "term_name      TEXT,   " .
-        "term_abbr      TEXT,   " .
-        "course_id      NUMBER, " .
-        "discipline     TEXT,   " .
-        "course_number  TEXT,   " .
-        "class_section  TEXT,   " .
-        "class_nbr      NUMBER, " .
-        "component      TEXT,   " .
-        "status         TEXT,   " .
-        "start_time     TEXT,   " .
-        "end_time       TEXT,   " .
-        "days           TEXT,   " .
-        "seats          NUMBER, " .
-        "enrollment     NUMBER, " .
-        "room           TEXT,   " .
-        "date_loaded    TEXT    " .
+        "term               TEXT,   " .
+        "session            TEXT,   " .
+        "term_code          NUMBER, " .
+        "term_name          TEXT,   " .
+        "term_abbr          TEXT,   " .
+        "course_id          NUMBER, " .
+        "discipline         TEXT,   " .
+        "course_number      TEXT,   " .
+        "class_section      TEXT,   " .
+        "class_nbr          NUMBER, " .
+        "component          TEXT,   " .
+        "instruction_mode   TEXT, " .
+        "status             TEXT,   " .
+        "start_time         TEXT,   " .
+        "end_time           TEXT,   " .
+        "days               TEXT,   " .
+        "seats              NUMBER, " .
+        "enrollment         NUMBER, " .
+        "room               TEXT,   " .
+        "date_loaded        TEXT    " .
       ")");
     //  Populate the table
     foreach ($enrollment_info as $row)
@@ -122,6 +124,7 @@ EOD;
       "'{$row->CLASS_SECTION}',       " .
       "'{$row->CLASS_NBR}',           " .
       "'{$row->SSR_COMPONENT}',       " .
+      "'{$row->INSTRUCTION_MODE}'     " .
       "'{$row->CLASS_STAT}',          " .
       "'$start_time',                 " .
       "'$end_time',                   " .
