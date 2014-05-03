@@ -4,30 +4,6 @@
   for each approved gened course.
 """
 
-"""
-The 805-based enrollments table:
-  $db->exec("CREATE TABLE enrollments (" .
-    "term           TEXT,   " .
-    "session        TEXT,   " .
-    "term_code      NUMBER, " .
-    "term_name      TEXT,   " .
-    "term_abbr      TEXT,   " .
-    "course_id      NUMBER, " .
-    "discipline     TEXT,   " .
-    "course_number  TEXT,   " .
-    "class_section  TEXT,   " .
-    "class_nbr      NUMBER, " .
-    "component      TEXT,   " .
-    "status         TEXT,   " .
-    "start_time     TEXT,   " .
-    "end_time       TEXT,   " .
-    "days           TEXT,   " .
-    "seats          NUMBER, " .
-    "enrollment     NUMBER, " .
-    "date_loaded    TEXT    " .
-  ")");
-"""
-
 import argparse
 import os
 import re
@@ -105,15 +81,16 @@ curric_curs.execute('drop table if exists course_enrollments cascade')
 curric_curs.execute("""
 create  table course_enrollments
 (
-  term_code     integer references enrollment_terms,
-  discipline    text    references discp_dept_div(discipline),
-  course_number integer not null,
-  component     text    not null,
-  suffixes      text    default '',
-  num_sections  integer not null,
-  num_seats     integer not null,
-  enrollment    integer not null,
-  primary key   (term_code, discipline, course_number, component)
+  term_code         integer references enrollment_terms,
+  discipline        text    references discp_dept_div(discipline),
+  course_number     integer not null,
+  component         text    not null,
+  instruction_mode  text    default '',
+  suffixes          text    default '',
+  num_sections      integer not null,
+  num_seats         integer not null,
+  enrollment        integer not null,
+  primary key       (term_code, discipline, course_number, component, instruction_mode)
 );
 
 drop view if exists offered_courses;
@@ -125,14 +102,15 @@ create view offered_courses as
             discipline,
             course_number,
             component,
+            instruction_mode,
             suffixes,
             sum(num_sections)   as sections,
             sum(num_seats)      as seats,
             sum(enrollment)     as enrollment
   from      course_enrollments
-  group by  term_code, discipline, course_number, component, suffixes
+  group by  term_code, discipline, course_number, component, instruction_mode, suffixes
   having    sum(num_sections) > 0
-  order by  term_code, discipline, course_number, component
+  order by  term_code, discipline, course_number, component, instruction_mode
 );
 
 create view offered_gened as
@@ -141,6 +119,7 @@ create view offered_gened as
           m.discipline,
           m.course_number,
           o.component,
+          o.instruction_mode,
           o.suffixes,
           t.abbr            as designation,
           m.is_primary,
@@ -157,25 +136,26 @@ create view offered_gened as
 
 # Create dictionaries of enrollment info
 # Accumulate # of sections, seats, and enrollment separately for each course and for each
-# section of a course. Courses are indexed by {term, discipline, number}; sections by
-# {term, discipline, number, section, component}
+# section and each instruction mode of a course. Courses are indexed by {term, discipline, number};
+# sections by {term, discipline, number, section, component, instruction_mode}
 # Each row is a separate section; all sections of a course are contiguous, by semester.
 
 
 #courses       = {}     # Dictionary indexed by term_code, discipline, course_number
-#sections      = {}     # Dictionary indexed by course_key + section, component
-term_code     = 0
-discipline    = ''
-course_number = 0
-component     = ''
-suffixes      = set()   # Set of suffixes: {'', 'W', 'H'}
-num_sections  = 0
-num_seats     = 0
-num_enrolled  = 0
-this_index    = ''      # term_code + discipline + course_number
+#sections      = {}     # Dictionary indexed by course_key + section, component, instruction_mode
+term_code         = 0
+discipline        = ''
+course_number     = 0
+component         = ''
+instruction_mode  = ''
+suffixes          = set()   # Set of suffixes: {'', 'W', 'H'}
+num_sections      = 0
+num_seats         = 0
+num_enrolled      = 0
+this_index        = ''      # term_code + discipline + course_number
 
 enrollment_curs.execute("""
-select * from enrollments order by term_code, discipline, course_number, component
+select * from enrollments order by term_code, discipline, course_number, component, instruction_mode
 """)
 for row in enrollment_curs:
   new_discipline  = row['discipline']
@@ -185,14 +165,16 @@ for row in enrollment_curs:
   empty, new_course_number, suffix = re.split('(\d+)', row['course_number'])
   if suffix == '':
     suffix = '-'
-  section         = row['class_section']
-  new_component   = row['component']
-  seats           = row['seats']
-  enrollment      = row['enrollment']
-  new_index       = '{} {} {} {}'.format(new_term_code,
-                                         new_discipline,
-                                         new_course_number,
-                                         new_component)
+  section               = row['class_section']
+  new_component         = row['component']
+  seats                 = row['seats']
+  enrollment            = row['enrollment']
+  new_instruction_mode  = row['instruction_mode']
+  new_index             = '{} {} {} {} {}'.format(new_term_code,
+                                            new_discipline,
+                                            new_course_number,
+                                            new_component,
+                                            new_instruction_mode)
   if new_index != this_index:
     if this_index != '':
       # Write course data to curric.course_enrollments
@@ -205,21 +187,23 @@ for row in enrollment_curs:
           '{}', --  discipline
           {},   --  course_number
           '{}', --  component
+          '{}', --  instruction_mode
           '{}', --  suffixes
           {},   --  num_sections
           {},   --  num_seats
           {})   --  enrollment
-""".format(term_code, discipline, course_number, component,
+""".format(term_code, discipline, course_number, component, instruction_mode,
            suffix_str, num_sections, num_seats, num_enrolled))
-    this_index    = new_index
-    term_code     = new_term_code
-    discipline    = new_discipline
-    course_number = new_course_number
-    component     = new_component
-    suffixes      = set(suffix)
-    num_sections  = 1
-    num_seats     = seats
-    num_enrolled  = enrollment
+    this_index        = new_index
+    term_code         = new_term_code
+    discipline        = new_discipline
+    course_number     = new_course_number
+    component         = new_component
+    instruction_mode  = new_instruction_mode
+    suffixes          = set(suffix)
+    num_sections      = 1
+    num_seats         = seats
+    num_enrolled      = enrollment
   else:
     suffixes.add(suffix)
     num_sections  +=  1
