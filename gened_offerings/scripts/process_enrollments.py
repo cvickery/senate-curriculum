@@ -1,7 +1,11 @@
 #! /usr/local/bin/python3
 """
-  Process the latest enrollments table to give current # of sections/seats/enrollment
-  for each approved gened course.
+  Generate course_enrollments table for all offered courses based on current 805 extract, which
+  includes final totals for previous semesters.
+  No daily history tracking here: see update_enrollments.py for that.
+    Views:
+      offered_courses:  Coalesce sections and instruction modes, giving courses
+      offered_gened:    Extract GenEd courses from offered_courses
 """
 
 import argparse
@@ -26,7 +30,7 @@ curric_curs = curric_db.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
 print('Curriculum db: {}'.format(curric_name))
 
-# Find latest enrollments db, and open it
+## Find latest enrollments db, and open it
 enrollment_file = '1901-01-01'
 for file in os.listdir('../db/'):
   if re.match("\d{4}", file):
@@ -37,6 +41,8 @@ print('enrollments db: {}'.format(enrollment_file))
 enrollment_conn = sqlite3.connect(enrollment_file)
 enrollment_conn.row_factory = sqlite3.Row
 enrollment_curs = enrollment_conn.cursor()
+
+## Sanity check: there must be only one value for date_loaded
 enrollment_curs.execute('select date_loaded from enrollments group by date_loaded')
 date_loaded = ''
 for row in enrollment_curs:
@@ -45,13 +51,15 @@ for row in enrollment_curs:
   date_loaded = row['date_loaded']
 if date_loaded == '': exit("Unable to determine date_loaded")
 print("enrollments last updated on", date_loaded)
+
+## Indicate the new date for updating enrollments
 curric_curs.execute("""
     update update_log
     set updated_date = '{}'
     where table_name = 'enrollments'
     """.format(date_loaded))
 
-# Get list of disciplines with scheduled courses: others will be disregarded
+## Get list of disciplines with scheduled courses: others will be disregarded
 disciplines = set()
 enrollment_curs.execute("select discipline from enrollments group by discipline order by discipline")
 for row in enrollment_curs:
@@ -102,15 +110,14 @@ create view offered_courses as
             discipline,
             course_number,
             component,
-            instruction_mode,
             suffixes,
             sum(num_sections)   as sections,
             sum(num_seats)      as seats,
             sum(enrollment)     as enrollment
   from      course_enrollments
-  group by  term_code, discipline, course_number, component, instruction_mode, suffixes
+  group by  term_code, discipline, course_number, component, suffixes
   having    sum(num_sections) > 0
-  order by  term_code, discipline, course_number, component, instruction_mode
+  order by  term_code, discipline, course_number, component
 );
 
 create view offered_gened as
@@ -119,7 +126,6 @@ create view offered_gened as
           m.discipline,
           m.course_number,
           o.component,
-          o.instruction_mode,
           o.suffixes,
           t.abbr            as designation,
           m.is_primary,
