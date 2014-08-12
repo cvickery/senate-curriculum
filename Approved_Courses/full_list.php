@@ -237,7 +237,7 @@ EOD;
       // Remove asterisk from primary RD: it isn't documented, and should be used only
       // when there is an alternate RD that can be substituted "automatically."
       $is_primary = $d_row['is_primary'] === 't' ? '' : '';
-      if ($is_primary)
+      if ($d_row['is_primary'] === 't')
       {
         $designations[0] = "{$d_row['designation']}$is_primary ({$d_row['reason']})";
       }
