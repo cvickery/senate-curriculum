@@ -273,7 +273,7 @@ EOD;
               <label for='prev-co-n'>No</label>
             </td>
             <td>
-              Have you received credit for College Option courses from another CUNY
+              Have you received any College Option credits from other CUNY
               senior college?
             </td>
           </tr>
@@ -285,8 +285,8 @@ EOD;
                       $num_prev_co />
             </td>
             <td>
-              How many College Option credits have you completed at another CUNY
-              senior college?
+              How many College Option credits have you received from other CUNY
+              senior colleges?
             </td>
           </tr>
         </table>
