@@ -160,7 +160,7 @@ EOD;
       $assigned_date = substr($row['assigned_date'], 0, 10);
       $review_submitted_date = 'Not yet';
       $need_review = " class='need-review'";
-      if ($row['submitted_date'] !== null)
+      if ($row['submitted_date'] !== null && $row['recommendation'] !== 'None')
       {
         $review_submitted_date = new DateTime($row['submitted_date']);
         if ($review_submitted_date > $proposal_submitted_date->add($one_hour))
