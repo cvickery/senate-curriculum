@@ -8,6 +8,8 @@ Pathways/
 *.swp
 *.dSYM/
 *.log
+*.sublime-project
+*.sublime-workspace
 .project
 .setings/
 Syllabi/*.pdf
