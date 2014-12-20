@@ -1,6 +1,10 @@
 //	review_editor.scss
 
 @import 'reviews';
+body {
+  min-width: 850px;
+  width: 95%;
+}
 .need-review {
   background-color:$highlight-background;
 	color:$highlight-color;
