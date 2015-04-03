@@ -96,6 +96,18 @@
   //  Final site_home_url
   $site_home_url = "$http_protocol://$http_host/$home_dir";
 
+  //  Sanitize all form data
+  $keys = array_keys($_GET);
+  foreach ($keys as $key)
+  {
+    $_GET[$key] = sanitize($_GET[$key]);
+  }
+  $keys = array_keys($_POST);
+  foreach ($keys as $key)
+  {
+    $_POST[$key] = sanitize($_POST[$key]);
+  }
+
   //  Global form_name: which form, if any, was submitted.
   $form_name = '';
   if ( isset($_POST[form_name])) $form_name = sanitize($_POST[form_name]);
