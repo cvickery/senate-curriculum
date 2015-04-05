@@ -223,8 +223,8 @@ EOD;
         <td>${attr_row['course_attribute_value']}</td>
       </tr>
 EOD;
-          $attr_table .= "</table>";
-        }
+          }
+        $attr_table .= "</table>";
       }
 
       //  Display course info
