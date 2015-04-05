@@ -195,7 +195,39 @@ EOD;
 
 EOD;
         }
+        //  Get cf course attributes, if any
+        $attr_table = '';
+        $attr_query = <<<EOD
+select  course_attribute, course_attribute_value
+from    cf_course_attributes
+where   course_id = $course_id
+EOD;
+        $attr_result = pg_query($attr_query) or die("<h1 class='error'>Curric query failed: "
+        . basename(__FILE__) . " line " . __LINE__
+        . "</h1></body></html>\n");
+        $num_attr = pg_num_rows($attr_result);
+        if ($num_attr > 0)
+        {
+          $attr_table = <<<EOD
+      <p>The course has the following attributes in CUNYfirst</p>
+      <table>
+        <tr>
+          <th>attribute</th><th>value</th>
+        </tr>
+EOD;
+          while ($attr_row = pg_fetch_assoc($attr_result))
+          {
+            $attr_table .= <<<EOD
+      <tr>
+        <td>${attr_row['course_attribute']}</td>
+        <td>${attr_row['course_attribute_value']}</td>
+      </tr>
+EOD;
+          $attr_table .= "</table>";
+        }
       }
+
+      //  Display course info
       echo <<<EOD
       <h2>$course: $title. $uc_component</h2>
       <div>
@@ -225,9 +257,11 @@ EOD;
         <h3>Catalog Description:</h3>
         <p>$catalog_description</p>
         $designation_table
+        $attr_table
       </div>
 
 EOD;
+      }
     }
   }
 
