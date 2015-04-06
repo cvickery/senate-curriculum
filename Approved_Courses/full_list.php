@@ -72,6 +72,7 @@ $cf_update_date     = $cf_update_date_raw->format('F j, Y');
 <html <?php echo $html_attributes;?>>
   <head>
     <title>Approved General Education Courses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
@@ -116,7 +117,6 @@ $cf_update_date     = $cf_update_date_raw->format('F j, Y');
       table.scroll {
         width: 95%;
         border: 1px solid black;
-        border-spacing: 0;
         font-size: 0.8em;
       }
       table.scroll th, table.scroll td {
