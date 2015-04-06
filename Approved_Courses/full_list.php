@@ -75,37 +75,72 @@ $cf_update_date     = $cf_update_date_raw->format('F j, Y');
     <link rel="stylesheet" type="text/css" href="../css/curriculum.css" />
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
+    <script type="text/javascript">
+      // http://stackoverflow.com/questions/17067294/
+      //    html-table-with-100-width-with-vertical-scroll-inside-tbody
+      $(function()
+      {
+        var $table      = $('table.scroll');
+        var $bodyCells  = $table.find('tbody tr:first').children();
+        var colWidth, col_span = 8;
+
+        // Get the tbody columns width array
+        colWidth = $bodyCells.map(function()
+        {
+          return $(this).width();
+        }).get();
+
+        // Set the width of thead columns
+        $table.find('thead tr').children().each(function(i, v)
+        {
+          var w = colWidth[i];
+          // Columns 7-11 are for the 5 QC RDs, and the header spans them all.
+          if (i == 7)
+          {
+            //  Either Chrome is broken, or I am. I can't put a loop here.
+            //  The 10 pixels are for the omitted padding and borders.
+            w += colWidth[8]  + 10;
+            w += colWidth[9]  + 10;
+            w += colWidth[10] + 10;
+            w += colWidth[11] + 10;
+          }
+          $(v).width(w);
+        });
+      });
+
+    </script>
     <style type='text/css'>
-      body {width: 1200px;}
-      table {
-width:1170px;
-        table-layout: fixed;
-        border: 1px solid black;
+      body {
+        min-width: 1275px;
       }
-      th, td {
-        padding:8px;
+      table.scroll {
+        width: 95%;
+        border: 1px solid black;
+        border-spacing: 0;
+        font-size: 0.8em;
+      }
+      table.scroll th, table.scroll td {
+        border-right: none;
+        border-left: 1px solid black;
+        vertical-align:top;
+        padding:4px;
         }
-      th:nth-child(1 ) div, td:nth-child(1 ) div { width: 100px; }
-      th:nth-child(2 ) div, td:nth-child(2 ) div { width: 200px; }
-      th:nth-child(3 ) div, td:nth-child(3 ) div { width:  30px; }
-      th:nth-child(4 ) div, td:nth-child(4 ) div { width:  30px; }
-      th:nth-child(5 ) div, td:nth-child(5 ) div { width: 120px; }
-      th:nth-child(6 ) div, td:nth-child(6 ) div { width: 100px; }
-      th:nth-child(7 ) div  {width: 468px; }
-      td:nth-child(7 ) div  {width:  80px; }
-      td:nth-child(8 ) div  {width:  80px; }
-      td:nth-child(9 ) div  {width:  80px; }
-      td:nth-child(10 ) div {width:  80px; }
-      td:nth-child(11 ) div {width:  80px; }
-      thead, tbody {display:block;}
-      tbody {height:800px; width:1184px; overflow:auto;}
+      table.scroll th:last-child, table.scroll td:last-child {
+        border-right: 1px solid black;
+      }
+      td:nth-child(2) {width:20%;}  /* Title      */
+      td:nth-child(5) {width:15%;}  /* Requisites */
+      td:nth-child(6) {width:10%;}  /* Attributes */
+
+      table.scroll thead, table.scroll tbody {display:block;}
+      table.scroll tbody {height:800px; overflow:auto;}
     </style>
   </head>
   <body>
 
   <h1>Queens College General Education Courses</h1>
   <p>Based on CUNYfirst catalog data as of <?php echo $cf_update_date; ?>.</p>
-  <table>
+  <table class='scroll'>
     <thead>
       <tr>
         <th><div>Course</div></th>
@@ -113,7 +148,8 @@ width:1170px;
         <th><div>Hr</div></th>
         <th><div>Cr</div></th>
         <th><div>Requisites</div></th>
-        <th><div>CF Designation</div></th>
+        <th><div>CF Requirement Designation</div></th>
+        <th><div>CF Course Attribute(s)</div></th>
         <th colspan='5'><div>QC Designation(s)</div></th>
       </tr>
     </thead>
@@ -150,6 +186,16 @@ EOD;
     $is_honors    = '';
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
+      $attr_query = "select * from cf_course_attributes where course_id = '${cf_row['course_id']}'";
+      $attr_result = pg_query($curric_db, $attr_query) or
+      die("<h1 class='error'>Query Failed " . basename(__FILE__) .
+          " line " . __LINE__ . "</h1></body></html>\n");
+      $attrs = '';
+      while ($attr_row = pg_fetch_assoc($attr_result))
+      {
+        if ($attrs !== '') $attrs .= '<br/>';
+        $attrs .= $attr_row['course_attribute'] . ': ' . $attr_row['course_attribute_value'];
+      }
       $cf_course_number = $cf_row['course_number'];
       $cf_designation   = $cf_row['designation'];
       $suffix = $cf_course_number[strlen($cf_course_number) - 1];
@@ -255,6 +301,7 @@ EOD;
     <td><div>$credits</div></td>
     <td><div>$prereqs</div></td>
     <td><div>$cf_designation</div></td>
+    <td><div>$attrs</div></td>
     <td><div>$designations[0]</div></td>
     <td><div>$designations[1]</div></td>
     <td><div>$designations[2]</div></td>
