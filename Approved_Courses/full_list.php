@@ -77,45 +77,55 @@ $cf_update_date     = $cf_update_date_raw->format('F j, Y');
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/site_ui.js"></script>
     <script type="text/javascript">
-      // http://stackoverflow.com/questions/17067294/
-      //    html-table-with-100-width-with-vertical-scroll-inside-tbody
       $(function()
       {
-        var $table      = $('table.scroll');
-        var $bodyCells  = $table.find('tbody tr:first').children();
-        var colWidth, col_span = 8;
-
-        // Get the tbody columns width array
-        colWidth = $bodyCells.map(function()
+        //  Resize heading column widths to match body column widths. Based on
+        //    http://stackoverflow.com/questions/17067294/
+        //    html-table-with-100-width-with-vertical-scroll-inside-tbody
+        var resize_heading = function()
         {
-          return $(this).width();
-        }).get();
+          var $table      = $('table.scroll');
+          var $bodyCells  = $table.find('tbody tr:first').children();
+          var colWidth, col_span = 8;
 
-        // Set the width of thead columns
-        $table.find('thead tr').children().each(function(i, v)
-        {
-          var w = colWidth[i];
-          // Columns 7-11 are for the 5 QC RDs, and the header spans them all.
-          if (i == 7)
+          // Get the tbody columns width array
+          colWidth = $bodyCells.map(function()
           {
-            //  Either Chrome is broken, or I am. I can't put a loop here.
-            //  The 10 pixels are for the omitted padding and borders.
-            w += colWidth[8]  + 10;
-            w += colWidth[9]  + 10;
-            w += colWidth[10] + 10;
-            w += colWidth[11] + 10;
-          }
-          $(v).width(w);
-        });
-      });
+            return $(this).width();
+          }).get();
 
+          // Set the width of thead columns
+          $table.find('thead tr').children().each(function(i, v)
+          {
+            var w = colWidth[i];
+            // Columns 7-11 are for the 5 QC RDs, and the header spans them all.
+            if (i == 7)
+            {
+              //  Either Chrome is broken, or I am. I can't put a loop here.
+              //  The 10 pixels are for the omitted padding and borders.
+              w += colWidth[8]  + 10;
+              w += colWidth[9]  + 10;
+              w += colWidth[10] + 10;
+              w += colWidth[11] + 10;
+            }
+            $(v).width(w);
+          });
+        };
+        //  Set it up
+        $(window).resize( resize_heading );
+        //  Initial do it
+        $(window).resize();
+      });
     </script>
     <style type='text/css'>
       body {
+        width:98%;
         min-width: 1275px;
+        margin: 0.5em auto;
       }
       table.scroll {
         width: 95%;
+        margin:auto;
         border: 1px solid black;
         font-size: 0.8em;
       }
