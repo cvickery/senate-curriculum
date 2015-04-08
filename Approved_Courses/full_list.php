@@ -186,7 +186,11 @@ EOD;
     $is_honors    = '';
     while ($cf_row = pg_fetch_assoc($cf_result))
     {
-      $attr_query = "select * from cf_course_attributes where course_id = '${cf_row['course_id']}'";
+      $attr_query = <<<EOD
+select * from cf_course_attributes
+where course_id = '${cf_row['course_id']}'
+and course_offering_nbr = '${cf_row['offer_nbr']}'
+EOD;
       $attr_result = pg_query($curric_db, $attr_query) or
       die("<h1 class='error'>Query Failed " . basename(__FILE__) .
           " line " . __LINE__ . "</h1></body></html>\n");
