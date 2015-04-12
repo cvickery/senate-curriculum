@@ -65,13 +65,13 @@ EOD;
   $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query Failed: " .
       pg_last_error($curric_db) . ': ' . basename(__FILE__) . ' ' . __LINE__ .
       '</h1></body></html>');
+  $reviewer_counts = array();
   if (($num = pg_num_rows($result)) < 1)
   {
     echo "<h2>All reviews are available and up to date</h2>\n";
   }
   else
   {
-    $reviewer_counts = array();
     echo <<<EOD
       <h2>$num Missing or Oboslete Reviews</h2>
       <table>
