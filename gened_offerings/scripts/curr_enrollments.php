@@ -1,4 +1,4 @@
-#! /usr/bin/php
+#! /usr/local/bin/php
 <?php
 ini_set('memory_limit', -1);  //  Big query
 require_once('utils.php');
