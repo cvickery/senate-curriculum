@@ -891,6 +891,18 @@ EOD;
 EOD;
   }
 
+  //  Proprosals resubmitted by department after rejection by CCRC
+  //  ------------------------------------------------------------
+  /*  The proposal must have been submitted after being rejected, and someone from
+   *  GEAC must have reviewed it.
+   */
+  echo <<<EOD
+      <h2>
+        Proposals resubmitted by a department after rejection by CCRC
+        <span class='warning'>(not implemented yet)</span>
+      </h2>
+EOD;
+
   //  Proposals approved by Senate, but not by BOT
   //  ---------------------------------------------
   echo <<<EOD
