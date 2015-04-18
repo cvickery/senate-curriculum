@@ -118,7 +118,7 @@ $course_number_value  = $course_number  = '';
         </p>
         <p>
           Enter a full course number or use wildcards to list multiple course numbers:
-          * means zero or more digits; + means one or more digits; ? means exactly one digit.
+          * means zero or more digits; + means one or more digits; ? means an optional digit.
           For example:
         </p>
         <table class='nob'>
@@ -136,7 +136,7 @@ $course_number_value  = $course_number  = '';
           </tr>
           <tr>
             <td class='nob'>1??</td>
-            <td class='nob'>Means all course numbers from 100 through 199</td>
+            <td class='nob'>Means all course numbers from 1 through 199</td>
           </tr>
         </table>
       </div>
@@ -185,7 +185,8 @@ EOD;
         $effective_date = $effective_date->format('F d, Y');
         $is_active      = ('A' === $row['status']) ? 'yes' : 'no';
         $can_schedule   = ('Y' === $row['schedule']) ? 'yes' : 'no';
-        $course         = $row['discipline'] . '—' . $row['course_number'];
+        $catalog_nbr    = $row['course_number'];
+        $course         = $row['discipline'] . '—' . $catalog_nbr;
         $division       = $row['division'];
         $department     = $row['department'];
         $level          = ('UGRD' === $row['career']) ? 'Undergrad' : 'Grad';
@@ -214,7 +215,7 @@ EOD;
           $prerequisites = "No prerequisites";
         }
         $designation_table = '';
-        $designations = lookup_designations($discipline, $course_number);
+        $designations = lookup_designations($discipline, $catalog_nbr);
         if ($designations !== '')
         {
           $designation_table = <<<EOD
