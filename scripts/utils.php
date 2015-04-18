@@ -410,7 +410,9 @@ and m.discipline = '$discipline'
 and m.course_number = '$course_number'
 
 EOD;
-  $result = pg_query($curric_db, $query);
+  $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
+        . basename(__FILE__) . " line " . __LINE__
+        . "</h1></body></html>\n");
   while ($desig = pg_fetch_assoc($result))
   {
     $desig_abbr = $desig['abbr'];
