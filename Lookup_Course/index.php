@@ -13,13 +13,15 @@ $discipline_value     = $discipline     = '';
 $course_number_value  = $course_number  = '';
   if ( !empty($form_name) and $form_name === 'course-info')
   {
-    $discipline     = sanitize($_POST['discipline']);
-    $course_number  = sanitize($_POST['course-number']);
-    $course_number  = preg_replace('/[a-z\.]/i', '', $course_number);
-    $course_number  = preg_replace('/^0*/', '', $course_number);
+    $discipline             = sanitize($_POST['discipline']);
+    $course_number_entered  = sanitize($_POST['course-number']);
+    $course_number_entered  = preg_replace('/[a-z\.]/i', '', $course_number_entered);
+    $course_number_entered  = preg_replace('/^0*/', '', $course_number_entered);
+    // Wildcard course numbers: prepend + * and ? with \d.
+    $course_number  = preg_replace('/([\+\*\?])/', '\d$1', $course_number_entered);
 
     $discipline_value     = " value='$discipline'";
-    $course_number_value  = " value='$course_number'";
+    $course_number_value  = " value='$course_number_entered'";
   }
 
   $mime_type = "text/html";
@@ -84,6 +86,8 @@ $course_number_value  = $course_number  = '';
         padding: 0.25em;
         text-align: center;
       }
+      .nob { border:none; text-align:left;}
+      table.nob {border:1px solid black; margin:0.5em 1em;}
       .error {
         background-color: red;
         color: white;
@@ -108,8 +112,33 @@ $course_number_value  = $course_number  = '';
     <fieldset>
       <legend>Select Course</legend>
       <div class='instructions'>
-        Select the course discipline from the list, and enter a single course number without
-        decimal points or leading zeros, and all variants (W and H), if any, will be shown.
+        <p>
+          Select the course discipline from the list, and enter a single course number without
+          decimal points or leading zeros, and all variants (W or H), if any, will be shown.
+        </p>
+        <p>
+          Enter a full course number or use wildcards to list multiple course numbers:
+          * means zero or more digits; + means one or more digits; ? means exactly one digit.
+          For example:
+        </p>
+        <table class='nob'>
+          <tr>
+            <td class='nob'>101</td>
+            <td class='nob'>Means 101, 101H, and 101W if they exist</td>
+          </tr>
+          <tr>
+            <td class='nob'>1*</td>
+            <td class='nob'>Means all course numbers that start with 1</td>
+          </tr>
+          <tr>
+            <td class='nob'>1+</td>
+            <td class='nob'>Means all course numbers from 10 through 19999...</td>
+          </tr>
+          <tr>
+            <td class='nob'>1??</td>
+            <td class='nob'>Means all course numbers from 100 through 199</td>
+          </tr>
+        </table>
       </div>
       <label for='discipline'>Discipline</label>
       <label for='course_number'>Course Number</label>
@@ -135,6 +164,7 @@ $course_number_value  = $course_number  = '';
 select * from cf_catalog
 where lower(discipline) = lower('$discipline')
 and (course_number ~* '^{$course_number}[WH]?$')
+order by course_number
 
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Curric query failed: "
@@ -150,6 +180,7 @@ EOD;
       while ($row = pg_fetch_assoc($result))
       {
         $course_id      = $row['course_id'];
+        $offer_nbr      = $row['offer_nbr'];
         $effective_date = new DateTime($row['effective_date']);
         $effective_date = $effective_date->format('F d, Y');
         $is_active      = ('A' === $row['status']) ? 'yes' : 'no';
@@ -201,6 +232,7 @@ EOD;
 select  course_attribute, course_attribute_value
 from    cf_course_attributes
 where   course_id = $course_id
+and     course_offering_nbr::integer = $offer_nbr
 EOD;
         $attr_result = pg_query($attr_query) or die("<h1 class='error'>Curric query failed: "
         . basename(__FILE__) . " line " . __LINE__
