@@ -402,12 +402,13 @@ function lookup_designations($discipline, $course_number)
   //  Look up all designations for which this course has already been approved.
   //  Return a string with table rows for each one, if any.
   $returnVal = '';
+  $pure_course_number = trim($course_number, " WHwh");
   $query = <<<EOD
 select t.abbr, t.full_name, m.reason
 from course_designation_mappings m, proposal_types t
 where m.designation_id = t.id
 and m.discipline = '$discipline'
-and m.course_number = '$course_number'
+and m.course_number = '$pure_course_number'
 
 EOD;
   $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
