@@ -390,7 +390,7 @@ EOD;
     </li>
   </ol>
     <div>
-      <input type='hidden' name='agent-id' value='{$proposal->agent_id}' />
+      <input type='hidden' name='agent-id' value='{$proposal->agency_id}' />
       <button type='submit' class='centered-button call-to-action'>
         Submit Proposal
       </button>
