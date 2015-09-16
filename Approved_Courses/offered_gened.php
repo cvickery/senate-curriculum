@@ -322,7 +322,7 @@ EOD;
     </p>
     <p>
       Each course may be used to satisfy just one requirement, but some courses appear in multiple areas.
-      In those cases, you may choose to have the course satisfy any one of those areas. See an advisor in
+      In those cases, you may choose to have the course satisfy any <em>one</em> of those areas. See an advisor in
       the Advising Center (Kiely 217) for more information on this option. Courses that are listed in multiple
       areas show the abbreviations of their other areas in parentheses following the course title.
     </p>
@@ -395,6 +395,16 @@ EOD;
 
     if ($show_w)
     {
+      $query = <<<EOD
+  select * from w_enrollments
+  where term_code = '$term_code'
+EOD;
+      $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at " . basename(__FILE__) .
+                                                    " line " . __LINE__ . "</h1>\n");
+      $suffix = 's are';
+      $num_rows = pg_num_rows($result);
+      if (1 === $num_rows) $suffix = ' is';
+
       echo <<<EOD
       <h2>$term_name Scheduled Writing-Intensive (W) Courses</h2>
       <div class='preamble'>
@@ -416,7 +426,7 @@ EOD;
           proper number of W courses. Contact the Advising Center (Kiely 217) if there are problems.
         </p>
         <p>
-          The following writing-intensive courses are scheduled to be offered
+          The following $num_rows writing-intensive course$suffix scheduled to be offered
           during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
           additional courses are scheduled or if scheduled courses are canceled during the enrollment period.
         </p>
@@ -433,13 +443,7 @@ EOD;
       </div>
 
 EOD;
-      $query = <<<EOD
-  select * from w_enrollments
-  where term_code = '$term_code'
-EOD;
-      $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at " . basename(__FILE__) .
-                                                    " line " . __LINE__ . "</h1>\n");
-      if (0 === pg_num_rows($result))
+      if (0 === $num_rows)
       {
         echo "<h3>No Writing-intensive Courses are scheduled to be offered during $term_name</h3>\n";
       }
@@ -449,9 +453,8 @@ EOD;
         while ($row = pg_fetch_assoc($result))
         {
           $discipline         = $row['discipline'];
-          $course_number_str  = $row['course_number'];
-          $course_number_num  = intval($course_number_str); // Drop the W
-          $course_info        = "<span>$discipline $course_number_str. {$row['course_title']}</span>";
+          $course_number      = $row['course_number'];
+          $course_info        = "<span>$discipline ${course_number}W. {$row['course_title']}</span>";
           $seats              = $row['seats'];
           $enrollment         = $row['enrollment'];
           $status                                 = " class='open'";
@@ -466,7 +469,7 @@ EOD;
   where id in ( select  designation_id
                 from    course_designation_mappings
                 where   discipline    = '$discipline'
-                and     course_number = $course_number_num )
+                and     course_number = $course_number )
 
 EOD;
           $other_result = pg_query($curric_db, $other_query)
