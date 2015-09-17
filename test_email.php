@@ -22,7 +22,7 @@ EOD;
   $mail->send() or die( $mail->getMessage() .
       " <a href='.'>try again</a> or report the problem to $webmaster_email");
 
-  echo "<h1>No error to report</h1>";
+  echo "<h1>Test message appears to have been sent. No errors reported.</h1>";
   exit;
 
 ?>
