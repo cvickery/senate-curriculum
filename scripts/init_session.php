@@ -32,20 +32,20 @@
   $home_dir       = 'Curriculum';
 
   //  Force HTTPS connection if not already in place and not coming from localhost
-  if ( !isset($_SERVER['HTTPS']))
-  {
-    if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
-    {
-      $http_protocol  = 'http';  // Exception for off-site development
-      $http_host      = 'localhost/senate.qc.cuny.edu';
-    }
-    else
-    {
-      //  Force https connection
-      header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
-      exit;
-    }
-  }
+  // if ( !isset($_SERVER['HTTPS']))
+  // {
+  //   if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost')
+  //   {
+  //     $http_protocol  = 'http';  // Exception for off-site development
+  //     $http_host      = 'localhost/senate.qc.cuny.edu';
+  //   }
+  //   else
+  //   {
+  //     //  Force https connection
+  //     header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+  //     exit;
+  //   }
+  // }
 
 //  Modules used by all pages
 //  -------------------------------------------------------------------------------------
