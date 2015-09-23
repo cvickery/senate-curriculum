@@ -28,9 +28,9 @@ $proposal_id      = $proposal->id;
 $guid             = $proposal->guid;
 $agency_name      = $agency_names[$proposal->agency_id];
 $base_dir         = basename(dirname(getcwd()));
-$view_url         = "http://senate.qc.cuny.edu/$base_dir/Proposals?id=$proposal_id";
+$view_url         = "https://senate.qc.cuny.edu/$base_dir/Proposals?id=$proposal_id";
 $submit_url =
-  "http://senate.qc.cuny.edu/$base_dir/Proposal_Manager/submit_proposal.php?token=$guid";
+  "https://senate.qc.cuny.edu/$base_dir/Proposal_Manager/submit_proposal.php?token=$guid";
 
 //  To be determined:
 $email_sender     = 'An Academic Senate Robot';
@@ -118,10 +118,8 @@ EOD;
   <p>
     $introductory_text
   </p>
-  <ul>
-    <li><a href='$submit_url'>Submit the proposal now</a></li>
-    <li><a href='$view_url'>View or print the proposal</a></li>
-  </ul>
+  <h3><a href='$submit_url'>Submit the Proposal</a></h3>
+  <p>You can also <a href='$view_url'>view or print the proposal</a>.</p>
   <p>
     $copies_text
   </p>
