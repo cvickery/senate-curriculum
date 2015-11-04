@@ -30,7 +30,7 @@ define('login_required',                'Signin required');
 define('blank_email',                   'Missing email address');
 define('bad_email',                     'Unrecognized email address');
 define('bad_pass',                      'Unrecognized email/password');
-define('need_blank'),                   'No password set for this site yet: use blank');
+define('need_blank',                   'No password set for this site yet: use blank');
 define('no_dept',                       'Unknown email or department affiliation');
 define('new_repeat_mismatch',           'New and repeated passwords don’t match');
 define('password_changed',              'Password changed');
