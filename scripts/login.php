@@ -266,10 +266,10 @@ EOD;
     }
 
     //  Extract form data
-    $qc_email = str_replace(' ', '.', trim(sanitize($_POST[qc_email])));
-    $password = sanitize($_POST[password]);
-    $new_passwd = $_POST[new_password];
-    $repeat_new = $_POST[repeat_new];
+    $qc_email       = str_replace(' ', '.', trim(sanitize($_POST[qc_email])));
+    $post_password  = sanitize($_POST[password]);
+    $new_passwd     = $_POST[new_password];
+    $repeat_new     = $_POST[repeat_new];
 
     //  Require 3+ characters for user’s name
     if (strlen($qc_email) > 2)
@@ -288,9 +288,9 @@ EOD;
             basename(__FILE__) . ' ' . __LINE__ . ' ' . $login_query);
         if ($result && pg_num_rows($result) === 1)
         {
-          //  Found user in curric.people: check password
+          //  Found user in curric.people
           $row = pg_fetch_assoc($result);
-          $post_password = sanitize($_POST[password]);
+          //  Help people who don't read the info about it being blank.
           if (crypt($post_password, $row[password]) === $row[password])
           {
             $person = new Person($qc_email);
@@ -303,7 +303,14 @@ EOD;
           }
           else
           {
-            $login_error_message = bad_pass;
+            if (crypt('', $row[password]) === $row[password])
+            {
+              $login_error_message = need_blank;
+            }
+            else
+            {
+              $login_error_message = bad_pass;
+            }
           }
         }
         else
@@ -348,7 +355,11 @@ EOD;
               $name  = $fname . (strlen($miname) ? ' '. $miname . ' ' : ' ');
               $name  .= $lname . (strlen($suffix) ? ' ' . $lname : '');
               $pending_person->set_name($name);
-              $departments_list[] = $row->DEPT_DESCR;
+              //  Add row to departments_list only if it's not already there
+              if (! in_array($row->DEPT_DESCR, $departments_list))
+              {
+                $departments_list[] = $row->DEPT_DESCR;
+              }
             }
             $num_depts = count($departments_list);
             if ($num_depts === 0)
