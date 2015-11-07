@@ -1,6 +1,6 @@
 <?php
 
-require_once('PHPMailerAutoload.php');
+require_once('../vendor/phpmailer/phpmailer/PHPMailerAutoload.php');
 
 //  class Mail
 //  -----------------------------------------------------------------------------------
