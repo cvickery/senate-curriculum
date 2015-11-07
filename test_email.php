@@ -1,6 +1,6 @@
 <?php
 require_once('scripts/mail_setup.php');
-$submitter_email = 'Christopher.Vickery@qc.cuny.edu';
+$recipient_email = 'Christopher.Vickery@qc.cuny.edu';
 $webmaster_email = 'yourself';
 $email_sender     = 'An Academic Senate Robot';
 
@@ -16,9 +16,10 @@ EOD;
 <p>This is your HTML test message</p>
 
 EOD;
-  $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $submitter_email,
+  $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $recipient_email,
     "This is a test message",
      $text_msg, $html_msg);
+  $mail->add_recipient('cvickery@gmail.com');
   $mail->send() or die( $mail->getMessage() .
       " <a href='.'>try again</a> or report the problem to $webmaster_email");
 
