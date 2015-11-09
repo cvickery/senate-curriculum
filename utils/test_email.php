@@ -1,5 +1,5 @@
 <?php
-require_once('scripts/mail_setup.php');
+require_once('../scripts/mail_setup.php');
 $recipient_email  = 'Christopher.Vickery@qc.cuny.edu';
 $email_sender     = 'An Academic Senate Robot';
 $timestamp        = date("l F j, Y H:i");
