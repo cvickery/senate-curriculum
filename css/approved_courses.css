@@ -16,8 +16,11 @@ html, body {
 body {
   margin: 1em;
 }
-h1 {
+h1, h2 {
   text-align:center;
+}
+h2 {
+  margin:0.5em;
 }
 table {
   width:100%;
