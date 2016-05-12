@@ -523,32 +523,13 @@ while ($row = pg_fetch_assoc($result))
   <body>
 <?php
   $course_heading = $reporting ? '<th>Discipline</th><th>Number</th>' : '<th>Course</th>';
-  $special_message = '';
-  $last_add_date = new DateTime('2014-02-05');
-  $today = new DateTime();
-  if ($today < $last_add_date && in_array('LPS', $designations))
-  {
-    $special_message = <<<EOD
-    <div style="color:#c00; margin:auto; width:80%; font-size:1.1em;">
-    <!--
-      <h2 style="margin: 0.1em;">New LPS Course for Spring 2014</h2>
-      <p style="margin: 0.1em 0 1em;">
-        Are you looking for a course that will satisfy your Pathways Life and Physical Sciences
-        (LPS) requirement, but is designed for non-science majors?
-      </p>
-      <p>
-        We’ve added <a href='http://gened.qc.cuny.edu/files/2013/12/ENSCI-99.pdf'>Environmental Science 99</a>
-        to the Spring schedule.
-      </p>
-      <p>
-        Check it out!
-      </p>
-    -->
-    </div>
-EOD;
-  }
   echo <<<EOD
     <h1>$page_title</h1>
+    <h2>
+      You can generate a
+      <a href='https://docs.google.com/document/d/1msxX5TjmlSjHn5EmCZH6B0SOPJfrtMyUrE71XYwuCHA/edit?usp=sharing'>
+        customized version of this list</a>.
+    </h2>
     $hover_message
     <p><em>
       Approval data last updated $approved_courses_update_date.
