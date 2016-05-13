@@ -12,12 +12,13 @@
  *    show        | title   | Show title, or title with details?
  *                |         | Course is always shown. Designations are shown if multiple.
  *                |         | Options (case-insensitive), one of:
- *                |         |   title     - title only
- *                |         |   details   - title, hours, credits, and requisites
+ *                |         |   title     - course title only
+ *                |         |   details   - course title, hours, credits, and requisites
  *                |         |   other     - other designations besides the one(s) requested
  *                |         |   all       - title, details, and other
  *                |         |   reporting - Separate row for each suffix; separate col for
  *                |         |               discipline and number
+ *                |         |
  *    enrollments | latest  | Comma-separated list of term_codes. Keywords 'latest'
  *                |         | and 'all' allowed. Term codes can be CF terms (CYYM)
  *                |         | or term_codes (YYYYMMS).
@@ -26,9 +27,6 @@
  *                |         | S: 0 when MM = 01, 02, or 09; 1 = short and 2 = long for summer
  *                |         | Include an Enrollment column with sections/seats/enrollment
  *                |         | for each course component.
- *                |         |
- *    width       | 800     | Width in pixels of the page.
- *                |         | Set this to the width of the target web part.
  *                |         |
  *    designation | MNS     | Comma and/or space-separated list of designations to
  *                |         | include.
@@ -43,6 +41,12 @@
  *                |         |   AOK   = AP, CV, NS, NS+L, RL, SS  (Area of Knowledge)
  *                |         |   CTXT  = US, ET, WC                (Context of Experience)
  *                |         |   PLAS  = AOK, CTXT, PI, AQR
+ *                |         |
+ *    nolink      | false   | Suppress link to external page with instructions on how to
+ *                |         | structure query strings.
+ *                |         |
+ *    width       | 800     | Width in pixels of the page.
+ *                |         | Set this to the width of the target web part.
  *
  *  Options may be abbreviated to their unique prefixes. For example, title = t;
  *  designation = d; details = det; default = def; full = f.
@@ -118,6 +122,7 @@ while ($row = pg_fetch_assoc($result))
       'COPT2' =>  array('LANG'),
       'COPT3' =>  array('LPS', 'SW', 'SCI'),
       'COPT4' =>  array('FCC', 'COPT1', 'COPT2', 'COPT3', 'SYN'),
+      'MNS'   =>  array('MQR', 'LPS', 'SCI'),
       'PATH'  =>  array('RCC', 'FCC', 'COPT'),
       'AOK'   =>  array('AP', 'CV', 'NS', 'NS+L', 'RL', 'SS'),
       'CTXT'  =>  array('US', 'ET', 'WC'),
@@ -224,7 +229,14 @@ while ($row = pg_fetch_assoc($result))
         }
         return;
       }
-      else die("<h1>append_designations: $desig is not a valid designation</h1>");
+      else
+      {
+        $all_designations = implode(' ', array_merge(array_keys($designation_sets),
+                                                                $designation_atoms));
+        die("<h1>$desig is not a valid designation</h1>\n"
+            . "<p>Choose from: $all_designations </p>\n"
+               );
+      }
     }
   }
 
@@ -266,6 +278,7 @@ while ($row = pg_fetch_assoc($result))
   $page_width               = '800px';
   $show_details             = false;
   $show_other               = true;
+  $show_link                = true;
   $reporting                = false;
   $show_course_enrollments  = false;
 
@@ -273,6 +286,7 @@ while ($row = pg_fetch_assoc($result))
   /*  s = s*    Show (title or title and details)
    *  d = d*    Designation
    *  t = t*    Page title
+   *  n = n*    No link to instructions
    *  w = w*    Page width
    *  e = e*    Enrollment info
    */
@@ -292,6 +306,9 @@ while ($row = pg_fetch_assoc($result))
       case 't':
         $_GET['title']        = $value;
         break;
+      case 'n':
+        $_GET['nolink']       = $value;
+        break;
       case 'w':
         $_GET['width']        = $value;
         break;
@@ -299,7 +316,17 @@ while ($row = pg_fetch_assoc($result))
         $_GET['enrollments']  = $value;
         break;
       default:
-        die("<h1>Unrecognized option: $key</h1>");
+        die("<h1>Unrecognized option: $key</h1>\n"
+            . "<p>Valid options are:</p>\n"
+            . "<ul>\n"
+            . "  <li>show [ = title | details | other | all | reporting ]</li>\n"
+            . "  <li>designations [ = comma-separated list of RDs ]</li>\n"
+            . "  <li>title [ = page title ]</li>\n"
+            . "  <li>nolink (Suppress link to instructions.)</li>\n"
+            . "  <li>width [ = page width in pixels ]</li>\n"
+            . "  <li>enrollments [ = comma-separated list of terms ]</li>\n"
+            . "</ul>\n"
+            );
     }
   }
   //  Process options
@@ -442,6 +469,11 @@ while ($row = pg_fetch_assoc($result))
   }
   $other_heading      = $show_other ? '<th>Other Designation(s)</th>' : '';
 
+  if (isset($_GET['nolink']))
+  {
+    $show_link = false;
+  }
+
   if (isset($_GET['width']))
   {
     $w = sanitize($_GET['width']);
@@ -523,13 +555,18 @@ while ($row = pg_fetch_assoc($result))
   <body>
 <?php
   $course_heading = $reporting ? '<th>Discipline</th><th>Number</th>' : '<th>Course</th>';
-  echo <<<EOD
-    <h1>$page_title</h1>
+  echo "<h1>$page_title</h1>\n";
+  if ($show_link)
+  {
+    echo <<<EOD
     <h2>
       You can generate a
       <a href='https://docs.google.com/document/d/1msxX5TjmlSjHn5EmCZH6B0SOPJfrtMyUrE71XYwuCHA/edit?usp=sharing'>
         customized version of this list</a>.
     </h2>
+EOD;
+  }
+  echo <<<EOD
     $hover_message
     <p><em>
       Approval data last updated $approved_courses_update_date.
@@ -537,7 +574,6 @@ while ($row = pg_fetch_assoc($result))
       CUNYfirst catalog data last updated $cf_catalog_update_date.
       $enrollment_str
     </em></p>
-    $special_message
     <table>
       <tr>
         $course_heading
