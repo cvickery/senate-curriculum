@@ -102,7 +102,7 @@ $course_number_value  = $course_number  = '';
   <h1>Course Information</h1>
   <p>
     <?php
-      echo "Catalog Information last updated on $cf_update_date";
+      echo "Catalog Information last updated on: $cf_update_date";
     ?>.
   </p>
   <form action='./index.php' method='post'>
