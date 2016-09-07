@@ -413,7 +413,7 @@ EOD;
       Actually, that’s not quite true. The proposal has indeed been $transaction_type, so
       <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. A final
       confirmation has been sent to you for your records, and a blind copy has been sent to
-      Chris Vickery (cvickery@qc.cuny.edu) for verification.
+      Christopher Vickery (cvickery@qc.cuny.edu) for verification.
       But no email notifications are being sent to anyone else at this time.
     </p>
 
