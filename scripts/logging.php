@@ -1,11 +1,9 @@
 <?php
 
-$log_file = fopen('debug.log', 'a');
 
 function log_msg($msg)
 {
-  global $log_file;
-  fputs($log_file, "*************************\n". date('Y-m-d H:i:s ') . $msg . "\n");
+  error_log('[' . date('Y-m-d H:i:s ') . '] ' . $msg);
 }
 function log_globals($msg='globals')
 {
