@@ -394,6 +394,35 @@ EOD;
     return $returnVal;
   }
 
+//  lookup_offerings()
+//  ---------------------------------------------------------------------------
+/*  Return a string of table rows giving the number of sections, seats, and
+ *  enrollment for terms in which the course has been or is scheduled to be
+ *  offered.
+ *  Returns an empty string if there are none.
+ */
+ function lookup_offerings($discipline, $course_number)
+ {
+    global $curric_db;
+    $returnVal = '';
+    $query = <<<EOD
+select * from offered_courses
+where discipline = '$discipline'
+  and to_char(course_number, '999') ~* '$course_number'
+  order by term_code
+EOD;
+    $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
+        . basename(__FILE__) . " line " . __LINE__
+        . "</h1></body></html>\n");
+    while ($row = pg_fetch_assoc($result))
+    {
+      $returnVal .= "<tr><td>{$row['term_code']}</td><td>{$row['course_number']}</td><td>{$row['sections']}</td>"
+                    ."<td>{$row['seats']}</td><td>{$row['enrollment']}</td></tr>";
+    }
+
+      return $returnVal;
+   }
+
 //  lookup_designations()
 //  ---------------------------------------------------------------------------
 function lookup_designations($discipline, $course_number)

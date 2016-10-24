@@ -14,8 +14,8 @@ $course_number_value  = $course_number  = '';
   if ( !empty($form_name) and $form_name === 'course-info')
   {
     $discipline             = sanitize($_POST['discipline']);
-    $course_number_entered  = sanitize($_POST['course-number']);
-    $course_number_entered  = preg_replace('/[a-z\.]/i', '', $course_number_entered);
+    $sanitized_course_number  = sanitize($_POST['course-number']);
+    $course_number_entered  = preg_replace('/[a-z\.]/i', '', $sanitized_course_number);
     $course_number_entered  = preg_replace('/^0*/', '', $course_number_entered);
     // Wildcard course numbers: prepend + * and ? with \d.
     $course_number  = preg_replace('/([\+\*\?])/', '\d$1', $course_number_entered);
@@ -117,7 +117,8 @@ $course_number_value  = $course_number  = '';
           decimal points or leading zeros, and all variants (W or H), if any, will be shown.
         </p>
         <p>
-          Enter a full course number or use wildcards to list multiple course numbers:
+          Enter a full course number or use wildcards (regular expressions) to list multiple
+          course numbers:
           * means zero or more digits; + means one or more digits; ? means an optional digit.
           For example:
         </p>
@@ -214,6 +215,8 @@ EOD;
         {
           $prerequisites = "No prerequisites";
         }
+
+        // Requirement Designations
         $designation_table = '';
         $designations = lookup_designations($discipline, $catalog_nbr);
         if ($designations !== '')
@@ -224,9 +227,9 @@ EOD;
         <tr><th>Abbr.</th><th>Designation</th><th>Approval Basis</th></tr>
         $designations
       </table>
-
 EOD;
         }
+
         //  Get cf course attributes, if any
         $attr_table = '';
         $attr_query = <<<EOD
@@ -291,10 +294,31 @@ EOD;
         <p>$catalog_description</p>
         $designation_table
         $attr_table
+        $offerings_table
       </div>
 
 EOD;
       }
+
+      // Offering History
+      $offerings_table = "<p>No recent history for $discipline $course_number.</p>";
+      $offerings = lookup_offerings($discipline, trim($course_number, ' wWhH'));
+      if ($offerings !== '')
+      {
+        $offerings_table = <<<EOD
+        <table>
+          <tr><th>Term</th><th>Course</th><th>Sections</th><th>Seats</th><th>Enrollment</th></tr>
+          $offerings
+        </table>
+EOD;
+      }
+      echo <<<EOD
+      <h2>Enrollment history for $discipline $sanitized_course_number</h2>
+      <div>
+        <p>This information is for all variants (-W, -H), if any, of courses listed.</p>
+        $offerings_table
+      </div>
+EOD;
     }
   }
 
