@@ -406,9 +406,8 @@ EOD;
               '{$this->dept_approval_date}',  -- dept_approval_date
               '{$this->dept_approval_name}',  -- dept_approval_name
                now(),                         -- opened_date
-               now(),                         -- activated_date
                NULL,                          -- closed_date
-               {$this->agency_id},             -- agency_id
+               {$this->agency_id},            -- agency_id
               '{$this->discipline}',          -- discipline
               '{$this->course_number}',       -- course_number
               '{$this->submitter_name}',      -- submitter_name

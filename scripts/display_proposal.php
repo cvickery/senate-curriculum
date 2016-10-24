@@ -37,7 +37,7 @@ EOD;
     {
       $row                = pg_fetch_assoc($result);
       $opened_date        = $row['opened_date'];
-      $submitted_date     = $row['activated_date'];
+      $submitted_date     = $row['submitted_date'];
       $closed_date        = $row['closed_date'];
       $dept_approval_date = $row['dept_approval_date'];
       $dept_approval_name = $row['dept_approval_name'];
@@ -292,7 +292,7 @@ EOD;
         <tr>
           <th>ID</th>
           <th>Type</th>
-          <th>Opened</th>
+          <th>Created</th>
           <th>Submitted</th>
           <th>Closed</th>
           <th>Agent</th>
@@ -383,7 +383,7 @@ EOD;
             $event_str = <<<EOD
       <p>
         The $agency_name <strong>requested revisions</strong> to the proposal on
-        $event_date_str. $reviewer_info
+        $event_date_str.
       </p>
 
 EOD;
