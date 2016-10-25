@@ -33,6 +33,16 @@ while ($row = pg_fetch_assoc($result))
   $discp2div[$row['discipline']]    = $row['division'];
 }
 
+//  The enrollment_terms table
+//  --------------------------------------------------------------------------------------
+$enrollment_terms = array();
+$result = pg_query($curric_db, "SELECT * FROM enrollment_terms ORDER BY term_code") or
+    die('Unable to access enrollment_terms table' . basename(__FILE__) . ' ' . __LINE__);
+while ($row = pg_fetch_assoc($result))
+{
+  $enrollment_terms[$row['term_code']]  = $row['term_name'];
+}
+
 //  $discp2dept[] and $discp2div[] contain only valid disciplines, depts, and divisions
 //  --------------------------------------------------------------------------------------
 /*  Populate dept_ids and chairs arrays with all entries in cf_organizations, knowing that
@@ -403,7 +413,7 @@ EOD;
  */
  function lookup_offerings($discipline, $course_number)
  {
-    global $curric_db;
+    global $curric_db, $enrollment_terms;
     $returnVal = '';
     $query = <<<EOD
 select * from offered_courses
@@ -416,8 +426,12 @@ EOD;
         . "</h1></body></html>\n");
     while ($row = pg_fetch_assoc($result))
     {
-      $returnVal .= "<tr><td>{$row['term_code']}</td><td>{$row['course_number']}</td><td>{$row['sections']}</td>"
-                    ."<td>{$row['seats']}</td><td>{$row['enrollment']}</td></tr>";
+      $term_name = $enrollment_terms[$row['term_code']];
+      $returnVal .= "<tr><td style='text-align:left;'>$term_name</td>"
+                    . "<td>{$row['course_number']}</td>"
+                    . "<td>{$row['sections']}</td>"
+                    . "<td>{$row['seats']}</td>"
+                    . "<td>{$row['enrollment']}</td></tr>";
     }
 
       return $returnVal;
