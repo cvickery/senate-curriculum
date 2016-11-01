@@ -294,7 +294,6 @@ EOD;
         <p>$catalog_description</p>
         $designation_table
         $attr_table
-        $offerings_table
       </div>
 
 EOD;
