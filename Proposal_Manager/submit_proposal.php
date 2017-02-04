@@ -410,11 +410,12 @@ EOD;
           echo "<p>A copy will also be forwarded to $notify_text.</p>";
           echo <<<EOD
     <p class='warning'>
-      Actually, that’s not quite true. The proposal has indeed been $transaction_type, so
-      <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. A final
+      Actually, that’s not quite true. The proposal has indeed been $transaction_type, for
+      approval, and
+      <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. Also, a final
       confirmation has been sent to you for your records, and a blind copy has been sent to
       Christopher Vickery (cvickery@qc.cuny.edu) for verification.
-      But no email notifications are being sent to anyone else at this time.
+      <em>But no email notifications will be sent to your chair or dean at this time.</em>
     </p>
 
 EOD;
