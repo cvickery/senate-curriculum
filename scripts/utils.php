@@ -419,7 +419,7 @@ EOD;
 select * from offered_courses
 where discipline = '$discipline'
   and to_char(course_number, '999') ~* '$course_number'
-  order by term_code
+  order by course_number, term_code
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
         . basename(__FILE__) . " line " . __LINE__
