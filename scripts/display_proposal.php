@@ -462,8 +462,11 @@ EOD;
       echo <<<EOD
   <h2>Justifications</h2>
   <p>
-    Each Criterion starts with the abbreviation for a group of criteria and/or a summary
-    of how many of the needed justifications for the group have been supplied.
+    The Criterion column gives the criterion group for each and the number of justifications
+    required within that group, followed by a description of the criterion. For required core
+    and flexible core proposals, criteria are given as “Student Learning Outcomes” (SLOs), which
+    the CUNY review committees often refererence by number, which are included in the descriptions
+    here.
   </p>
 
   <table>
