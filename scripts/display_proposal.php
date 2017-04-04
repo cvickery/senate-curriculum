@@ -462,11 +462,17 @@ EOD;
       echo <<<EOD
   <h2>Justifications</h2>
   <p>
-    The Criterion column gives the criterion group for each and the number of justifications
-    required within that group, followed by a description of the criterion. For required core
-    and flexible core proposals, criteria are given as “Student Learning Outcomes” (SLOs), which
-    the CUNY review committees often refererence by number, which are included in the descriptions
-    here.
+    The Criterion column gives the group abbreviation for each criterion and the number of
+    justifications required within that group, followed by a description of the criterion.
+    For all required core and flexible core designations, criteria are given as “Student Learning
+    Outcomes” (SLOs), which the CUNY review committees often refererence by number, and those SLO
+    numbers are at the start of the criteria descriptions here.
+  </p>
+  <p>
+    It is important for the justifications to tell what the students will do to demonstrate that
+    they have achieved the corresponding SLO, rather than to narrate what the course “covers.” It
+    is important for the justifcations to align clearly with course requirements and grading
+    criteria given in the sample syllabus/syllabi.
   </p>
 
   <table>
