@@ -543,8 +543,8 @@ EOD;
             Pathways required-core and flexible-core criteria are stated in terms of what students
             who complete the course successfully will have learned. Those justifications should
             explain how the grading for the course will demonstrate that students have actually
-            achieved the desired SLO. <em>It is critical for these justifications to be clearly in
-            alignment with the grading structure for coursework given in the syllabus.</em>
+            achieved the desired SLO. <strong>It is critical for these justifications to be clearly in
+            alignment with the grading structure for coursework given in the syllabus.</strong>
           </li>
           <li>
             The criteria for requirement designations occur in sets. For some sets, you have to
