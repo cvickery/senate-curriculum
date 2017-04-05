@@ -531,33 +531,40 @@ EOD;
         <ul class='instructions'>
           <li>
             There are two distinct types of justifications to supply: Course Attributes and
-            Student Learning Outcomes (SLOs). QC-specific justifications are derived from the
-            general education structure that preceded Pathways (the Perspectives structure). Those
-            justifications focus on how the course represents its discipline within the liberal
-            arts. CUNY-specific justifications are required for Pathways required-core and
-            flexible-core designations; those justifications should explain how the grading for
-            the course will demonstrate that students have actually achieved the desired outcome.
+            Student Learning Outcomes (SLOs).
           </li>
           <li>
-            For Pathways SLO justifications, explain how the graded elements of the course, as
-            described in the syllabus, relate to the particular SLO.
+            QC-specific justifications are derived from the general education structure that
+            preceded Pathways (the Perspectives structure). Those justifications focus on how the
+            attributes of the course content position the course and its discipline within the
+            liberal arts.
           </li>
           <li>
-            The criteria for requirement designations occur in sets. For some sets, the
-            course has to satisfy all the criteria in the set. For other sets, a proposal
+            Pathways required-core and flexible-core criteria are stated in terms of what students
+            who complete the course successfully will have learned. Those justifications should
+            explain how the grading for the course will demonstrate that students have actually
+            achieved the desired SLO. <em>It is critical for these justifications to be clearly in
+            alignment with the grading structure for coursework given in the syllabus.</em>
+          </li>
+          <li>
+            The criteria for requirement designations occur in sets. For some sets, you have to
+            provide justifications for all the criteria in the set. For other sets, a proposal
             only needs to supply justifications for some minimum number of criteria within the set.
-            There is no particular advantage to supplying more justifications than are needed.
+            In those cases there is no particular advantage to supplying more justifications than
+            are needed.
           </li>
           <li>
-            You may paste the justifications here from a document you prepared
-            separately, but all text formatting (italics and boldface) will be lost. However,
-            special characters, such as accented or non-latin letters and curly
-            quotes should transfer correctly.
+            You may paste the justifications here from a document you prepared separately, but text
+            formatting such asitalics and boldface will be lost. However, special characters, such
+            as accented or non-latin letters and curly quotes should transfer correctly.
           </li>
           <li>
-            Save your work regularly. Once it is saved you can return to it later. Be
-            sure to submit the proposal to get it to the review committees when it is
-            ready.
+            Save your work regularly. Once it is saved you can return to it later.
+          </li>
+          <li>
+            Be sure to go through the complete process to submit the proposal for review. Until
+            you actually get a confirmation email that the proposal was received, the reviewers
+            will not know about it.
           </li>
         </ul>
 EOD;
