@@ -530,47 +530,34 @@ EOD;
         <input type='hidden' name='form-name' value='edit-designation' />
         <ul class='instructions'>
           <li>
-            The criteria for requirement designations occur in sets. For some sets, the
-            course has to satisfy all the criteria in the set. For example, “All General
-            Education courses offered at Queens College must …” For other sets, a proposal
-            only needs to supply justifications for some minimum number of criteria within
-            the set.  For example, “Creative Expression courses must meet at least three
-            of the following six learning outcomes …” There is no advantage to supplying
-            more justifications than are needed. The review committees do not look for the
-            the “best” justifications in a group, just the first ones provided.
+            There are two distinct types of justifications to supply: Course Attributes and
+            Student Learning Outcomes (SLOs). QC-specific justifications are derived from the
+            general education structure that preceded Pathways (the Perspectives structure). Those
+            justifications focus on how the course represents its discipline within the liberal
+            arts. CUNY-specific justifications are required for Pathways required-core and
+            flexible-core designations; those justifications should explain how the grading for
+            the course will demonstrate that students have actually achieved the desired outcome.
           </li>
           <li>
-            Justifications are short paragraphs, and must complement the material in the
-            syllabus supplied for the course. That is, the syllabus provides the rationale
-            for the course (its goals, objectives, or learning outcomes) and tells what
-            the students will do in the course to satisfy those goals, objectives, or
-            learning outcomes. The job of the justification paragraphs is to explain
-            how the rationale for the course also satisfies the criteria established
-            for granting that course a particular requirement designation.
+            For Pathways SLO justifications, explain how the graded elements of the course, as
+            described in the syllabus, relate to the particular SLO.
+          </li>
+          <li>
+            The criteria for requirement designations occur in sets. For some sets, the
+            course has to satisfy all the criteria in the set. For other sets, a proposal
+            only needs to supply justifications for some minimum number of criteria within the set.
+            There is no particular advantage to supplying more justifications than are needed.
           </li>
           <li>
             You may paste the justifications here from a document you prepared
-            separately, but at the present time all text formatting will be lost. However,
-            you may use any characters you want, such as accented letters and curly
-            quotes. As long as they look right as you view this web page, they will be fine.
-            (Grün ist schön, and Зелений е добре should look “right” in German and
-            Ukrainian.)
+            separately, but all text formatting (italics and boldface) will be lost. However,
+            special characters, such as accented or non-latin letters and curly
+            quotes should transfer correctly.
           </li>
           <li>
-            Save your work regularly. Once it is saved you can return to it later. But be
+            Save your work regularly. Once it is saved you can return to it later. Be
             sure to submit the proposal to get it to the review committees when it is
             ready.
-          </li>
-          <li>
-            Make it as easy as you can for the members of the review committees to see
-            that the course meets the criteria it claims to meet. They may be PhDs, but
-            they are not subject matter experts in all disciplines!
-          </li>
-          <li>
-            Design your justifications so that it will be clear how to evaluate whether
-            the course actually satisfies the listed critera during the assessment process
-            that will take place in two years. We expect that samples of student work in
-            the course will play an important role in course assessment.
           </li>
         </ul>
 EOD;
