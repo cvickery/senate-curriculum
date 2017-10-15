@@ -70,7 +70,7 @@ EOD;
       <h3>Role of this web site</h3>
       <p>
         This site supports the work of the Academic Senate’s various curriculum committees
-        and subcomiittees, primarily by providing tools and mechanisms for proposing
+        and subcomittees, primarily by providing tools and mechanisms for proposing
         changes to the courses offered at Queens College, and for tracking those proposals
         through the approval process.
       </p>
