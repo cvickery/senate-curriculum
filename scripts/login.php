@@ -333,9 +333,9 @@ EOD;
                     (
                       exec
                       (
-                        "(export ORACLE_HOME=/opt/oracle/instantclient/; " .
-                        " export TNS_ADMIN=/opt/oracle/instantclient; " .
-                        " export DYLD_LIBRARY_PATH=/opt/oracle/instantclient; " .
+                        "(export ORACLE_HOME=/Users/vickery/oracle/instantclient/; " .
+                        " export TNS_ADMIN=/Users/vickery/oracle/instantclient; " .
+                        " export DYLD_LIBRARY_PATH=/Users/vickery/oracle/instantclient; " .
                         " echo \"$login_query\"|bin/oci_query)"
                       )
                     );
