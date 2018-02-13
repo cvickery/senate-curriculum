@@ -336,7 +336,7 @@ EOD;
                         "(export ORACLE_HOME=/Users/vickery/oracle/instantclient/; " .
                         " export TNS_ADMIN=/Users/vickery/oracle/; " .
                         " export DYLD_LIBRARY_PATH=/Users/vickery/oracle/instantclient; " .
-                        " echo \"$login_query\"|bin/oci_query)"
+                        " echo \"$login_query\"|/Users/vickery/bin/oci_query)"
                       )
                     );
           if (is_array($result) && count($result) !== 0)
