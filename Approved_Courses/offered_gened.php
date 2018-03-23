@@ -327,9 +327,9 @@ EOD;
       areas show the abbreviations of their other areas in parentheses following the course title.
     </p>
     <p>
-      Some courses have co-requisites, listed in the course catalog. In those cases, <em>both</em>
-      the course shown <em>and</em> its co-requisite(s) must be completed to satisfy the listed
-      requirement.
+      Some courses have co-requisites, which are listed in the course catalog. In those cases,
+      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed to
+      satisfy the listed requirement.
     </p>
     </div>
     <div class='course-list'>
@@ -379,6 +379,11 @@ EOD;
       may also satisfy a context of experience requirement (US, ET, or WC), and/or an extended requirement (PI or
       AQR). Courses that can satisfy multiple requirements show the abbreviations of their other requirements in
       parentheses following the course title.
+    </p>
+    <p>
+      Some courses have co-requisites, which are listed in the course catalog. In those cases,
+      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed to
+      satisfy the listed requirement.
     </p>
     </div>
     <div class='course-list'>
