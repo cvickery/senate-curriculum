@@ -326,6 +326,11 @@ EOD;
       the Advising Center (Kiely 217) for more information on this option. Courses that are listed in multiple
       areas show the abbreviations of their other areas in parentheses following the course title.
     </p>
+    <p>
+      Some courses have co-requisites, listed in the course catalog. In those cases, <em>both</em>
+      the course shown <em>and</em> its co-requisite(s) must be completed to satisfy the listed
+      requirement.
+    </p>
     </div>
     <div class='course-list'>
 
