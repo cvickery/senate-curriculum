@@ -328,8 +328,8 @@ EOD;
     </p>
     <p>
       Some courses have co-requisites, which are listed in the course catalog. In those cases,
-      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed to
-      satisfy the listed requirement.
+      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed in
+      order to satisfy the listed requirement.
     </p>
     </div>
     <div class='course-list'>
@@ -382,8 +382,8 @@ EOD;
     </p>
     <p>
       Some courses have co-requisites, which are listed in the course catalog. In those cases,
-      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed to
-      satisfy the listed requirement.
+      <em>both</em> the course shown here <em>and</em> its co-requisite(s) must be completed in
+      order to satisfy the listed requirement.
     </p>
     </div>
     <div class='course-list'>
