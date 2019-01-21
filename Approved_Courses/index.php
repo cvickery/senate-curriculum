@@ -387,20 +387,20 @@ while ($row = pg_fetch_assoc($result))
               {
                 $requested_terms[] = $request;
               }
-              else die("<h1 class='error'>No enrollment data for $term_code</h1>");
+              else die("<h1 class='error'>No enrollment data for requested term.</h1>");
               break;
             case 7:
               if (array_key_exists($term_code, $enrollment_terms))
               {
                 $requested_terms[] = $term_code;
               }
-              else die("<h1 class='error'>No enrollment data for $term_code</h1>");
+              else die("<h1 class='error'>No enrollment data for requested term.</h1>");
               break;
             default:
-              die("<h1 class='error'>Invalid term code: $term_code</h1>");
+              die("<h1 class='error'>Invalid term.</h1>");
           }
         }
-        else die("<h1 class='error'>Non-numeric term code: $term_code</h1>");
+        else die("<h1 class='error'>Non-numeric term code.</h1>");
       }
     }
 
