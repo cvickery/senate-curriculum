@@ -23,14 +23,15 @@ fwrite($plain_file, $text_msg);
 fclose($plain_file);
 $html_name = tempnam('/tmp/', 'html');
 $html_file = fopen($html_name, 'w');
-fwrite($html_file, $text_msg);
+fwrite($html_file, $html_msg);
 fclose($html_file);
 chmod($plain_name, 0644);
 chmod($html_name, 0644);
+
 $cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -p $plain_name -h $html_name " .
        "-f 'An Academic Senate Robot' -d1 $recipient_email cvickery@gmail.com";
-echo $cmd;
 system($cmd, $return_value);
+
 if ($return_value === 0)
 {
   echo "<h1>Test message appears to have been sent. No errors reported.</h1>";
