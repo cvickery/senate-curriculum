@@ -757,6 +757,7 @@ EOD;
       }
 
       //  Requirement Designation. Draw attention if not 'Regular Liberal Arts'
+      $designation = $this->designation
       $designation_class = " class='warning'";
       $designation_msg   = '';
       if ($this->is_undergraduate)
@@ -764,14 +765,14 @@ EOD;
         if (array_key_exists($this->designation, $basic_designations))
         {
           $designation = sanitize($basic_designations[$this->designation]);
-          if ($this->designation === 'RLA')
+          if ($designation === 'RLA')
           {
             $designation_class = '';
           }
           else
           {
             $designation_msg = <<<EOD
-    <p class='designation-msg warning'>
+    <p class='designation-msg error'>
       <strong>Note: </strong>courses submitted for General Education designations must be
       “Regular Liberal Arts” (RLA).
     </p>
@@ -783,7 +784,7 @@ EOD;
         {
           $designation      = sanitize($common_core_designations[$this->designation]);
           $designation_msg  = <<<EOD
-    <p class='designation-msg warning'>
+    <p class='designation-msg error'>
       <strong>Note: </strong>This course has already been assigned the {$this->designation}
       designation. Courses cannot be approved for two CUNY Common Core designations.
     </p>
@@ -792,9 +793,9 @@ EOD;
         }
         elseif ($this->designation === 'COPR')
         {
-          $designation      = 'Queens Core (LIT, LANG, SCI, or Other)';
+          $designation      = 'College Option (LIT, LANG, SCI, or Other)';
           $designation_msg  = <<<EOD
-    <p class='designation-msg warning'>
+    <p class='designation-msg error'>
       <strong>Note: </strong>This course is already a College Option course at Queens
       College (Literature, Language, Science, or Synthesis). Consult <a
       href='http://senate.qc.cuny.edu/Curriculum/Approved_Courses' target='_blank'>the
@@ -806,7 +807,7 @@ EOD;
         {
           $designation     = 'Unknown Designation';
           $designation_msg = <<<EOD
-    <p class='designation-msg warning'>
+    <p class='designation-msg error'>
       <strong>Note: </strong>courses submitted for General Education designations must be
       “Regular Liberal Arts” (RLA).
     </p>
@@ -831,7 +832,7 @@ EOD;
     <p class='catalog-description'>
       {$catalog_description}
     </p>
-    <p><strong>Requirement Designation: </strong><span$designation_class>{$designation}</span></p>
+    <p><strong>Requirement Designation: </strong><span $designation_class>{$designation}</span></p>
     $designation_msg
 
 EOD;
