@@ -18,19 +18,24 @@ echo "<!-- syllabus.php -->\n";
   //  Determine system size limit for file/post uploads
   //  ------------------------------------------------------------------------------------
   $max_upload_size  = trim(ini_get('upload_max_filesize'));
-  switch (strtolower($max_upload_size[strlen($max_upload_size) - 1]))
+  $suffix = strtolower($max_upload_size[strlen($max_upload_size) - 1]);
+  $max_upload_size = substr($max_upload_size, 0, strlen($max_upload_size) - 1);
+  switch ($suffix)
   {
     case 'g': $max_upload_size *= 1024;
     case 'm': $max_upload_size *= 1024;
     case 'k': $max_upload_size *= 1024;
   }
-  $max_post_size    = trim(ini_get('post_max_size'));
-  switch (strtolower($max_post_size[strlen($max_post_size) - 1]))
+  $max_post_size  = trim(ini_get('upload_max_filesize'));
+  $suffix = strtolower($max_post_size[strlen($max_post_size) - 1]);
+  $max_post_size = substr($max_post_size, 0, strlen($max_post_size) - 1);
+  switch ($suffix)
   {
     case 'g': $max_post_size *= 1024;
     case 'm': $max_post_size *= 1024;
     case 'k': $max_post_size *= 1024;
   }
+
   $max_size = ($max_upload_size > $max_post_size) ? $max_post_size : $max_upload_size;
   $max_size_str = humanize_num($max_size);  // Used in instructions
 
@@ -246,7 +251,7 @@ EOD;
       {
         $saved_date     = substr($date_str, 0, 10) . ' ' . substr($date_str, 14, 5);
 				$human_date_obj = new DateTime($saved_date);
-				$human_date_str = $human_date_obj->format('F j, Y \a\t g:i ') 
+				$human_date_str = $human_date_obj->format('F j, Y \a\t g:i ')
 				    . substr($date_str, 20, 2);
         $query = <<<EOD
 SELECT saved_by
