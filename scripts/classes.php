@@ -757,7 +757,7 @@ EOD;
       }
 
       //  Requirement Designation. Draw attention if not 'Regular Liberal Arts'
-      $designation = $this->designation
+      $designation = $this->designation;
       $designation_class = " class='warning'";
       $designation_msg   = '';
       if ($this->is_undergraduate)
