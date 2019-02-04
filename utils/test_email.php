@@ -19,14 +19,14 @@ EOD;
 
 $plain_name = tempnam('/tmp/', 'plain');
 $plain_file = fopen($plain_name, 'w');
-$plain_file.fwrite($text_msg);
+fwrite($plain_file, $text_msg);
 fclose($plain_file);
 $html_name = tempnam('/tmp/', 'html');
 $html_file = fopen($html_name, 'w');
-$html_file.fwrite($text_msg);
+fwrite($html_file, $text_msg);
 fclose($html_file);
 
-system("/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_name -h $html_name" .
+system("/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_name -h $html_name " .
        "-f 'An Academic Senate Robot' -t $recipient_email -d1 cvickery@gmail.com", $return_value);
 if ($return_value === 0)
 {
