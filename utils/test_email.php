@@ -27,7 +27,7 @@ fwrite($html_file, $text_msg);
 fclose($html_file);
 chmod($plain_name, 0644);
 chmod($html_name, 0644);
-$cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_name -h $html_name " .
+$cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -p $plain_name -h $html_name " .
        "-f 'An Academic Senate Robot' -d1 $recipient_email cvickery@gmail.com";
 echo $cmd;
 system($cmd, $return_value);
