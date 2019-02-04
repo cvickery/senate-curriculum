@@ -39,8 +39,8 @@ else
   echo "<h1>*** test_email failed</h1>";
 }
 
-unlink($plain_name);
-unlink($html_name);
+// unlink($plain_name);
+// unlink($html_name);
 exit;
   // $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $recipient_email,
   //   "Jack’s Alive",
