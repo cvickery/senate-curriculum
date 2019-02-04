@@ -17,12 +17,14 @@ EOD;
 
 EOD;
 
-$plain_name = tempnam(, 'plain');
+$plain_name = tempnam('/tmp/', 'plain');
 $plain_file = fopen($plain_name, 'w');
-$plain_file.write($text_msg);
-$html_name = tempnam(, 'html');
+$plain_file.fwrite($text_msg);
+fclose($plain_file);
+$html_name = tempnam('/tmp/', 'html');
 $html_file = fopen($html_name, 'w');
-$html_file.write($text_msg);
+$html_file.fwrite($text_msg);
+fclose($html_file);
 
 system("/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_file -h $html_file" .
        "-f 'An Academic Senate Robot' -t $recipient_email -d1 cvickery@gmail.com", $return_value);
@@ -34,6 +36,9 @@ else
 {
   echo "<h1>*** test_email failed</h1>";
 }
+
+unlink($plain_name);
+unlink($html_name);
 exit;
   // $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $recipient_email,
   //   "Jack’s Alive",
