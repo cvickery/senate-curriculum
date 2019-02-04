@@ -25,7 +25,7 @@ $html_file = fopen($html_name, 'w');
 $html_file.write($text_msg);
 
 system("/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_file -h $html_file" .
-       "-f 'An Academic Senate Robot' -t $recipient_email cvickery@gmail.com", $return_value);
+       "-f 'An Academic Senate Robot' -t $recipient_email -d1 cvickery@gmail.com", $return_value);
 if ($return_value === 0)
 {
   echo "<h1>Test message appears to have been sent. No errors reported.</h1>";
