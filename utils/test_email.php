@@ -27,8 +27,7 @@ fwrite($html_file, $text_msg);
 fclose($html_file);
 
 $cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_name -h $html_name " .
-       "-f 'An Academic Senate Robot' -t $recipient_email -d1 cvickery@gmail.com";
-echo $cmd;
+       "-f 'An Academic Senate Robot' -d1 $recipient_email cvickery@gmail.com";
 system($cmd, $return_value);
 if ($return_value === 0)
 {
