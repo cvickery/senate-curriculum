@@ -28,6 +28,7 @@ fclose($html_file);
 
 $cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -t $plain_name -h $html_name " .
        "-f 'An Academic Senate Robot' -d1 $recipient_email cvickery@gmail.com";
+echo $cmd;
 system($cmd, $return_value);
 if ($return_value === 0)
 {
