@@ -36,7 +36,8 @@ $cmd = <<<EOD
   -d1 \
   $recipient_email cvickery@gmail.com
 EOD;
-error_log($cmd)
+error_log($cmd);
+
 system($cmd, $return_value);
 
 if ($return_value === 0)
