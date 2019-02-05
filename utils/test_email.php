@@ -1,7 +1,6 @@
 <?php
-require_once('../scripts/mail_setup.php');
 $recipient_email  = 'Christopher.Vickery@qc.cuny.edu';
-$email_sender     = 'An Academic Senate Robot';
+$sender_email     = 'An Academic Senate Robot <cvickery@qc.cuny.edu>';
 $timestamp        = date("l F j, Y H:i");
 
   //  plain text version
@@ -28,8 +27,16 @@ fclose($html_file);
 chmod($plain_name, 0644);
 chmod($html_name, 0644);
 
-$cmd = "/Users/vickery/bin/mail.py -s 'Jack’s Alive' -p $plain_name -h $html_name " .
-       "-f 'An Academic Senate Robot' -d1 $recipient_email cvickery@gmail.com";
+$cmd = <<<EOD
+  SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py \
+  -s 'Jack’s Alive' \
+  -p $plain_name \
+  -h $html_name \
+  -f '$sender_email' \
+  -d1 \
+  $recipient_email cvickery@gmail.com";
+EOD;
+error_log($cmd)
 system($cmd, $return_value);
 
 if ($return_value === 0)
