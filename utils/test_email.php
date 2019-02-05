@@ -34,7 +34,7 @@ $cmd = <<<EOD
   -h $html_name \
   -f '$sender_email' \
   -d1 \
-  $recipient_email cvickery@gmail.com";
+  $recipient_email cvickery@gmail.com
 EOD;
 error_log($cmd)
 system($cmd, $return_value);
