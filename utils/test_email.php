@@ -1,4 +1,8 @@
 <?php
+/* Test the PHP interface to main.py
+ * This is not a test of the Senate_Mail class. See ../scripts/test_mail_setup.php for that.
+ */
+
 $recipient_email  = 'Christopher.Vickery@qc.cuny.edu';
 $sender_email     = 'An Academic Senate Robot <cvickery@qc.cuny.edu>';
 $timestamp        = date("l F j, Y H:i");
@@ -27,14 +31,14 @@ fclose($html_file);
 chmod($plain_name, 0644);
 chmod($html_name, 0644);
 
-$cmd = <<<EOD
-  SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py \
-  -s 'Jack’s Alive' \
-  -p $plain_name \
-  -h $html_name \
-  -f '$sender_email' \
-  $recipient_email cvickery@gmail.com
-EOD;
+$msg_file = tempnam('/tmp/', 'msg');
+$cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py 2> $msg_file";
+$cmd .= " -s 'Jack’s Alive'";
+$cmd .= " -p $plain_name";
+$cmd .= " -h $html_name";
+$cmd .= " -f '$sender_email'";
+$cmd .= " -- $recipient_email cvickery@gmail.com";
+
 error_log($cmd);
 
 system($cmd, $return_value);
@@ -45,11 +49,13 @@ if ($return_value === 0)
 }
 else
 {
-  echo "<h1>*** test_email failed</h1>";
+  echo "<h1>Test Failed</h1><p>";
+  echo file_get_contents($msg_file) . '</p>';
 }
 
 unlink($plain_name);
 unlink($html_name);
+unlink($msg_file);
 exit;
 
   // $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $recipient_email,

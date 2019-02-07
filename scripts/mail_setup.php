@@ -1,6 +1,4 @@
 <?php
-
-
 //  class Senate_Mail
 //  -----------------------------------------------------------------------------------
 /*    Interface to /Users/vickery/bin/mail.py
@@ -17,67 +15,55 @@ class Senate_Mail
   {
     //  Save constructor params
     $this->error_message = 'Message created; no send operation attempted yet.';
-    $this->from_addr = $from_str;
-    $this->to_addrs = array($to_str);
-    $this->subject = $subject;
+    $this->from_addr = $this->parse_email($from_str);
+    $this->to_addrs = array($this->parse_email($to_str));
+    $this->subject = $this->sanitize($subject);
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
+    $this->reply_to_addr = NULL;
     $this->plain_name = tempnam('/tmp/', 'plain');
     $plain_file = fopen($this->plain_name, 'w');
     fwrite($plain_file, $text_body);
     fclose($plain_file);
-    chmod($this->$plain_name, 0644);
+    chmod($this->plain_name, 0644);
     $this->html_name = NULL;
-    if ($html_body)
+    if (! is_null($html_body))
     {
-      $this->$html_name = tempnam('/tmp/', 'html');
+      $this->html_name = tempnam('/tmp/', 'html');
       $html_file = fopen($this->html_name, 'w');
-      fwrite($html_file, $html_msg);
+      fwrite($html_file, $html_body);
       fclose($html_file);
       chmod($this->html_name, 0644);
     }
+  }
 
-  //   //  Extract name and address from from_str and to_str
-  //   $from_array = $this->parse_address($from_str, 'Academic Senate');
-  //   $this->mail->setFrom($from_array[0], $from_array[1]);
-  //   $to_array = $this->parse_address($to_str, '');
-  //   $this->mail->addAddress($to_array[0], $to_array[1]);
-  //   $this->mail->Subject = $subject;
-  //   $this->mail->AltBody = $text_body;
-  //   if ($html_body)
-  //   {
-  //     $this->mail->msgHTML($html_body);
-  //   }
-  //   else
-  //   {
-  //     $this->mail->msgHTML(str_replace("\n", "<br/>", $text_body));
-  //   }
-  // }
-
-  //  Setters
-  // function set_text($text_body)
-  // {
-  //   //  Setting text generates html, but that can be overridden by
-  //   //  setting html afterwards.
-  //   $this->mail->AltBody = $text_body;
-  //   $this->mail->msgHTML(str_replace("\n", "<br/>", $text_body));
-  // }
-  // function set_html($html_body)   { $this->mail->msgHTML($html_body); }
-  // function set_subject($subject)  { $this->mail->Subject = $subject; }
-  //  add_recipient()
-  function add_recipient($recipient)
+  // add_recipient()
+  function add_recipient($email, $name=null)
   {
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>recipient: ".htmlspecialchars($recipient)."</p>";
     $this->to_addrs[] = $recipient;
   }
   //  add_cc()
-  function add_cc($recipient)
+  function add_cc($email, $name=null)
   {
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>cc recipient: ".htmlspecialchars($recipient)."</p>";
     $this->cc_addrs[] = $recipient;
   }
   //  add_bcc()
-  function add_bcc($recipient)
+  function add_bcc($email, $name=null)
   {
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>bcc recipient: ".htmlspecialchars($recipient)."</p>";
     $this->bcc_addrs[] = $recipient;
+  }
+  //  set_reply_to()
+  function set_reply_to()
+  {
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>reply-to recipient: ".htmlspecialchars($recipient)."</p>";
+    $this->reply_to_addr = $recipient;
   }
 
   //  get_message()
@@ -93,25 +79,33 @@ class Senate_Mail
   function send()
   {
     $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py";
-    $cmd .= " -f $this->from_addr";
+    $cmd .= " -f '$this->from_addr'";
     $cmd .= " -s '$this->subject'";
     $cmd .= " -p '$this->plain_name'";
+    // Optional options
     if (! is_null($this->html_name))
     {
       $cmd .= " -h $this->html_name";
     }
-    if (count($this->cc_addr) > 0)
+    if (count($this->cc_addrs) > 0)
     {
-      $cc_list = implode(', ', $this->cc_addrs);
+      $cc_list = implode(' ', $this->cc_addrs);
       $cmd .= " -c $cc_list";
     }
-    if (count($this->bcc_addr) > 0)
+    if (count($this->bcc_addrs) > 0)
     {
-      $bcc_list = implode(', ', $this->bcc_addrs);
+      $bcc_list = implode(' ', $this->bcc_addrs);
       $cmd .= " -b $bcc_list";
     }
-    $recipients = implode(', ', $this->to_addrs);
+    if (! is_null($this->reply_to_addr))
+    {
+      $cmd .= " -r $this->reply_to_addr";
+    }
+    // Required positional argument
+    $recipients = implode(' ', $this->to_addrs);
     $cmd .= " -- $recipients";
+
+    echo "<h2>".htmlspecialchars($cmd)."</h2>";
 
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
@@ -124,7 +118,7 @@ class Senate_Mail
 
     if ($exit_status != 0)
     {
-      $this->error_message = get_file_contents($msg_file);
+      $this->error_message = file_get_contents($msg_file);
       unlink($msg_file);
       return false;
     }
@@ -134,14 +128,60 @@ class Senate_Mail
       unlink($msg_file);
       return true;
     }
+  }
 
-    // if (! $this->mail->send() )
-    // {
-    //   $this->error_message = $this->mail->ErrorInfo;
-    //   return false;
-    // }
-    // $this->error_message = '';
-    // return true;
+  //  parse_email()
+  //  ---------------------------------------------------------------
+  /*  Extract the email address from addr_str. If there is a real_name,
+   *  extract that too, but override it with the real_name argument, if
+   *  given. Use username (titlecased) as real_name if not otherwise
+   *  available.
+   */
+  private function parse_email($addr_str, $real_name=null)
+  {
+    echo "<p>parse_email(".htmlspecialchars($addr_str),", ".htmlspecialchars($real_name),")</p>";
+    // Extract the username and domain parts of the address
+    $v = preg_match('/([^ @\>\<\'\"]+)@([^ @\>\<\'\"]+)/', $addr_str, $matches);
+    if (! $v)
+    {
+      die("<h1 class='error'>“{$addr_str}” is not a valid email address.</h1>");
+    }
+    $username = $matches[1];
+    $domain = $matches[2];
+
+    if (is_null($real_name))
+    {
+      // See if there was a real_name in addr_str
+      $worker_str = str_replace('<', '', $addr_str);
+      $worker_str = str_replace('>', '', $worker_str);
+      $worker_str = trim(str_replace("{$username}@{$domain}", '', $worker_str));
+      echo "<p>worker_str: “".htmlspecialchars($worker_str)."”</p>";
+      if ($worker_str === '')
+      {
+        $real_name = ucwords($username);
+      }
+      else
+      {
+        $real_name = ucwords($worker_str);
+      }
+    }
+    $real_name = trim($this->sanitize($real_name));
+    $return_str = "'{$real_name} <{$username}@{$domain}>'";
+    echo "<p>parse_email: |".htmlspecialchars($addr_str)."| ==> |".htmlspecialchars($return_str)."|</p>";
+  }
+
+
+  //  sanitize()
+  //  ---------------------------------------------------------------
+  /*  Make sure strings don’t contain single or double quotes.
+   *  Uses prime symbols (rather than smart quotes) for replacements
+   *  to keep things simple.
+   */
+  private function sanitize($str)
+  {
+    $sanitized = str_replace("'", '′', $str);
+    $sanitized = str_replace('"', '″', $sanitized);
+    return $sanitized;
   }
 }
 ?>
