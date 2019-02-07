@@ -21,11 +21,10 @@ class Senate_Mail
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
     $this->plain_name = tempnam('/tmp/', 'plain');
-    error_log("*** {$this->plain_name}");
     $plain_file = fopen($this->plain_name, 'w');
     fwrite($plain_file, $text_body);
     fclose($plain_file);
-    chmod($this->$plain_name, 0644);
+    chmod($this->plain_name, 0644);
     $this->html_name = NULL;
     if (! is_null($html_body))
     {
