@@ -163,7 +163,8 @@ class Senate_Mail
       }
     }
     $real_name = trim($this->sanitize($real_name));
-    return "'{$real_name} <{$username}@{$domain}>'";
+    $return_str = "'{$real_name} <{$username}@{$domain}>'";
+    echo "<p>parse_email: |$addr_str| ==> |$return_str|</p>"
   }
 
 
