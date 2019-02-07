@@ -15,9 +15,9 @@ class Senate_Mail
   {
     //  Save constructor params
     $this->error_message = 'Message created; no send operation attempted yet.';
-    $this->from_addr = $from_str;
-    $this->to_addrs = array($to_str);
-    $this->subject = $subject;
+    $this->from_addr = $this->sanitize($from_str);
+    $this->to_addrs = array($this->sanitize($to_str));
+    $this->subject = $this->sanitize($subject);
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
     $this->plain_name = tempnam('/tmp/', 'plain');
@@ -39,17 +39,17 @@ class Senate_Mail
   // add_recipient()
   function add_recipient($recipient)
   {
-    $this->to_addrs[] = $recipient;
+    $this->to_addrs[] = $this->sanitize($recipient);
   }
   //  add_cc()
   function add_cc($recipient)
   {
-    $this->cc_addrs[] = $recipient;
+    $this->cc_addrs[] = $this->sanitize($recipient);
   }
   //  add_bcc()
   function add_bcc($recipient)
   {
-    $this->bcc_addrs[] = $recipient;
+    $this->bcc_addrs[] = $this->sanitize($recipient);
   }
 
   //  get_message()
@@ -107,14 +107,19 @@ class Senate_Mail
       unlink($msg_file);
       return true;
     }
+  }
 
-    // if (! $this->mail->send() )
-    // {
-    //   $this->error_message = $this->mail->ErrorInfo;
-    //   return false;
-    // }
-    // $this->error_message = '';
-    // return true;
+  //  sanitize()
+  //  ---------------------------------------------------------------
+  /*  Make sure strings don’t contain single or double quotes.
+   *  Uses prime symbols (rather than smart quotes) for replacements
+   *  to keep things simple.
+   */
+  private function sanitize($str)
+  {
+    $sanitized = str_replace("'", '′', $str);
+    $sanitized = str_replace('"', '″', $sanitized);
+    return $sanitized;
   }
 }
 ?>
