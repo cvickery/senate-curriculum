@@ -72,12 +72,12 @@ class Senate_Mail
     {
       $cmd .= " -h $this->html_name";
     }
-    if (count($this->cc_addr) > 0)
+    if (count($this->cc_addrs) > 0)
     {
       $cc_list = implode(', ', $this->cc_addrs);
       $cmd .= " -c $cc_list";
     }
-    if (count($this->bcc_addr) > 0)
+    if (count($this->bcc_addrs) > 0)
     {
       $bcc_list = implode(', ', $this->bcc_addrs);
       $cmd .= " -b $bcc_list";
