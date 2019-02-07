@@ -1,6 +1,4 @@
 <?php
-
-
 //  class Senate_Mail
 //  -----------------------------------------------------------------------------------
 /*    Interface to /Users/vickery/bin/mail.py
@@ -28,7 +26,7 @@ class Senate_Mail
     fclose($plain_file);
     chmod($this->$plain_name, 0644);
     $this->html_name = NULL;
-    if ($html_body)
+    if (! is_null($html_body))
     {
       $this->$html_name = tempnam('/tmp/', 'html');
       $html_file = fopen($this->html_name, 'w');
@@ -36,6 +34,7 @@ class Senate_Mail
       fclose($html_file);
       chmod($this->html_name, 0644);
     }
+  }
 
   //   //  Extract name and address from from_str and to_str
   //   $from_array = $this->parse_address($from_str, 'Academic Senate');
