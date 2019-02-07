@@ -57,6 +57,13 @@ class Senate_Mail
     echo "<p>bcc recipient: $recipient</p>";
     $this->bcc_addrs[] = $recipient;
   }
+  //  set_reply_to()
+  function set_reply_to()
+  {
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>reply-to recipient: $recipient</p>";
+    $this->reply_to_addr = $recipient;
+  }
 
   //  get_message()
   //  --------------------------------------------------------------
@@ -74,23 +81,31 @@ class Senate_Mail
     $cmd .= " -f '$this->from_addr'";
     $cmd .= " -s '$this->subject'";
     $cmd .= " -p '$this->plain_name'";
+    // Optional options
     if (! is_null($this->html_name))
     {
       $cmd .= " -h $this->html_name";
     }
     if (count($this->cc_addrs) > 0)
     {
-      $cc_list = implode(', ', $this->cc_addrs);
+      $cc_list = implode(' ', $this->cc_addrs);
       $cmd .= " -c $cc_list";
     }
     if (count($this->bcc_addrs) > 0)
     {
-      $bcc_list = implode(', ', $this->bcc_addrs);
+      $bcc_list = implode(' ', $this->bcc_addrs);
       $cmd .= " -b $bcc_list";
     }
-    $recipients = implode(', ', $this->to_addrs);
+    if (! is_null($this->reply_to_addr))
+    {
+      $cmd .= " -r $this->reply_to_addr";
+    }
+    // Required positional argument
+    $recipients = implode(' ', $this->to_addrs);
     $cmd .= " -- $recipients";
+
     echo "<h2>$cmd</h2>";
+
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
 
