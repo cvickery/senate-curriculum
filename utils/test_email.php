@@ -46,7 +46,7 @@ if ($return_value === 0)
 else
 {
   echo "<h1>Test Failed</h1><p>";
-  echo get_file_contents($msg_file) . '</p>';
+  echo file_get_contents($msg_file) . '</p>';
 }
 
 unlink($plain_name);
