@@ -16,7 +16,7 @@ EOD;
   $mail = new Senate_Mail('Senate Email Test<Christopher.Vickery@qc.cuny.edu>',
       'Christopher.Vickery@qc.cuny.edu', "'testing' don’t question authority",
       $text_msg, $html_msg);
-  $mail->add_recipient('cvickery@gmail.com', 'Dr. Christopher Vickery')
+  $mail->add_recipient('cvickery@gmail.com', 'Dr. Christopher Vickery');
   $mail->add_cc('poffice@qc.cuny.edu');
   $mail->add_bcc('cvickery@qc.cuny.edu', 'Charles Christopher Vickery');
 
