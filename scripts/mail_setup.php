@@ -30,40 +30,13 @@ class Senate_Mail
     {
       $this->$html_name = tempnam('/tmp/', 'html');
       $html_file = fopen($this->html_name, 'w');
-      fwrite($html_file, $html_msg);
+      fwrite($html_file, $html_body);
       fclose($html_file);
       chmod($this->html_name, 0644);
     }
   }
 
-  //   //  Extract name and address from from_str and to_str
-  //   $from_array = $this->parse_address($from_str, 'Academic Senate');
-  //   $this->mail->setFrom($from_array[0], $from_array[1]);
-  //   $to_array = $this->parse_address($to_str, '');
-  //   $this->mail->addAddress($to_array[0], $to_array[1]);
-  //   $this->mail->Subject = $subject;
-  //   $this->mail->AltBody = $text_body;
-  //   if ($html_body)
-  //   {
-  //     $this->mail->msgHTML($html_body);
-  //   }
-  //   else
-  //   {
-  //     $this->mail->msgHTML(str_replace("\n", "<br/>", $text_body));
-  //   }
-  // }
-
-  //  Setters
-  // function set_text($text_body)
-  // {
-  //   //  Setting text generates html, but that can be overridden by
-  //   //  setting html afterwards.
-  //   $this->mail->AltBody = $text_body;
-  //   $this->mail->msgHTML(str_replace("\n", "<br/>", $text_body));
-  // }
-  // function set_html($html_body)   { $this->mail->msgHTML($html_body); }
-  // function set_subject($subject)  { $this->mail->Subject = $subject; }
-  //  add_recipient()
+  // add_recipient()
   function add_recipient($recipient)
   {
     $this->to_addrs[] = $recipient;
