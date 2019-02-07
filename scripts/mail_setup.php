@@ -142,7 +142,7 @@ class Senate_Mail
       }
     }
     $real_name = trim($this->sanitize($real_name));
-    return "{$real_name} <{$username}@{$domain}>";
+    return "'{$real_name} <{$username}@{$domain}>'";
   }
 
 
