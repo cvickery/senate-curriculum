@@ -21,6 +21,7 @@ class Senate_Mail
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
     $this->plain_name = tempnam('/tmp/', 'plain');
+    error_log("*** ${this->plain_name");
     $plain_file = fopen($this->plain_name, 'w');
     fwrite($plain_file, $text_body);
     fclose($plain_file);
@@ -111,7 +112,7 @@ class Senate_Mail
     }
     $recipients = implode(', ', $this->to_addrs);
     $cmd .= " -- $recipients";
-    error_log($cmd);
+    error_log(">>>|$cmd|<<<");
 
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
