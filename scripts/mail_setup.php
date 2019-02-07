@@ -123,7 +123,7 @@ class Senate_Mail
 
     if ($exit_status != 0)
     {
-      $this->error_message = get_file_contents($msg_file);
+      $this->error_message = file_get_contents($msg_file);
       unlink($msg_file);
       return false;
     }
