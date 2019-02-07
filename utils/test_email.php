@@ -33,7 +33,6 @@ $cmd = <<<EOD
   -p $plain_name \
   -h $html_name \
   -f '$sender_email' \
-  -d1 \
   $recipient_email cvickery@gmail.com
 EOD;
 error_log($cmd);
@@ -52,6 +51,7 @@ else
 unlink($plain_name);
 unlink($html_name);
 exit;
+
   // $mail = new Senate_Mail('QC Curriculum<nobody@qc.cuny.edu>', $recipient_email,
   //   "Jack’s Alive",
   //    $text_msg, $html_msg);
