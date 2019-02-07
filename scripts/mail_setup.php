@@ -122,7 +122,7 @@ class Senate_Mail
                     $addr_str, $matches);
     if (! $v)
     {
-      die("<h1 class='error'>“$addr_str” is not a valid email address.</h1>");
+      die("<h1 class='error'>“{$addr_str}” is not a valid email address.</h1>");
     }
     if (is_null($real_name))
     {
