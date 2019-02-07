@@ -118,17 +118,27 @@ class Senate_Mail
   private function parse_email($addr_str, $real_name=null)
   {
     // Extract the username and domain parts of the address
-    $v = preg_match('/\s*(?P<real_name>[^\<]+)?\s+[\<]\s*(?P<username>\S+)@(?P<domain>\S+)\s*[\>]/',
-                    $addr_str, $matches);
+    $v = preg_match('/([^ @\>\<\'\"]+)@([^ @\>\<\'\"]+)/', $addr_str, $matches);
     if (! $v)
     {
       die("<h1 class='error'>“{$addr_str}” is not a valid email address.</h1>");
     }
+    $username = $matches[1];
+    $domain = $matches[2];
+
     if (is_null($real_name))
     {
-      if ($matches['real_name'] === '')
+      // See if there was a real_name in addr_str
+      $worker_str = str_replace('<', '', $addr_str);
+      $worker_str = str_replace('>', '', $worker_str);
+      $worker_str = trim(str_replace("{username}@{$domain}", '', $worker_str));
+      if ($worker_str === '')
       {
-        $real_name = ucwords($matches['username']);
+        $real_name = ucwords($username);
+      }
+      else
+      {
+        $real_name = ucwords($worker_str);
       }
     }
     $real_name = trim($this->sanitize($real_name));
