@@ -65,7 +65,7 @@ class Senate_Mail
   function send()
   {
     $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py";
-    $cmd .= " -f $this->from_addr";
+    $cmd .= " -f '$this->from_addr'";
     $cmd .= " -s '$this->subject'";
     $cmd .= " -p '$this->plain_name'";
     if (! is_null($this->html_name))
@@ -83,7 +83,7 @@ class Senate_Mail
       $cmd .= " -b $bcc_list";
     }
     $recipients = implode(', ', $this->to_addrs);
-    $cmd .= "  $recipients";
+    $cmd .= " -- $recipients";
     error_log(">>>|$cmd|<<<");
 
     $msg_file = tempnam('/tmp/', 'msg');
