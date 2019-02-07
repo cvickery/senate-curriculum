@@ -83,7 +83,7 @@ class Senate_Mail
       $cmd .= " -b $bcc_list";
     }
     $recipients = implode(', ', $this->to_addrs);
-    $cmd .= " -- $recipients";
+    $cmd .= "  $recipients";
     error_log(">>>|$cmd|<<<");
 
     $msg_file = tempnam('/tmp/', 'msg');
