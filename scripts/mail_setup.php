@@ -84,10 +84,10 @@ class Senate_Mail
     }
     $recipients = implode(', ', $this->to_addrs);
     $cmd .= " -- $recipients";
-    error_log(">>>|$cmd|<<<");
-
+    echo "<p>before system()</p>";
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
+    echo "<p>after system()</p>";
 
     unlink($this->plain_name);
     if (! is_null($this->html_name))
