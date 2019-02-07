@@ -1,4 +1,8 @@
 <?php
+/* Test the PHP interface to main.py
+ * This is not a test of the Senate_Mail class. See ../scripts/test_mail_setup.php for that.
+ */
+
 $recipient_email  = 'Christopher.Vickery@qc.cuny.edu';
 $sender_email     = 'An Academic Senate Robot <cvickery@qc.cuny.edu>';
 $timestamp        = date("l F j, Y H:i");
