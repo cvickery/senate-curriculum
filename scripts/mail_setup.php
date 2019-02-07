@@ -139,6 +139,7 @@ class Senate_Mail
    */
   private function parse_email($addr_str, $real_name=null)
   {
+    echo "<p>parse_email($addr_str, $real_name)</p>";
     // Extract the username and domain parts of the address
     $v = preg_match('/([^ @\>\<\'\"]+)@([^ @\>\<\'\"]+)/', $addr_str, $matches);
     if (! $v)
