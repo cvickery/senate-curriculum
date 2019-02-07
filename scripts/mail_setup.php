@@ -111,6 +111,7 @@ class Senate_Mail
     }
     $recipients = implode(', ', $this->to_addrs);
     $cmd .= " -- $recipients";
+    error_log($cmd);
 
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
