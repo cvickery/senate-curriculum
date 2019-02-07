@@ -13,7 +13,7 @@ $text_msg = <<<EOD
   This is a “smart” message, don’t you think?
 
 EOD;
-  $mail = new Senate_Mail('Senate Email Test<Christopher.Vickery@qc.cuny.edu>',
+  $mail = new Senate_Mail('Senate Email Test <Christopher.Vickery@qc.cuny.edu>',
       'Christopher.Vickery@qc.cuny.edu', "'testing' don’t question authority",
       $text_msg, $html_msg);
   $mail->add_recipient('cvickery@gmail.com', 'Dr. Christopher Vickery');
