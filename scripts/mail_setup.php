@@ -15,8 +15,8 @@ class Senate_Mail
   {
     //  Save constructor params
     $this->error_message = 'Message created; no send operation attempted yet.';
-    $this->from_addr = $this->sanitize($from_str);
-    $this->to_addrs = array($this->sanitize($to_str));
+    $this->from_addr = $this->parse_email($from_str);
+    $this->to_addrs = array($this->parse_email($to_str));
     $this->subject = $this->sanitize($subject);
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
@@ -37,19 +37,19 @@ class Senate_Mail
   }
 
   // add_recipient()
-  function add_recipient($recipient)
+  function add_recipient($email, $name=null)
   {
-    $this->to_addrs[] = $this->sanitize($recipient);
+    $this->to_addrs[] = $this->parse_email($email, $name);
   }
   //  add_cc()
-  function add_cc($recipient)
+  function add_cc($email, $name=null)
   {
-    $this->cc_addrs[] = $this->sanitize($recipient);
+    $this->cc_addrs[] = $this->parse_email($email, $name);
   }
   //  add_bcc()
-  function add_bcc($recipient)
+  function add_bcc($email, $name=null)
   {
-    $this->bcc_addrs[] = $this->sanitize($recipient);
+    $this->bcc_addrs[] = $this->parse_email($email, $name);
   }
 
   //  get_message()
@@ -84,10 +84,9 @@ class Senate_Mail
     }
     $recipients = implode(', ', $this->to_addrs);
     $cmd .= " -- $recipients";
-    echo "<p>before system()</p>";
+
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
-    echo "<p>after system()</p>";
 
     unlink($this->plain_name);
     if (! is_null($this->html_name))
@@ -108,6 +107,34 @@ class Senate_Mail
       return true;
     }
   }
+
+  //  parse_email()
+  //  ---------------------------------------------------------------
+  /*  Extract the email address from addr_str. If there is a real_name,
+   *  extract that too, but override it with the real_name argument, if
+   *  given. Use username (titlecased) as real_name if not otherwise
+   *  available.
+   */
+  private function parse_email($addr_str, $real_name=null)
+  {
+    // Extract the username and domain parts of the address
+    $v = preg_match('/\s*(?P<real_name>[^\<]+)?\s+[\<]\s*(?P<username>\S+)@(?P<domain>\S+)\s*[\>]/',
+                    $addr_str, $matches);
+    if (! $v)
+    {
+      die('<h1 class="error">“$addr_str” is not a valid email address.</h1>')
+    }
+    if (is_null($real_name))
+    {
+      if ($matches['real_name'] === '')
+      {
+        $real_name = ucwords($matches['username']);
+      }
+    }
+    $real_name = trim($this->sanitize($real_name));
+    return "{$real_name} <{$matches['username']}@{$matches['domain']}>";
+  }
+
 
   //  sanitize()
   //  ---------------------------------------------------------------
