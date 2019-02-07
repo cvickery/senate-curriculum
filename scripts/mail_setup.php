@@ -28,7 +28,7 @@ class Senate_Mail
     $this->html_name = NULL;
     if (! is_null($html_body))
     {
-      $this->$html_name = tempnam('/tmp/', 'html');
+      $this->html_name = tempnam('/tmp/', 'html');
       $html_file = fopen($this->html_name, 'w');
       fwrite($html_file, $html_body);
       fclose($html_file);
