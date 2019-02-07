@@ -20,6 +20,7 @@ class Senate_Mail
     $this->subject = $this->sanitize($subject);
     $this->cc_addrs = array();
     $this->bcc_addrs = array();
+    $this->reply_to_addr = NULL;
     $this->plain_name = tempnam('/tmp/', 'plain');
     $plain_file = fopen($this->plain_name, 'w');
     fwrite($plain_file, $text_body);
