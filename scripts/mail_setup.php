@@ -39,17 +39,23 @@ class Senate_Mail
   // add_recipient()
   function add_recipient($email, $name=null)
   {
-    $this->to_addrs[] = $this->parse_email($email, $name);
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>recipient: $recipient</p>";
+    $this->to_addrs[] = $recipient;
   }
   //  add_cc()
   function add_cc($email, $name=null)
   {
-    $this->cc_addrs[] = $this->parse_email($email, $name);
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>cc recipient: $recipient</p>";
+    $this->cc_addrs[] = $recipient;
   }
   //  add_bcc()
   function add_bcc($email, $name=null)
   {
-    $this->bcc_addrs[] = $this->parse_email($email, $name);
+    $recipient = $this->parse_email($email, $name);
+    echo "<p>bcc recipient: $recipient</p>";
+    $this->bcc_addrs[] = $recipient;
   }
 
   //  get_message()
