@@ -154,7 +154,7 @@ class Senate_Mail
       // See if there was a real_name in addr_str
       $worker_str = str_replace('<', '', $addr_str);
       $worker_str = str_replace('>', '', $worker_str);
-      $worker_str = trim(str_replace("{username}@{$domain}", '', $worker_str));
+      $worker_str = trim(str_replace("{$username}@{$domain}", '', $worker_str));
       echo "<p>worker_str: “".htmlspecialchars($worker_str)."”</p>";
       if ($worker_str === '')
       {
