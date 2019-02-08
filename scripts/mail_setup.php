@@ -155,6 +155,7 @@ class Senate_Mail
       $worker_str = str_replace('<', '', $addr_str);
       $worker_str = str_replace('>', '', $worker_str);
       $worker_str = trim(str_replace("{username}@{$domain}", '', $worker_str));
+      echo "<p>worker_str: “".htmlspecialchars($worker_str)."”</p>";
       if ($worker_str === '')
       {
         $real_name = ucwords($username);
@@ -165,7 +166,7 @@ class Senate_Mail
       }
     }
     $real_name = trim($this->sanitize($real_name));
-    $return_str = "'{$real_name} \<{$username}@{$domain}\>'";
+    $return_str = "'{$real_name} <{$username}@{$domain}>'";
     echo "<p>parse_email: |".htmlspecialchars($addr_str)."| ==> |".htmlspecialchars($return_str)."|</p>";
   }
 
