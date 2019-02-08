@@ -41,28 +41,28 @@ class Senate_Mail
   function add_recipient($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>recipient: ".htmlspecialchars($recipient)."</p>";
+    echo "<p>recipient: ".htmlspecialchars($recipient)."</p>\n";
     $this->to_addrs[] = $recipient;
   }
   //  add_cc()
   function add_cc($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>cc recipient: ".htmlspecialchars($recipient)."</p>";
+    echo "<p>cc recipient: ".htmlspecialchars($recipient)."</p>\n";
     $this->cc_addrs[] = $recipient;
   }
   //  add_bcc()
   function add_bcc($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>bcc recipient: ".htmlspecialchars($recipient)."</p>";
+    echo "<p>bcc recipient: ".htmlspecialchars($recipient)."</p>\n";
     $this->bcc_addrs[] = $recipient;
   }
   //  set_reply_to()
   function set_reply_to()
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>reply-to recipient: ".htmlspecialchars($recipient)."</p>";
+    echo "<p>reply-to recipient: ".htmlspecialchars($recipient)."</p>\n";
     $this->reply_to_addr = $recipient;
   }
 
@@ -78,6 +78,7 @@ class Senate_Mail
    */
   function send()
   {
+    var_dump($this);
     $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py";
     $cmd .= " -f '$this->from_addr'";
     $cmd .= " -s '$this->subject'";
@@ -105,7 +106,7 @@ class Senate_Mail
     $recipients = implode(' ', $this->to_addrs);
     $cmd .= " -- $recipients";
 
-    echo "<h2>".htmlspecialchars($cmd)."</h2>";
+    echo "<h2>".htmlspecialchars($cmd)."</h2>\n";
 
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
@@ -139,12 +140,12 @@ class Senate_Mail
    */
   private function parse_email($addr_str, $real_name=null)
   {
-    echo "<p>parse_email(".htmlspecialchars($addr_str),", ".htmlspecialchars($real_name),")</p>";
+    echo "<p>parse_email(".htmlspecialchars($addr_str),", ".htmlspecialchars($real_name),")</p>\n";
     // Extract the username and domain parts of the address
     $v = preg_match('/([^ @\>\<\'\"]+)@([^ @\>\<\'\"]+)/', $addr_str, $matches);
     if (! $v)
     {
-      die("<h1 class='error'>“{$addr_str}” is not a valid email address.</h1>");
+      die("<h1 class='error'>“{$addr_str}” is not a valid email address.</h1>\n");
     }
     $username = $matches[1];
     $domain = $matches[2];
@@ -155,7 +156,7 @@ class Senate_Mail
       $worker_str = str_replace('<', '', $addr_str);
       $worker_str = str_replace('>', '', $worker_str);
       $worker_str = trim(str_replace("{$username}@{$domain}", '', $worker_str));
-      echo "<p>worker_str: “".htmlspecialchars($worker_str)."”</p>";
+      echo "<p>worker_str: “".htmlspecialchars($worker_str)."”</p>\n";
       if ($worker_str === '')
       {
         $real_name = ucwords($username);
@@ -167,7 +168,7 @@ class Senate_Mail
     }
     $real_name = trim($this->sanitize($real_name));
     $return_str = "'{$real_name} <{$username}@{$domain}>'";
-    echo "<p>parse_email: |".htmlspecialchars($addr_str)."| ==> |".htmlspecialchars($return_str)."|</p>";
+    echo "<p>parse_email: |".htmlspecialchars($addr_str)."| ==> |".htmlspecialchars($return_str)."|</p>\n";
   }
 
 
