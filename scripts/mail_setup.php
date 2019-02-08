@@ -41,28 +41,28 @@ class Senate_Mail
   function add_recipient($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>recipient: $recipient</p>";
+    echo "<p>recipient: ".htmlspecialchars($recipient)."</p>";
     $this->to_addrs[] = $recipient;
   }
   //  add_cc()
   function add_cc($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>cc recipient: $recipient</p>";
+    echo "<p>cc recipient: ".htmlspecialchars($recipient)."</p>";
     $this->cc_addrs[] = $recipient;
   }
   //  add_bcc()
   function add_bcc($email, $name=null)
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>bcc recipient: $recipient</p>";
+    echo "<p>bcc recipient: ".htmlspecialchars($recipient)."</p>";
     $this->bcc_addrs[] = $recipient;
   }
   //  set_reply_to()
   function set_reply_to()
   {
     $recipient = $this->parse_email($email, $name);
-    echo "<p>reply-to recipient: $recipient</p>";
+    echo "<p>reply-to recipient: ".htmlspecialchars($recipient)."</p>";
     $this->reply_to_addr = $recipient;
   }
 
@@ -105,7 +105,7 @@ class Senate_Mail
     $recipients = implode(' ', $this->to_addrs);
     $cmd .= " -- $recipients";
 
-    echo "<h2>$cmd</h2>";
+    echo "<h2>".htmlspecialchars($cmd)."</h2>";
 
     $msg_file = tempnam('/tmp/', 'msg');
     system("$cmd 2> $msg_file", $exit_status);
@@ -139,7 +139,7 @@ class Senate_Mail
    */
   private function parse_email($addr_str, $real_name=null)
   {
-    echo "<p>parse_email($addr_str, $real_name)</p>";
+    echo "<p>parse_email(".htmlspecialchars($addr_str),", ".htmlspecialchars($real_name),")</p>";
     // Extract the username and domain parts of the address
     $v = preg_match('/([^ @\>\<\'\"]+)@([^ @\>\<\'\"]+)/', $addr_str, $matches);
     if (! $v)
@@ -166,7 +166,7 @@ class Senate_Mail
     }
     $real_name = trim($this->sanitize($real_name));
     $return_str = "'{$real_name} \<{$username}@{$domain}\>'";
-    echo "<p>parse_email: |$addr_str| ==> |$return_str|</p>";
+    echo "<p>parse_email: |".htmlspecialchars($addr_str)."| ==> |".htmlspecialchars($return_str)."|</p>";
   }
 
 
