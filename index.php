@@ -92,7 +92,7 @@ EOD;
       <dd>
         Create, edit, submit, or delete your course and designation proposals.
         <br/>
-        <em>Access requires a valid Queens College email address.</em>
+        <em>Access requires you to sign in with a valid Queens College email address.</em>
       </dd>
 
       <dt><a href='Syllabi'>Syllabi</a></dt>
@@ -108,22 +108,27 @@ EOD;
         View individual comments from General Education Advisory Committee (GEAC)
         recommendations.
         <br/>
-        <em>Access requires a valid Queens College email address.</em>
+        <em>Access requires you to sign in with a valid Queens College email address.</em>
       </dd>
 
-      <dt><a href="Pathways">Senate Ad Hoc Committee on Pathways</a></dt>
+      <dt><a href="Approved_Courses">Approved General Education Courses</a></dt>
       <dd>
-        Archive of documents and discussion leading to the Queens College Pathways
-        Implementation Plan adopted by the Academic Senate on March 29, 2012.
+        List of QC courses approved for Pathways requirements.
       </dd>
-
-      <dt><a href="gened_offerings">Perspectives Offerings</a></dt>
-      <dd>
-          Historical and current Perspectives (PLAS) course offerings.
+      <dt><a href="Approved_Courses/offered_gened.php">Scheduled General Education Courses</a>
+      </dt>
+      <dd>Select from past as well as present terms. Indicates “nearly full” enrollment indicators.
       </dd>
+      <dt><a href="Lookup_Course">Course Catalog Information</a>
+      </dt>
+      <dd>Includes general education requirements each course satisfies (if any) as well
+      as enrollment histories.</dd>
+      <dt>
+        <a href="College_Option">College Option Calculator</a>
+      </dt>
+      <dd>Answer questions about a student’s history to determine how many College Option credits
+        the student must complete at QC.</dd>
 
-      <dt><a href="cur_reports.php">Chancellor’s University Reports (CURs)</a></dt>
-      <dd>QC Curriculum material extracted from CURs. (<em>not current</em>)</dd>
 
     </dl>
   </body>
