@@ -113,7 +113,7 @@ EOD;
         View and track curriculum proposals.
       </dd>
 
-      <dt><a href="Proposal Guidelines">General Education Proposal Guidelines</a></dt>
+      <dt><a href="Proposal_Guidelines">General Education Proposal Guidelines</a></dt>
       <dd>
         Guidelines for preparing proposals for CUNY Common Core and QC College Option designations.
       </dd>
