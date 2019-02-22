@@ -4,19 +4,19 @@
  */
 
 $recipient_email  = 'Christopher.Vickery@qc.cuny.edu';
-$sender_email     = 'An Academic Senate Robot <cvickery@qc.cuny.edu>';
+$sender_email     = 'Email Test <cvickery@qc.cuny.edu>';
 $timestamp        = date("l F j, Y H:i");
 
   //  plain text version
   $text_msg = <<<EOD
-This is your text test message, sent: $timestamp
+This is a text test message, sent: $timestamp
 
 EOD;
 
   //  HTML version
   $html_msg = <<<EOD
 
-<p>This is your HTML test message, sent: $timestamp</p>
+<p>This is a HTML test message, sent: $timestamp</p>
 
 EOD;
 
