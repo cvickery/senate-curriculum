@@ -10,13 +10,13 @@
  */
   //  site-wide
   //  ------------------------------------------------------
-  define('Proposals_label',         'Track Proposals');
-  define('Model_Proposals_label',   'Guidelines');
-  define('Proposal_Manager_label',  'Manage Proposals');
-  define('Syllabi_label',           'Syllabi');
-  define('Reviews_label',           'GEAC Reviews');
-  define('Review_Editor_label',     'Edit Reviews');
-  define('Admin_label',             'Admin');
+  define('Proposals_label',           'Track Proposals');
+  define('Proposal_Guidelines_label', 'Guidelines');
+  define('Proposal_Manager_label',    'Manage Proposals');
+  define('Syllabi_label',             'Syllabi');
+  define('Reviews_label',             'GEAC Reviews');
+  define('Review_Editor_label',       'Edit Reviews');
+  define('Admin_label',               'Admin');
 
   //  Admin
   //  ------------------------------------------------------
@@ -45,13 +45,13 @@
 
     //  Map labels to directory URLs
     $link_info  = array(
-        Proposals_label         =>  "$site_home_url/Proposals",
-        Model_Proposals_label   =>  "$site_home_url/Model_Proposals",
-        Proposal_Manager_label  =>  "$site_home_url/Proposal_Manager",
-        Syllabi_label           =>  "$site_home_url/Syllabi",
-        Reviews_label           =>  "$site_home_url/Reviews",
-        Review_Editor_label     =>  "$site_home_url/Review_Editor",
-        Admin_label             =>  "$site_home_url/Admin",
+        Proposals_label           =>  "$site_home_url/Proposals",
+        Proposal_Guidelines_label =>  "$site_home_url/Proposal_Guidelines",
+        Proposal_Manager_label    =>  "$site_home_url/Proposal_Manager",
+        Syllabi_label             =>  "$site_home_url/Syllabi",
+        Reviews_label             =>  "$site_home_url/Reviews",
+        Review_Editor_label       =>  "$site_home_url/Review_Editor",
+        Admin_label               =>  "$site_home_url/Admin",
         );
 
     //  Filter out the ones that don't apply to this user
