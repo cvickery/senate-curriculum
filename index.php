@@ -42,11 +42,10 @@ require_once('init_session.php');
   $nav_bar    = site_nav();
   echo <<<EOD
   <div id='status-bar'>
-    $instructions_button
     $status_msg
     $nav_bar
   </div>
-  <h1>Queens College Academic Senate<br />Curriculum</h1>
+  <h1>Queens College Academic Senate<br />Curriculum Matters</h1>
   $dump_if_testing
 
 EOD;
@@ -59,33 +58,64 @@ EOD;
     unset($_SESSION[login_error_msg]);
   }
 ?>
-    <div class='instructions'>
-      <h3>Responsibilities of the Academic Senate</h3>
+    <div>
       <p>
-        The Academic Senate of Queens College is responsible, subject to the CUNY Board of
+        The Academic Senate of Queens College “is responsible, subject to the CUNY Board of
         Trustees, for the formulation of policy relating to the admission and retention of
         students, curriculum, granting of degrees, campus life, and the nomination of
-        academic deans.
+        academic deans.”
       </p>
-      <h3>Role of this web site</h3>
       <p>
         This site supports the work of the Academic Senate’s various curriculum committees
-        and subcomittees, primarily by providing tools and mechanisms for proposing
-        changes to the courses offered at Queens College, and for tracking those proposals
-        through the approval process.
+        and subcomittees. It provides information about courses currently offered at Queens College,
+        mechanisms for proposing new courses or changing existing courses, and a way to track those
+        proposals through the approval process.
       </p>
     </div>
-    <h2>What’s Here</h2>
+
+    <h2>Information</h2>
     <dl>
 
+      <dt><a href="Approved_Courses">Approved General Education Courses</a></dt>
+      <dd>
+        List of QC courses approved for Pathways requirements.
+      </dd>
+      <dt><a href="Approved_Courses/offered_gened.php">Scheduled General Education Courses</a>
+      </dt>
+      <dd>
+        Select from past as well as present terms. Indicates “nearly full” enrollment indicators.
+        Updated daily.
+      </dd>
+
+      <dt><a href="Lookup_Course">Course Information</a>
+      </dt>
+      <dd>
+        <p>
+          Includes catalog information from CUNYfirst; general education requirements each course
+          satisfies (if any); basis for general education approvals; course attributes; and
+          enrollment histories. Updated daily.
+        </p>
+        <p>
+          <em>Note:</em> You can look up multiple courses at a time by using wildcards (
+          <strong><code>*</code>, </strong><strong><code>+</code></strong>, and
+          <strong><code>?</code></strong>) in the course number field.
+        </p>
+      </dd>
+      <dt>
+        <a href="College_Option">College Option Calculator</a>
+      </dt>
+      <dd>Answer questions about a student’s history to determine how many College Option credits
+        the student must complete at QC.</dd>
+
+      <h2>Proposal Processes</h2>
       <dt><a href="Proposals">Track Proposals</a></dt>
       <dd>
         View and track curriculum proposals.
       </dd>
 
-      <dt><a href="Model_Proposals">Proposal Guidelines</a></dt>
+      <dt><a href="Proposal Guidelines">General Education Proposal Guidelines</a></dt>
       <dd>
-        Guidelines for preparing curriculum proposals, with examples.
+        Guidelines for preparing proposals for CUNY Common Core and QC College Option designations.
       </dd>
 
       <dt><a href="Proposal_Manager">Manage Proposals</a></dt>
@@ -110,26 +140,6 @@ EOD;
         <br/>
         <em>Access requires you to sign in with a valid Queens College email address.</em>
       </dd>
-
-      <dt><a href="Approved_Courses">Approved General Education Courses</a></dt>
-      <dd>
-        List of QC courses approved for Pathways requirements.
-      </dd>
-      <dt><a href="Approved_Courses/offered_gened.php">Scheduled General Education Courses</a>
-      </dt>
-      <dd>Select from past as well as present terms. Indicates “nearly full” enrollment indicators.
-      </dd>
-      <dt><a href="Lookup_Course">Course Catalog Information</a>
-      </dt>
-      <dd>Includes general education requirements each course satisfies (if any) as well
-      as enrollment histories.</dd>
-      <dt>
-        <a href="College_Option">College Option Calculator</a>
-      </dt>
-      <dd>Answer questions about a student’s history to determine how many College Option credits
-        the student must complete at QC.</dd>
-
-
     </dl>
   </body>
 </html>

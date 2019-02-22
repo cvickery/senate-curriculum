@@ -1,5 +1,5 @@
 <?php
-//  Model_Proposals/index.php
+//  Proposal_Guidelines/index.php
 set_include_path(get_include_path()
     . PATH_SEPARATOR . getcwd() . '/../scripts'
     . PATH_SEPARATOR . getcwd() . '/../include');
