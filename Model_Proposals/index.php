@@ -30,7 +30,7 @@ require_once('init_session.php');
 <!DOCTYPE html>
 <html <?php echo $html_attributes;?>>
   <head>
-    <title>Model Curriculum Proposals</title>
+    <title>GenEd Proposal Guidelines</title>
     <link rel="icon" href="../../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="../css/model_proposals.css" />
     <script type='text/javascript' src="../js/jquery.min.js"></script>
@@ -42,291 +42,136 @@ require_once('init_session.php');
   $status_msg = login_status();
   $nav_bar    = site_nav();
   echo <<<EOD
-  <div id='status-bar'>
-    $instructions_button
+  <nav id='status-bar'>
     $status_msg
     $nav_bar
-  </div>
-  <div>
-    <h1>Guidelines and Model Proposals</h1>
-    $dump_if_testing
-
+  </nav>
+  <h1>Undergraduate General Education Proposal Guidelines</h1>
 EOD;
 ?>
-    <h2>Guidelines for CUNY Core and College Option Proposals and Syllabi</h2>
+  <section>
+    <h2>Three Types of General Education Requirements at Queens College</h2>
+    <div>
+      <dl>
+        <dt>CUNY-wide <em>Common Core</em> (“Pathways”)</dt>
+        <dd>
+          <p>
+            A course may be designated to satisfy no more than one of the following eight Common Core
+            areas:
+          </p>
+          <ul>
+            <li>English Composition (EC)</li>
+            <li>Mathematics and Quantitative Reasoning (MQR)</li>
+            <li>Life and Physical Sciences (LPS)</li>
+            <li>World Cultures and Global Issues (WCGI)</li>
+            <li>United States Experience in its Diversity (USED)</li>
+            <li>Creative Expression (CE)</li>
+            <li>Individual and Society (IS)</li>
+            <li>Scientific World (SW)</li>
+          </ul>
+          <p>
+            Students must complete two EC courses plus an extra course from among the last five
+            designations, for a total of ten courses. Once a student has satisfied one of these
+            designation requirements at any CUNY college, that requirement remains satisfied no matter
+            where within CUNY the student subsequently transfers.
+          </p>
+          <p>
+            For a course to be designated as a Common Core course, a proposal must be approved both
+            at Queens (by the Academic Senate) and by a CUNY-wide committee called the Common Core
+            Review Committee (CCRC). Once the CCRC approves a proposal, the course goes to the
+            Chancellor for final approval, and then gets entered into <em>CUNYfirst</em>.
+          </p>
+          <p>
+            Most of the material below is intended to help faculty prepare proposals that the CCRC
+            will approve.
+          </p>
+        </dd>
+        <dt>College Option</dt>
+        <dd>
+          <p>
+            The College Option requirements are part of the overall Pathways structure, but unlike
+            the Common Core, no CUNY-wide review takes place: once the Academic Senate approves a
+            course for the College Option, it is forwarded directly to the Chancellor.
+          </p>
+          <p>
+            Unlike Common Core designations, a course may have multiple College Option attributes
+            in addition to or instead of a single Common Core designation. But students can use a
+            single course to satisfy no more than one Common Core or College Option requirement.
+          </p>
+          <p>
+            Also unlike Common Core requirements, once a student matriculates at Queens College, all
+            remaining College Option requirements must be completed in residence at Queens.
+          </p>
+          <p>
+            The College Option structure is arcane. See <a href="../College_Option/"
+            target="_blank"> the college option calculator</a> to see how to determine which college
+            option courses a student must complete here.
+          </p>
+        </dd>
+        <dt>Writing Intensive Courses</dt>
+        <dd>
+          <p>
+            Students must complete two writing intensive courses at Queens College. These courses can
+            and should overlap with the courses taken as part of the student’s major or other
+            General Education requirements.
+          </p>
+        </dd>
+      </dl>
+    </div>
+  </section>
+  <section>
+    <h2>Proposal Preparation</h2>
     <div>
       <p>
-        The most important thing to keep in mind when preparing proposals is that the
-        syllabus and the proposal justifications have to complement each other in
-        meaningful ways. They must not contradict each other, and both must be specific
-        enough so that the case for approving the course is “obvious.”
+        Once you Sign In to this website (using the button at the top right of this page, for
+        example), a menu will open up at the top of the page that includes a “Manage Proposals”
+        button. From that page, you will be able to create, edit, or delete proposals, and to upload
+        sample course syllabi to support your proposals.
       </p>
-      <h3>The Syllabus</h3>
+      <blockquote style="border:1px solid #999; border-radius:0.5em; padding:0.5em;">
+        In order to propose a course for a General Education requirement, the course must already
+        exist in <em>CUNYfirst</em> <strong>or</strong> you must first start a separate proposal
+        here to create the course. (A future version of this site should eliminate the need for
+        separate proposals.)
+      </blockquote>
       <p>
-        The syllabus is the document given to students at the beginning of the
-        course. It provides the student with (a) the rationale for the course, sometimes
-        stated as “goals” or “objectives,” (b) the
-        course requirements (assignments and exams), and (c) information on how
-        grades will be determined. Syllabi normally contain additional administrative
-        information for the course (“administrivia”) such as how to contact the
-        instructor(s), office hours, how to access course materials, etc., but the first
-        three elements are the critical parts for present purposes.
-      </p>
-      <p>
-        Although the syllabus is designed for student consumption, it also provides
-        proposal reviewers with their only way to understand how the course is actually
-        structured and what material is actually covered.
+        There are two closely-linked parts to a proposal, a list of Student Learning Outcomes (SLOs)
+        and the sample syllabus for the course being proposed. When justifying a SLO, tell how
+        successful completion of the course will demonstrate that a student has achieved that
+        learning outcome. The focus has to be on what the student learns, not what the course
+        covers. The justification should reference particular graded activities given in the course
+        syllabus. Be concrete, but not long-winded, in these justifications.
       </p>
       <p>
-        Naturally, the syllabus must be consistent with the formal catalog information for
-        the course: title, contact hours and credits, prerequisites, and catalog
-        description.
+        Unlike an actual syllabus provided to students at the beginning of a course, the sample
+        syllabus submitted to the CCRC should be written with the CCRC in mind. They like to see the
+        SLOs listed explicitly, and it is important to make clear what assignments/activities will
+        be required, and how much each will count towards the course grade. Including the schedule
+        of topics to be covered and descriptions of the graded assignments are important. Policies
+        related to course management, when and where the class meets, how to contact the instructor,
+        etc. are not important, but do not have to be removed either.
       </p>
       <p>
-        There is no length requirement for the syllabus, and no required structure for the
-        document, provided the three key elements listed above are all clearly presented.
-        That said, CUNY guidelines suggest a five-page maximum, but it is not a strictly
-        enforced limit. A one page syllabus is almost certainly too skimpy to allow
-        meaningful evaluation of the course, and a ten page syllabus is almost certainly
-        too detailed for the time students and reviewers alike are willing to devote to
-        it.
-      </p>
-      <p>
-        Many syllabi contain a weekly or class-by-class schedule for the course. Such a
-        schedule can be a good way to indicate what proportion of the course is devoted to
-        various topics, and to help students keep track of where they are in the course as
-        the semester progresses. But to support a General Education proposal, it’s
-        more important for the syllabus to give a good idea of what assignments the
-        students will be submitting rather than just a list of due dates.
-      </p>
-      <p>
-        Although the syllabus submitted in support of a General Education proposal may
-        well be an actual one distributed to students, it doesn’t have to be. For new
-        courses or courses that vary the assignments across sections or semesters, a
-        synthetic or representative syllabus that provides a model for how the course is
-        taught is perfectly acceptable. Occasionally, it can be useful to provide two
-        different syllabi for the course to show what aspects of the course do and don’t
-        vary across offerings. In this case, combine the two syllabi, clearly identified
-        and separated from each other, in a single document for uploading. See <a
-        href='https://senate.qc.cuny.edu/Curriculum/Syllabi/ENGL-110_2012-11-29.pdf'>the
-        syllabus for English 110</a> for an example.
-      </p>
-      <h3>Justifications</h3>
-      <p>
-        All Queens College General Education courses must meet two criteria that were
-        established when the “Perspectives” (PLAS) curriculum was adopted in 2006:
-        (a) “Address how, in the discipline (or disciplines) of the course, data and
-        evidence are construed and knowledge is acquired; that is, how questions are asked
-        and answered.”
-        (b) “Position the discipline(s) in the liberal arts curriculum and the larger
-        society.”
-      </p>
-      <p>
-        Note that both these criteria are <em>discipline oriented</em>, and that they
-        relate to the first of the three key elements of the syllabus listed above.  As a
-        liberal arts college, Queens strives to structure the General Education portion of
-        the curriculum as a coherent unity rather than as a set of disparate un-related
-        requirements. Use the justifications for these two criteria to explain to the
-        Queens College reviewers how the course reinforces this integrative approach to
-        general education.
-      </p>
-      <p>
-        Proposals for “CUNY Core” (Pathways) areas are evaluated on the basis of “learning
-        outcomes.” In practice, this means that the justifications have to be stated in
-        terms of activities that students are actually graded on in the course. A topic
-        may be germaine to a particular learning outcome, but "covering,” “discussing,” or
-        ”reading about” a topic is not sufficient justification for claiming that the
-        learning outcome will actually be met.
-      </p>
-      <p>
-        Rather, the justifications for learning outcomes must cite the graded activities
-        listed in the syllabus that make it possible to establish that the outcomes are
-        met.
-      </p>
-      <p>
-        Make sure the time allocated to&#x2014;and the grading weight for&#x2014;each
-        activity in the syllabus has face validity for supporting the corresponding
-        justifications in the proposal.
-      </p>
-      <p>
-        Justifications are normally not long: two to five sentences should be fine. A lot
-        of reviewers are reading a lot of proposals, so you want to make your case clearly
-        and concisely.  Eshew both puffery and vagueness!
-      </p>
-      <h3>Advice</h3>
-      <p>
-        Avoid justifying the discipline or particular course topic in the CUNY
-        Core justifications. Concentrate on what students will do in the course instead.
-        The only place you would need to say something about the discipline or course
-        topic is in the two Queens College “perspectives” critera and, possibly, the
-        Queens College “College Option” areas (Language, Literature, Science, and
-        Synthesis).
-      </p>
-      <p>
-       Do not include more justifications than are required unless you think they really
-       strengthen the case for the course. Go for consistently good justifications rather
-       than a larger number of weaker ones.
+        The critical point is that the syllabus and the SLO justifications must clearly support
+        each other.
       </p>
     </div>
+  </section>
 
-    <h2>Model Proposals</h2>
-    <div>
-      <!-- EC-2 -->
-      <section id='EC'>
-        <a href='#EC'>English Composition (CUNY Core)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            <p>
-              The Writing Subcommittee guidelines for English Composition (“College
-              Writing 2”) courses are avalable as a separate document: <a
-              href='docs/2012-09-27_CW2_Guidelines.pdf'>CW2 Guidelines</a>.
-            </p>
-          </div>
-        </section>
-      </section>
+  <section>
+    <h2>More Information</h2>
+    <p>
+      The Writing Subcommittee guidelines for English Composition (“College Writing 2”) courses
+      are avalable as a separate document: <a href='docs/2012-09-27_CW2_Guidelines.pdf'>CW2
+      Guidelines</a>.
+    </p>
+    <p>
+      All previously-submitted QC proposals are available for review in the <a href="../Proposals">
+      Curriculum Proposals</a> section of this website. If a proposal was returned by the CCRC,
+      their comments are shown in the section showing the steps in the review process for the
+      proposal.
+    </p>
+  </section>
 
-      <!-- MQR -->
-      <section id='MQR'>
-        <a href='#MQR'>Mathematical and Quantitative Reasoning (CUNY Core)</a> [No model
-        available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- LPS -->
-      <section id='LPS'>
-        <a href='#LPS'>Life and Physical Sciences (CUNY Core)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- WC -->
-      <section id='WC'>
-        <a href='../Proposals?id=194'>Proposal #194: World Cultures and Global Issues
-        (CUNY Core)</a>
-        <section>
-          <h1>Comments</h1>
-          <div>
-            <ul>
-              <li>As originally submitted, this proposal was very long. It has since been
-              revised, but parts of it are still longer than necessary.</li>
-              <li>What the committee liked about the proposal is that it clearly indicates
-              how the student assignments given in the syllabus address the criteria
-              for the WC designation.</li>
-            </ul>
-          </div>
-        </section>
-      </section>
-
-      <!-- USED -->
-      <section id='USED'>
-        <a href='../Proposals?id=171'>Proposal #171: United States Experience in its
-        Diversity (CUNY Core)</a>
-        <section>
-          <h1>Comments</h1>
-          <div>
-            <ul>
-              <li>The committee found the justifications to be complete, compelling, and
-              well-related to the sample syllabus.</li>
-              <li>A particularly strong feature of this proposal is that it makes it clear
-              that the course can be taught in a variety of styles, according to the
-              instructor’s preferences, yet always satisfies the criteria for the US
-              designation at Queens and across the university.</li>
-            </ul>
-          </div>
-        </section>
-      </section>
-
-      <!-- CE -->
-      <section id='CE'>
-        <a href='../Proposals?id=165'>Proposal #165: Creative Expression (CUNY Core)</a>
-        <section>
-          <h1>Comments</h1>
-          <div>
-            <ul>
-              <li>
-                This proposal illustrates the case where a course needs two proposals to
-                achieve designation as a CUNY Core course. In addition to proposal #165,
-                there is a related proposal (<a href='../Proposals?id=187'>#187</a>)
-                that revises the course catalog information so that the course satisfies a
-                property outside the scope of the CE learning outcomes, specifically to
-                change its Liberal Arts Designation from Non-Liberal Arts to Regular
-                Liberal Arts.
-              </li>
-              <li>
-                Notice that each justification specifies just what students will do in the
-                course to achieve the objectives. Each justification either explicitly or
-                implicitly refers to the student activities given in the sample syllabus.
-              </li>
-            </ul>
-          </div>
-        </section>
-      </section>
-
-      <!-- IS -->
-      <section id='IS'>
-        <a href='#IS'>Individual and Society (CUNY Core)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- SW -->
-      <section id='SW'>
-        <a href='#'>Scientific World (CUNY Core)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- LANG -->
-      <section id='LANG'>
-        <a href='#'>Language (College Option)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- LIT -->
-      <section id='LIT'>
-        <a href='#'>Literature (College Option)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-
-      <!-- SCI -->
-      <section id='SCI'>
-        <a href='#'>Science (College Option)</a> [No model available]
-        <section>
-          <h1>Comments</h1>
-          <div>
-            None available
-          </div>
-        </section>
-      </section>
-    </div>
-    </div>
   </body>
 </html>
