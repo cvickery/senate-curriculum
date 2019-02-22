@@ -207,9 +207,8 @@ EOD;
         <strong>Proposal Preparation Guidelines</strong>
       </p>
       <p>
-        The <a href='../Model_Proposals' target='new'> Guidelines</a> link at the top of
-        the page will take you to some guidelines for preparing proposals, along with some
-        annotated samples to look at.
+        The <a href='../Proposal_Guidelines' target='_blank'> Guidelines</a> link at the top of
+        the page will take you to some guidelines for preparing proposals.
       </p>
       <p>
         <strong>Terminology Notes:</strong>
@@ -217,19 +216,15 @@ EOD;
         <ul>
           <li>
             CUNY uses “Common Core” to refer to the 30 credits of General Education
-            courses that all CUNY students must complete. We use “CUNY Core” to refer to
-            the Queens College courses that are designated as satisfying those requirements.
+            courses that all CUNY students must complete. “Pathways” refers to the combination of
+            Common Core requirements that apply CUNY-wide, plus an additional requirement of up to
+            twelve credits, called “College Option” that are specific to individual CUNY senior
+            colleges, such as Queens. (See additional note on the “Pathways” term below.)
             <p>
-              CUNY Core courses offered at Queens must meet all the criteria established
+              Common Core courses offered at Queens must meet all the criteria established
               by CUNY, plus additional criteria required of all General Education courses
               offered at Queens.
             </p>
-          </li>
-          <li>
-            CUNY uses “College Option” to refer to the 12 credits of General Education
-            courses that all CUNY baccalaureate students must complete.  We use “QC
-            College Option” to refer to the Queens College courses that are designated as
-            satisfying those requirements.
           </li>
           <li>
             <p>
@@ -252,7 +247,7 @@ EOD;
           <li>
             CUNY uses “Pathways” to refer to an initiative to make transferring from
             one CUNY college to another less burdensome for students. The term covers the
-            CUNY Core, College Option, and common introcuctory-level courses for majors.
+            Common Core, College Option, and common introcuctory-level courses for majors.
             <p>
               Proposals entered here include designation proposals for the CUNY Core and
               College Option parts of Pathways, but nothing that has to do with the
