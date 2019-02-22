@@ -686,10 +686,10 @@ EOD;
                   but not PLAS or Overlay (W/Q) proposals.
                 </p>
                 <p>
-                  Furthermore, the guidelines for EC-2 courses are still in flux, and may
-                  change as the Writing Subcommittee develops its guidelines.  See the <a
-                  href='../Model_Proposals/#EC'>Model Proposals page</a> for more information
-                  on EC.
+                  Furthermore, the guidelines for EC-2 courses are still in flux, and may change as
+                  the Writing Subcommittee develops its guidelines.  See the <a
+                  href='../Proposal_Guidelines/#EC'>Proposal_Guidelines page</a> for more
+                  information on EC.
                 </p>
             </li>
           </ul>
