@@ -2,11 +2,9 @@
 /*  syllabus_utils.php
  */
 
-//  Syllabus file types
+//  Recognized syllabus file types
 //  ======================================================================================
-    $valid_extensions = array(
-      '.pdf', '.docx', '.doc', '.rtf', '.odf', '.md', '.txt'
-    );
+    $valid_extensions = array('pdf', 'docx', 'doc', 'rtf', 'odf', 'html', 'md', 'txt');
 
 //  num2str()
 //  -------------------------------------------------------------------------

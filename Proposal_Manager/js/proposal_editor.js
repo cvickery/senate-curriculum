@@ -165,11 +165,20 @@ $(function()
    */
     $('#syllabus-file').change(function(evt)
     {
+      var valid_extensions = ['pdf', 'docx', 'html', 'odt', 'md', 'txt'];
+      var valid_extensions_msg = '';
+      for (i = 0; i < valid_extensions.length - 1; i++)
+      {
+        valid_extensions_msg += `${valid_extensions[i]}, `;
+      }
+      valid_extensions_msg += `and ${valid_extensions[valid_extensions.length - 1]}`;
       var file_name = $.trim($(this).val());
-      var matches = /\.([a-z]{3,5})$/i.exec(file_name);
+      var matches = /\.([a-z]{2,})$/i.exec(file_name);
       //  Woo-hoo! Figured out how to use "in" instead of looping through an array of
-      //  strings:
-      if (matches && matches[1] in {pdf:'', doc:'', docx:'', pages:'', rtf:'', txt:''})
+      //  strings. But that means setting up the extensions as keys having no values in an object,
+      //  which is stupid and means repeating the list 2x in the code.
+      // if (matches && matches[1] in {pdf:'', doc:'', docx:'', html:'', rtf:'', txt:''})
+      if (valid_extensions.includes(matches[1].toLowerCase()))
       {
         $('#syllabus-submit').removeAttr('disabled');
       }
@@ -179,7 +188,7 @@ $(function()
         if (file_name)
         {
           alert("'" + file_name + "' does not have a recognized file type for syllabi.\n" +
-          "Recognized extensions are .pdf, .doc, .docx, .pages, .rtf, and .txt");
+          `Recognized extensions are ${valid_extensions_msg}.`);
           $(this).val('');
         }
       }

@@ -103,20 +103,13 @@ EOD;
       // Supported file types and processing steps:
       // ------------------------------------------
       /*
-       *  PDF   No Conversion needed
-       *  txt   pandoc to odt; soffice to pdf
-       *  md    pandoc to odt; soffice to pdf
-       *  docx  soffice to pdf
-       *  doc   soffice to pdf
-       *  rtf   soffice to pdf
-       *  odt   soffice to pdf
-       *  html  soffice to pdf (if self-contained html)
-       *  pages Not supported
+       *  PDF  No conversion needed.
+       *  txt, md, html, odt, docx: Use pandoc.
        */
       $tmp_name = $upload['tmp_name'];
 
       $extension = '';
-      if (preg_match('/(\.[a-z]{2,5})$/i', $upload_name, $matches))
+      if (preg_match('/\.([a-z]{2,})$/i', $upload_name, $matches))
       {
         $candidate = strtolower($matches[1]);
         foreach ($valid_extensions as $ext)
@@ -128,101 +121,103 @@ EOD;
           }
         }
       }
+      if ($extension !== '')
+      {
+        // JavaScript has already reported invalid extension via an alert, it has to be valid if
+        // execution gets here.
+        // var_dump($matches); echo "<hr/>";
+        // var_dump($upload_name); echo "<hr/>";
+        // var_dump($tmp_name); echo "<hr/>";
 
-      //  Generate the new base name (DISCP-catalog_number-date)
-      preg_match('/^\s*([a-z]+)[ -]*(\d+.?)\s*$/i', $course_str, $matches);
-      $discipline = strtoupper($matches[1]);
-      $course_number = $matches[2];
-      $base_name = $discipline . '-' . $course_number . '_' . date('Y-m-d');
-      $file_name = $base_name . $extension;
+        //  Generate the new base name (DISCP-catalog_number-date)
+        preg_match('/^\s*([a-z]+)[ -]*(\d+.?)\s*$/i', $course_str, $matches);
+        $discipline = strtoupper($matches[1]);
+        $course_number = $matches[2];
+        $base_name = $discipline . '-' . $course_number . '_' . date('Y-m-d');
+        $file_name = "${base_name}.$extension";
 
-      // Move it to the conversion directory.
-      $file_to_convert = "../Syllabi/To_Convert/$file_name";
-      if (file_exists($file_to_convert))
-      {
-        // Configuration error
-        unlink($file_to_convert) or die('Unlink failed ' . basename(__FILE__) . ' ' .
-            __LINE__);
-      }
-      $result = move_uploaded_file($tmp_name, $file_to_convert);
-      if (! $result)
-      {
-        $location = basename(__FILE__) . '; line ' . __LINE__;
-        echo <<<EOD
-  <p class='error'>
-    Syllabus upload of $upload_name failed. Please report the problem to $webmaster_email. Error
-    message is “{$location}.”
-  </p>
-EOD;
-      }
-      else
-      {
-        //  Uploaded file is in To_Convert directory
-        $soffice = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
-        $pandoc = "/usr/local/bin/pandoc";
-        switch ($extension)
+        // Move it to the conversion directory.
+        $file_to_convert = "../Syllabi/To_Convert/$file_name";
+        $result = move_uploaded_file($tmp_name, $file_to_convert);
+        if (! $result)
         {
-          case 'pdf':
-            break;
-          case 'docx':
-          case 'doc':
-          case 'rtf':
-          case 'html':
-            system("(cd ../Syllabi/To_Convert;"
-                 . " $soffice --writer --convert-to pdf $file_name;)");
-            break;
-          case 'md':
-          case 'txt':
-            system("(cd ../Syllabi/To_Convert;"
-                 . " $pandoc -i $file_name -o $base_name.odt;"
-                 . " $soffice --writer --convert-to pdf $base_name.odt;"
-                 . " rm $base_name.odt;)");
-            break;
-          default:
-            echo <<<EOD
-      <p class='error'>
-        Syllabus upload failed: ‘$extension’ is not a recognized file type.
-      </p>
-EOD;
-            break;
-        }
-
-        // PDF file should exist, either by direct upload or by conversion processing.
-        $converted_file = "../Syllabi/To_Convert/$base_name.pdf";
-        if (!file_exists($converted_file))
-        {
+          $location = basename(__FILE__) . '; line ' . __LINE__;
           echo <<<EOD
     <p class='error'>
-      Syllabus conversion of $file_name failed. Please report the problem to $webmaster_email.”
+      Syllabus upload of $upload_name failed. Please report the problem to $webmaster_email. Error
+      message is “{$location}.”
     </p>
 EOD;
         }
         else
         {
-          //  Move the PDF into place and delete the uploaded file if it was not a PDF
-          $destination = "../Syllabi/$base_name.pdf";
-          rename($converted_file, $destination) or die('Rename failed ' . basename(__FILE__)
-                                                       . ' ' . __LINE__);
-
-          //  Looks successful: silently create a record in the syllabus_uploads table.
-          $remote_ip = 'Unknown IP';
-          if (isset($_SERVER['REMOTE_ADDR']))
+          //  Uploaded file is in To_Convert directory
+          $pandoc = "/usr/local/bin/pandoc";
+          switch ($extension)
           {
-            $remote_ip = $_SERVER['REMOTE_ADDR'];
+            case 'pdf':
+              break;
+            case 'docx':
+            case 'html':
+            case 'md':
+            case 'txt':
+              system("(cd ../Syllabi/To_Convert; $pandoc -i $file_name -o $base_name.pdf");
+              break;
+            default:
+              echo <<<EOD
+        <p class='error'>
+          Syllabus upload failed: “${extension}” is not a recognized file type.
+        </p>
+EOD;
+              break;
           }
-          $doc_type = substr($extension, 1);
-          $query = <<<EOD
-    INSERT INTO syllabus_uploads
-    VALUES (now(),                          -- saved_date
-            '$base_name'||' '||'$doc_type', -- file_name
-            '{$person->name}',              -- saved_by
-            '$remote_ip')                   -- saved_from
+
+          // PDF file should exist, either by direct upload or by conversion processing.
+          $converted_file = "../Syllabi/To_Convert/$base_name.pdf";
+          if (!file_exists($converted_file))
+          {
+            echo <<<EOD
+      <p class='error'>
+        Syllabus conversion from $upload_name to $file_name failed. Please report the problem to
+        $webmaster_email.”
+      </p>
+EOD;
+          }
+          else
+          {
+            //  Move the PDF into place and delete the uploaded file if it was not a PDF
+            $destination = "../Syllabi/$base_name.pdf";
+            rename($converted_file, $destination) or die('Rename failed ' . basename(__FILE__)
+                                                         . ' ' . __LINE__);
+
+            //  Looks successful: silently create a record in the syllabus_uploads table.
+            $remote_ip = 'Unknown IP';
+            if (isset($_SERVER['REMOTE_ADDR']))
+            {
+              $remote_ip = $_SERVER['REMOTE_ADDR'];
+            }
+            $doc_type = substr($extension, 1);
+            $query = <<<EOD
+      INSERT INTO syllabus_uploads
+      VALUES (now(),                          -- saved_date
+              '$base_name'||' '||'$doc_type', -- file_name
+              '{$person->name}',              -- saved_by
+              '$remote_ip')                   -- saved_from
 
 EOD;
-          $result = pg_query($curric_db, $query) or die("<h1 class='error'>Database error: "
-                    . pg_last_error($curric_db) . ' ' . basename(__FILE__) . ' ' . __LINE__
-                    . "Please report this problem to $webmaster_email.</h1></body></html>");
+            $result = pg_query($curric_db, $query) or die("<h1 class='error'>Database error: "
+                      . pg_last_error($curric_db) . ' ' . basename(__FILE__) . ' ' . __LINE__
+                      . "Please report this problem to $webmaster_email.</h1></body></html>");
+          }
         }
+      }
+      else
+      {
+        echo <<<EOD
+    <p class='error'>
+      I don’t know how to convert “${upload_name}” to PDF.
+    </p>
+EOD;
       }
     }
   }
