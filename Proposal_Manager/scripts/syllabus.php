@@ -125,6 +125,7 @@ EOD;
       {
         // JavaScript has already reported invalid extension via an alert, it has to be valid if
         // execution gets here.
+
         // var_dump($matches); echo "<hr/>";
         // var_dump($upload_name); echo "<hr/>";
         // var_dump($tmp_name); echo "<hr/>";
@@ -152,16 +153,17 @@ EOD;
         else
         {
           //  Uploaded file is in To_Convert directory
-          $pandoc = "/usr/local/bin/pandoc";
+          $pandoc = "/usr/local/bin/pandoc --pdf-engine /Library/TeX/texbin/pdflatex";
           switch ($extension)
           {
             case 'pdf':
               break;
             case 'docx':
+            case 'odt':
             case 'html':
             case 'md':
             case 'txt':
-              system("(cd ../Syllabi/To_Convert; $pandoc -i $file_name -o $base_name.pdf");
+              system("(cd ../Syllabi/To_Convert; $pandoc -i $file_name -o $base_name.pdf;)");
               break;
             default:
               echo <<<EOD
@@ -187,10 +189,20 @@ EOD;
           {
             //  Move the PDF into place and delete the uploaded file if it was not a PDF
             $destination = "../Syllabi/$base_name.pdf";
-            rename($converted_file, $destination) or die('Rename failed ' . basename(__FILE__)
-                                                         . ' ' . __LINE__);
-
-            //  Looks successful: silently create a record in the syllabus_uploads table.
+            rename($converted_file, $destination)
+              // Configuration Error
+              or die('Rename failed ' . basename(__FILE__) . ' ' . __LINE__);
+            unlink("../Syllabi/To_Convert/$base_name.$extension")
+              // Configuration Error
+              or die('Unlink failed ' . basename(__FILE__) . ' ' . __LINE__);
+            //  Looks successful: happify the user and silently create a record in the
+            //  syllabus_uploads table.
+            echo <<<EOD
+    <p>
+      <strong>Upload successful. Syllabus is now available at <a href="../Syllabi/{$base_name}.pdf"
+      target="_blank">{$base_name}.pdf</a></strong>.
+    </p>
+EOD;
             $remote_ip = 'Unknown IP';
             if (isset($_SERVER['REMOTE_ADDR']))
             {
@@ -225,14 +237,7 @@ EOD;
 
 //  Output Section
 //  --------------------------------------------------------------------------------------
-    echo <<<EOD
-      <p class='warning'>
-        If you upload a non-PDF file, it will take a few seconds to convert it,
-        and it will look like nothing happened when you click the “Upload Syllabus”
-        button below. But if you reload this page after waiting a bit, the new file
-        should be listed here.
-      </p>
-EOD;
+
 //  Display list of currently-available syllabi for this course, if any
     $syllabi_msg = '';
     if ($course_str !== 'Select course')
