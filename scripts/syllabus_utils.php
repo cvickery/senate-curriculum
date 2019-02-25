@@ -5,7 +5,7 @@
 //  Syllabus file types
 //  ======================================================================================
     $valid_extensions = array(
-      '.pdf', '.doc', '.docx', '.pages', '.rtf', '.txt'
+      '.pdf', '.docx', '.doc', '.rtf', '.odf', '.md', '.txt'
     );
 
 //  num2str()
@@ -73,7 +73,7 @@
     $result = preg_match(course_str_re, $course_str, $matches);
     if ($result < 1)
     {
-      throw new Exception('Invalid course string: ' 
+      throw new Exception('Invalid course string: '
           . basename(__FILE__) . ' line ' . __LINE__);
     }
     $syllabus_dir = opendir('../Syllabi');

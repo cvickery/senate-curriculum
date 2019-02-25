@@ -99,12 +99,25 @@ EOD;
     }
     else
     {
+      // PROCESS THE UPLOADED FILE
+      // Supported file types and processing steps:
+      // ------------------------------------------
+      /*
+       *  PDF   No Conversion needed
+       *  txt   pandoc to odt; soffice to pdf
+       *  md    pandoc to odt; soffice to pdf
+       *  docx  soffice to pdf
+       *  doc   soffice to pdf
+       *  rtf   soffice to pdf
+       *  odt   soffice to pdf
+       *  html  soffice to pdf (if self-contained html)
+       *  pages Not supported
+       */
       $tmp_name = $upload['tmp_name'];
 
       $extension = '';
-      if (preg_match('/(\.[a-z]{3,5})$/i', $upload_name, $matches))
+      if (preg_match('/(\.[a-z]{2,5})$/i', $upload_name, $matches))
       {
-        $extension = '';
         $candidate = strtolower($matches[1]);
         foreach ($valid_extensions as $ext)
         {
@@ -115,94 +128,103 @@ EOD;
           }
         }
       }
-      if ($extension !== '')
-      {
-        //  Generate the new base name (DISCP-num-date)
-        preg_match('/^\s*([a-z]+)[ -]*(\d+.?)\s*$/i', $course_str, $matches);
-        $discipline = strtoupper($matches[1]);
-        $course_number = $matches[2];
-        $base_name = $discipline . '-' . $course_number . '_' . date('Y-m-d');
-        $file_name = $base_name . $extension;
 
-        if ($extension === '.pdf')
-        {
-          //  If PDF, move it to syllabi directory
-          $destination = "../Syllabi/$file_name";
-          if (file_exists($destination))
-          {
-            unlink($destination) or die('Unlink failed ' . basename(__FILE__) . ' ' .
-                __LINE__);
-          }
-          $result = move_uploaded_file($tmp_name, $destination);
-          if (! $result)
-          {
-            $location = basename(__FILE__) . ' line ' . __LINE__;
-            echo <<<EOD
-      <p class='error'>
-        Syllabus upload of $upload_name failed. Please report the problem
-        to $webmaster_email. Error message is “{$location}.”
-      </p>
+      //  Generate the new base name (DISCP-catalog_number-date)
+      preg_match('/^\s*([a-z]+)[ -]*(\d+.?)\s*$/i', $course_str, $matches);
+      $discipline = strtoupper($matches[1]);
+      $course_number = $matches[2];
+      $base_name = $discipline . '-' . $course_number . '_' . date('Y-m-d');
+      $file_name = $base_name . $extension;
+
+      // Move it to the conversion directory.
+      $file_to_convert = "../Syllabi/To_Convert/$file_name";
+      if (file_exists($file_to_convert))
+      {
+        // Configuration error
+        unlink($file_to_convert) or die('Unlink failed ' . basename(__FILE__) . ' ' .
+            __LINE__);
+      }
+      $result = move_uploaded_file($tmp_name, $file_to_convert);
+      if (! $result)
+      {
+        $location = basename(__FILE__) . '; line ' . __LINE__;
+        echo <<<EOD
+  <p class='error'>
+    Syllabus upload of $upload_name failed. Please report the problem to $webmaster_email. Error
+    message is “{$location}.”
+  </p>
 EOD;
-          }
-          else
-          {
-            $upload_ok = true;
-          }
-        }
-        else
-        {
-          //  Otherwise, move it to the conversion directory.
-          $destination = "../Syllabi/To_Convert/$file_name";
-          if (file_exists($destination))
-          {
-            unlink($destination) or die('Unlink failed ' . basename(__FILE__) . ' ' .
-                __LINE__);
-          }
-          $result = move_uploaded_file($tmp_name, $destination);
-          if (! $result)
-          {
-            $location = basename(__FILE__) . ' ' . __LINE__;
-            echo <<<EOD
-      <p class='error'>
-        Syllabus upload of $upload_name failed. Please report the problem
-        to $webmaster_email. Error message is “{$location}.”
-      </p>
-EOD;
-          }
-          else
-          {
-            $upload_ok = true;
-          }
-        }
       }
       else
       {
-        echo <<<EOD
+        //  Uploaded file is in To_Convert directory
+        $soffice = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+        $pandoc = "/usr/local/bin/pandoc";
+        switch ($extension)
+        {
+          case 'pdf':
+            break;
+          case 'docx':
+          case 'doc':
+          case 'rtf':
+          case 'html':
+            system("(cd ../Syllabi/To_Convert;"
+                 . " $soffice --writer --convert-to pdf $file_name;)");
+            break;
+          case 'md':
+          case 'txt':
+            system("(cd ../Syllabi/To_Convert;"
+                 . " $pandoc -i $file_name -o $base_name.odt;"
+                 . " $soffice --writer --convert-to pdf $base_name.odt;"
+                 . " rm $base_name.odt;)");
+            break;
+          default:
+            echo <<<EOD
+      <p class='error'>
+        Syllabus upload failed: ‘$extension’ is not a recognized file type.
+      </p>
+EOD;
+            break;
+        }
+
+        // PDF file should exist, either by direct upload or by conversion processing.
+        $converted_file = "../Syllabi/To_Convert/$base_name.pdf";
+        if (!file_exists($converted_file))
+        {
+          echo <<<EOD
     <p class='error'>
-      Syllabus upload failed: '$upload_name' does not have a recognized file type.
-      <br />Recognized extensions are .pdf, .doc, .docx, .rtf, and .pages.
+      Syllabus conversion of $file_name failed. Please report the problem to $webmaster_email.”
     </p>
 EOD;
-      }
-    }
-    //  Looks successful: silently create a record in the syllabus_uploads table.
-    $remote_ip = 'Unknown IP';
-    if (isset($_SERVER['REMOTE_ADDR']))
-    {
-      $remote_ip = $_SERVER['REMOTE_ADDR'];
-    }
-    $doc_type = substr($extension, 1);
-    $query = <<<EOD
-INSERT INTO syllabus_uploads
-VALUES (now(),                          -- saved_date
-        '$base_name'||' '||'$doc_type', -- file_name
-        '{$person->name}',              -- saved_by
-        '$remote_ip')                   -- saved_from
+        }
+        else
+        {
+          //  Move the PDF into place and delete the uploaded file if it was not a PDF
+          $destination = "../Syllabi/$base_name.pdf";
+          rename($converted_file, $destination) or die('Rename failed ' . basename(__FILE__)
+                                                       . ' ' . __LINE__);
+
+          //  Looks successful: silently create a record in the syllabus_uploads table.
+          $remote_ip = 'Unknown IP';
+          if (isset($_SERVER['REMOTE_ADDR']))
+          {
+            $remote_ip = $_SERVER['REMOTE_ADDR'];
+          }
+          $doc_type = substr($extension, 1);
+          $query = <<<EOD
+    INSERT INTO syllabus_uploads
+    VALUES (now(),                          -- saved_date
+            '$base_name'||' '||'$doc_type', -- file_name
+            '{$person->name}',              -- saved_by
+            '$remote_ip')                   -- saved_from
 
 EOD;
-    $result = pg_query($curric_db, $query) or die("<h1 class='error'>Database error: " .
-        pg_last_error($curric_db) . ' ' . basename(__FILE__) . ' ' . __LINE__ .
-        "Please report this problem to $webmaster_email.</h1></body></html>");
+          $result = pg_query($curric_db, $query) or die("<h1 class='error'>Database error: "
+                    . pg_last_error($curric_db) . ' ' . basename(__FILE__) . ' ' . __LINE__
+                    . "Please report this problem to $webmaster_email.</h1></body></html>");
+        }
+      }
+    }
   }
 
 
@@ -212,10 +234,9 @@ EOD;
       <p class='warning'>
         If you upload a non-PDF file, it will take a few seconds to convert it,
         and it will look like nothing happened when you click the “Upload Syllabus”
-        button. But if you reload this page after waiting a bit, the new file
+        button below. But if you reload this page after waiting a bit, the new file
         should be listed here.
       </p>
-
 EOD;
 //  Display list of currently-available syllabi for this course, if any
     $syllabi_msg = '';
@@ -293,71 +314,49 @@ EOD;
           <fieldset><legend>Upload a Syllabus</legend>
             <div class='instructions'>
               <p>
-                Syllabi are stored as PDFs, but you may submit them in any of the
-                following file formats ...
+                Syllabi are stored as PDFs, but you may submit them in any of the following file
+                formats ...
               </p>
               <ul>
                 <li>
-                  Microsoft Word (.doc or .docx file extension)
+                  Microsoft Word (.docx or .doc file extension)
                 </li>
                 <li>
                   Rich Text Format (.rtf file extension)
                 </li>
                 <li>
-                  Apple Pages (.pages file extension)
+                  Open Office / Libre Office (.odt file extension)
+                </li>
+                <li>
+                  Markdown (.md file extension)
                 </li>
                 <li>
                   Plain text (.txt file extension)
                 </li>
               </ul>
               <p>
-                ... and we will convert them into PDFs for you automatically. <span
-                class='warning'>See note below.</span>
+                ... and we will convert them into PDFs for you automatically.
               </p>
               <p>
-                Alternatively, if the syllabus is maintained as a web page, there are two
-                options, both of which are equally acceptable:
+                If the syllabus is maintained as a web page, open it in your browser, save it as
+                a PDF document on your computer, and upload that. Or, if your syllabus is a
+                self-contained .html file (no links to stylesheets or JavaScript), you can upload it
+                for us to convert to PDF here, but check the result to be sure it looks okay.
               </p>
-              <ol>
-                <li>
-                  Prepare a file in any one of the above formats with the full URL of the
-                  syllabus as its content. Make sure the URL starts with http:// or
-                  https://, and upload the file here. The resulting PDF will include a
-                  clickable link to the web page.
-                  <p>
-                    The web page must be publicly-available on the Internet for this
-                    option to work. There must be no passwords or secret handshakes
-                    required for accessing the page.
-                  </p>
-                </li>
-                <li>
-                  Convert the web page to one of the formats listed above, and then upload
-                  the resulting file here. There are services on the Web for doing this
-                  conversion. Consult with the Center for Teaching and Learning if you
-                  need help with this option.
-                  <p>
-                    Note that the resulting PDF might not look like your web page after
-                    conversion, so don’t use this option if that possibility is a problem.
-                  </p>
-                </li>
-              </ol>
               <p>
-                There is a size limit of $max_size_str for uploaded files. Files
+                There is a size limit of $max_size_str for uploaded files on this computer. Files
                 larger than that will cause the upload operation to fail.
               </p>
-              <p>
-                We keep a historic archive of all syllabi submitted for a course, so even
-                if you revise a syllabus, older versions will still be accessible.
-              </p>
+              <blockquote style="border:1px solid #ccc; border-radius:0.5em; padding:0.5em">
+                The CUNY Common Core Review Committee (CCRC) will not accept syllabi larger than
+                500 KB, so be sure your sample syllabus does not exceed that limit if you are
+                submitting a proposal for one of the Common Core designations (EC-2, MQR, LPS, WCGI,
+                USED, CE, IS, or SW).
+              </blockquote>
               <p>
                 If you want to submit multiple syllabi for the same course, such as a set
                 of sample syllabi for a variable topics course, combine them into a single
                 file, each starting on a separate page, and submit the combined file.
-              </p>
-              <p>
-                It takes a minute or so for syllabi to be converted to PDF form, so they
-                won’t show up right away. But if you upload a PDF, that should show up
-                here immediately.
               </p>
             </div>
             <div>

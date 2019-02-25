@@ -281,6 +281,12 @@ EOD;
         new or additional syllabus for courses at the bottom of this web page.
       </p>
       <p>
+        All syllabi are stored in PDF format. If you don’t want to convert your document to PDF
+        before uploading it, you can upload a Microsoft Word, Markdown, Libre Office, or plain text
+        file, and we will convert it for you automatically. In the cases where we do the converion,
+        you should review the resulting PDF to be sure it looks right.
+      </p>
+      <p>
         There is a <a href='../Syllabi' target='new'>separate web page</a> for browsing
         the archive of all syllabi on file.
       </p>
