@@ -217,5 +217,5 @@ $(function()
       }
     });
     // Page-load focus on discipline; but it does weird things.
-    // $('#discipline').focus();
+    $('#discipline').focus();
 });
