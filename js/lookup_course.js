@@ -216,6 +216,4 @@ $(function()
         default:  break;
       }
     });
-    // Page-load focus on discipline; but it does weird things.
-    $('#discipline').focus();
 });

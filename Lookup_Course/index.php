@@ -15,13 +15,10 @@ $course_number_value  = $course_number  = '';
   {
     $discipline             = sanitize($_POST['discipline']);
     $sanitized_course_number  = sanitize($_POST['course-number']);
-    $course_number_entered  = preg_replace('/[a-z\.]/i', '', $sanitized_course_number);
-    $course_number_entered  = preg_replace('/^0*/', '', $course_number_entered);
-    // Wildcard course numbers: prepend + * and ? with \d.
-    $course_number  = preg_replace('/([\+\*\?])/', '\d$1', $course_number_entered);
-
+    $course_number  = preg_replace('/[a-c,e-z\.]/i', '', $sanitized_course_number);
+    $course_number  = preg_replace('/^0*/', '', $course_number);
     $discipline_value     = " value='$discipline'";
-    $course_number_value  = " value='$course_number_entered'";
+    $course_number_value  = " value='$course_number'";
   }
 
   $mime_type = "text/html";
@@ -118,26 +115,32 @@ $course_number_value  = $course_number  = '';
         </p>
         <p>
           Enter a full course number or use wildcards (regular expressions) to list multiple
-          course numbers:
-          * means zero or more digits; + means one or more digits; ? means an optional digit.
+          course numbers. Use \d to represent any digit, and optionally follow it with:
+           * for zero or more repetitions; + for one or more repetitions;
+          ? for zero or one repetition. Honors are Writing-intensive versions of course numbers
+          are always included automatically.
           For example:
         </p>
         <table class='nob'>
           <tr>
             <td class='nob'>101</td>
-            <td class='nob'>Means 101, 101H, and 101W if they exist</td>
+            <td class='nob'>Means 101, 101H, and 101W — whichever ones exist</td>
           </tr>
           <tr>
-            <td class='nob'>1*</td>
+            <td class='nob'>\d\d</td>
+            <td class='nob'>Means all two-digit course numbers</td>
+          </tr>
+          <tr>
+            <td class='nob'>1\d*</td>
             <td class='nob'>Means all course numbers that start with 1</td>
           </tr>
           <tr>
-            <td class='nob'>1+</td>
+            <td class='nob'>1\d+</td>
             <td class='nob'>Means all course numbers from 10 through 19999...</td>
           </tr>
           <tr>
-            <td class='nob'>1??</td>
-            <td class='nob'>Means all course numbers from 1 through 199</td>
+            <td class='nob'>1\d\d</td>
+            <td class='nob'>Means all course numbers from 100 through 199</td>
           </tr>
         </table>
       </div>
@@ -165,7 +168,7 @@ $course_number_value  = $course_number  = '';
 select * from cf_catalog
 where lower(discipline) = lower('$discipline')
 and (course_number ~* '^{$course_number}[WH]?$')
-order by course_number
+order by numeric_part(course_number)
 
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Curric query failed: "

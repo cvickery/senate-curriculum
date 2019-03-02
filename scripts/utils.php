@@ -418,7 +418,7 @@ EOD;
     $query = <<<EOD
 select * from offered_courses
 where discipline = '$discipline'
-  and to_char(course_number, '999') ~* '$course_number'
+  and to_char(course_number, 'FM999999') ~* '^$course_number\$'
   order by course_number, term_code
 EOD;
     $result = pg_query($curric_db, $query) or die("<h1 class='error'>Query failed: "
