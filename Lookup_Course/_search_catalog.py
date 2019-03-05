@@ -34,7 +34,6 @@ def oops(msg):
 # Get form data ... from command line if unit testing.
 """ Web page headers
 """
-sys.stdout.buffer.write("Content-Type: text/html; charset=utf-8\r\n\r\n".encode('utf-8'))
 args = cgi.FieldStorage()
 search_string = args.getvalue('search_string',
                               default='<span class="error">Missing Search String</span>')
@@ -142,9 +141,18 @@ html_page = """
     <title>Ajax Course Search</title>
   </head>
   <body>
-    <h1>TESTING</h1>
     {}
   </body>
 </html>
 """.format('<hr/>'.join(return_list))
-sys.stdout.buffer.write(html_page.encode('utf-8'))
+
+if os.getenv('REQUEST_METHOD') == 'GET':
+  sys.stdout.buffer.write("Content-Type: text/html; charset=utf-8\r\n\r\n".encode('utf-8'))
+  sys.stdout.buffer.write(html_page.encode('utf-8'))
+else:
+  sys.stdout.buffer.write("Content-Type: text/json; charset=utf-8\r\n".encode('utf-8'))
+  sys.stdout.buffer.write("X-Content-Type-Options: nosniff\r\n".encode('utf-8'))
+  sys.stdout.buffer.write("Access-Control-Allow-Origin: http://pmakerdev.qc.cuny.edu\r\n\r\n"
+                          .encode('utf-8'))
+  sys.stdout.buffer.write(json.dumps(return_list))
+
