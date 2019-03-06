@@ -7,6 +7,7 @@ import re
 import datetime
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
+import json
 
 # For unit testing
 import argparse
@@ -115,8 +116,10 @@ for row in cursor.fetchall():
 </style>
 <div>
   <p class="course-line">
-    {row.institution.strip('012')}
-    <strong>{row.discipline} {row.catalog_number}: </strong>{row.title}
+    <strong>
+      {row.institution.strip('012')} {row.discipline} {row.catalog_number}:
+    </strong>
+    {row.title}
   </p>
   <p class="hours-credits-requisites-line">
     {hours_str}; {credits_str}; {requisites_str}
@@ -154,5 +157,4 @@ else:
   sys.stdout.buffer.write("X-Content-Type-Options: nosniff\r\n".encode('utf-8'))
   sys.stdout.buffer.write("Access-Control-Allow-Origin: http://pmakerdev.qc.cuny.edu\r\n\r\n"
                           .encode('utf-8'))
-  sys.stdout.buffer.write(json.dumps(return_list))
-
+  sys.stdout.buffer.write(json.dumps(return_list).encode('utf-8'))
