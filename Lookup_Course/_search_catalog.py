@@ -86,6 +86,7 @@ query = f"""
   """
 conn = psycopg2.connect('dbname=cuny_courses user=vickery')
 cursor = conn.cursor(cursor_factory=NamedTupleCursor)
+cursor2 = conn.cursor(cursor_factory=NamedTupleCursor)  # For cross-listing check
 cursor.execute(query, (discipline, ))
 return_list = []
 for row in cursor.fetchall():
@@ -107,12 +108,26 @@ for row in cursor.fetchall():
     status_str = 'Active'
   else:
     status_str = '<span class="warning">Inactive</span>'
+  cursor2.execute(f"""
+                  select discipline, catalog_number, title
+                  from courses
+                  where course_id = {row.course_id}
+                    and offer_nbr != {row.offer_nbr}
+                  """)
+  cross_listed_str = ''
+  if cursor2.rowcount > 0:
+    cross_listed_str = """
+    <p><strong class="warning">NOTE</strong> This course is cross-listed with:</p><ul>
+    """
+    for xlist in cursor2.fetchall():
+      cross_listed_str += f'<li>{xlist.discipline} {xlist.catalog_number} {xlist.title}</li>'
+    cross_listed_str += '</ul>'
 
   course_html = f"""
 <style type='text/css'>
   *         {{font-family: sans-serif; color:green;}}
   .error    {{color:red;}}
-  .warning  {{color: #fcf;}}
+  .warning  {{color: #f33;}}
 </style>
 <div>
   <p class="course-line">
@@ -132,6 +147,7 @@ for row in cursor.fetchall():
   <p class="cuny-line">
     CUNY: course_id={row.course_id:06}; offer_nbr={row.offer_nbr}; subject={row.cuny_subject}
   </p>
+  {cross_listed_str}
 </div>
   """
   return_list.append(course_html)
