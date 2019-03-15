@@ -104,8 +104,8 @@ EOD;
     {
       while ($row = pg_fetch_assoc($result))
       {
-        $discipline         = $row['discipline'];
-        $course_number      = $row['course_number'];
+        $discipline = $row['discipline'];
+        $course_number = $row['course_number'];
         if ($row['component'] === 'LAB')
         {
           //  Do not display lab sections: it makes students think that's
@@ -146,7 +146,7 @@ EOD;
             die("Bad suffix_str ($suffix_str) at " . basename(__FILE__) . " line " . __LINE__);
         }
 
-        $course_info      = "<span>$discipline $course_number_str$if_lab. {$row['course_title']}</span>";
+        $course_info = "<span>$discipline $course_number_str$if_lab. {$row['course_title']}</span>";
         $seats            = $row['seats'];
         $enrollment       = $row['enrollment'];
         $status                                 = " class='open'";
@@ -165,7 +165,10 @@ EOD;
 
 EOD;
         $other_result = pg_query($curric_db, $other_query)
-        or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+        or die("<h1 class='error'>Query failed: "
+               . basename(__FILE__)
+               . ' line ' . __LINE__
+               ."</h1>");
         $other_designations = "";
         while ($other_row = pg_fetch_assoc($other_result))
         {
@@ -290,7 +293,7 @@ EOD;
           {
             if ($term_code != $other_term_code)
             {
-              echo "<li><a href='./offered_gened.php?t=$other_term_code'>$other_term_name</a></li>\n";
+              echo "<li><a href='./offered_gened.php?t=$other_term_code'>$other_term_name</a></li>";
             }
           }
             echo "</ul>\n";
@@ -304,13 +307,14 @@ EOD;
     <h2>$term_name Scheduled Pathways Courses</h2>
     <div class='preamble'>
       <p>
-        Students who entered Queens College in the Fall 2013 semester or later follow the Pathways curriculum.
+        Students who entered Queens College in the Fall 2013 semester or later follow the Pathways
+        curriculum.
       </p>
       <p>
         The following courses satisfy Pathways requirements <em>and</em> are scheduled to be offered
-        during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
-        additional courses are scheduled or if scheduled courses are canceled during the enrollment
-        period.
+        during the $term_name semester. The list is accurate as of $enrollment_date, but may change
+        as additional courses are scheduled or if scheduled courses are canceled during the
+        enrollment period.
       </p>
     <p>
       <em>
@@ -321,10 +325,11 @@ EOD;
       The current version of this list is available online at http://bit.ly/R20mGz .
     </p>
     <p>
-      Each course may be used to satisfy just one requirement, but some courses appear in multiple areas.
-      In those cases, you may choose to have the course satisfy any <em>one</em> of those areas. See an advisor in
-      the Advising Center (Kiely 217) for more information on this option. Courses that are listed in multiple
-      areas show the abbreviations of their other areas in parentheses following the course title.
+      Each course may be used to satisfy just one requirement, but some courses appear in multiple
+      areas. In those cases, you may choose to have the course satisfy any <em>one</em> of those
+      areas. See an advisor in the Advising Center (Kiely 217) for more information on this option.
+      Courses that are listed in multiple areas show the abbreviations of their other areas in
+      parentheses following the course title.
     </p>
     <p>
       Some courses have co-requisites, which are listed in the course catalog. In those cases,
@@ -347,8 +352,8 @@ EOD;
       course_rows('LIT');
       course_rows('LANG');
       course_rows('SCI');
-      course_rows('SYN', 'Any LPS or Flexible Core course listed above, plus the following Synthesis courses.');
-
+      course_rows('SYN',
+          'Any LPS or Flexible Core course listed above, plus the following Synthesis courses.');
       echo "    </div>\n";
     }
 
@@ -358,13 +363,14 @@ EOD;
     <h2>$term_name Scheduled Perspectives (PLAS) Courses</h2>
     <div class='preamble'>
       <p>
-        Students who entered Queens College after the Fall 2009 semester but before the Fall 2013 semester follow
-        the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum.
+        Students who entered Queens College after the Fall 2009 semester but before the Fall 2013
+        semester follow the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum.
       </p>
       <p>
-        The following courses satisfy Perspectives (PLAS) requirements <em>and</em> are scheduled to be offered
-        during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
-        additional courses are scheduled or if scheduled courses are canceled during the enrollment period.
+        The following courses satisfy Perspectives (PLAS) requirements <em>and</em> are scheduled to
+        be offered during the $term_name semester. The list is accurate as of $enrollment_date, but
+        may change as additional courses are scheduled or if scheduled courses are canceled during
+        the enrollment period.
       </p>
     <p>
       <em>
@@ -375,10 +381,10 @@ EOD;
       The current version of this list is available online at http://bit.ly/R20mGz .
     </p>
     <p>
-      Each course may be used to satisfy just one area requirement (AP, CV, NS, NS+L, RL, or SS), but some courses
-      may also satisfy a context of experience requirement (US, ET, or WC), and/or an extended requirement (PI or
-      AQR). Courses that can satisfy multiple requirements show the abbreviations of their other requirements in
-      parentheses following the course title.
+      Each course may be used to satisfy just one area requirement (AP, CV, NS, NS+L, RL, or SS),
+      but some courses may also satisfy a context of experience requirement (US, ET, or WC), and/or
+      an extended requirement (PI or AQR). Courses that can satisfy multiple requirements show the
+      abbreviations of their other requirements in parentheses following the course title.
     </p>
     <p>
       Some courses have co-requisites, which are listed in the course catalog. In those cases,
@@ -409,7 +415,8 @@ EOD;
   select * from w_enrollments
   where term_code = '$term_code'
 EOD;
-      $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at " . basename(__FILE__) .
+      $result = pg_query($curric_db, $query) or die("<h1 class='error'>W Lookup Failed at "
+                                                    . basename(__FILE__) .
                                                     " line " . __LINE__ . "</h1>\n");
       $suffix = 's are';
       $num_rows = pg_num_rows($result);
@@ -419,33 +426,34 @@ EOD;
       <h2>$term_name Scheduled Writing-Intensive (W) Courses</h2>
       <div class='preamble'>
         <p>
-          Students who entered Queens College after the Fall 2009 semester but before the Fall 2013 semester follow
-          the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum, and must complete three Writing-Intensive
-          (W) courses in order to graduate. Perspectives students may elect to take a Pathways EC-2 (College Writing 2)
-          course as one of their three W courses.
+          Students who entered Queens College after the Fall 2009 semester but before the Fall 2013
+          semester follow the Perspectives in the Liberal Arts and Sciences (PLAS) curriculum, and
+          must complete three Writing-Intensive (W) courses in order to graduate. Perspectives
+          students may elect to take a Pathways EC-2 (College Writing 2) course as one of their
+          three W courses.
         </p>
         <p>
-          Students who entered Queens College in the Fall 2013 semester or later follow the Pathways curriculum,
-          and must complete two W courses in order to graduate.
+          Students who entered Queens College in the Fall 2013 semester or later follow the Pathways
+          curriculum, and must complete two W courses in order to graduate.
         </p>
         <p>
-          To avoid the need to take extra courses, students should plan their course of study at Queens in a way that
-          maximizes the overlap between W courses and courses taken to complete the requirements for their Major or
-          other General Education requirements. Students who transfer from institutions that do not indicate
-          writing-intensive courses on the transcript should make sure they receive credit for having completed the
-          proper number of W courses. Contact the Advising Center (Kiely 217) if there are problems.
+          To avoid the need to take extra courses, students should plan their course of study at
+          Queens in a way that maximizes the overlap between W courses and courses taken to complete
+          the requirements for their Major or other General Education requirements. Students who
+          transfer from institutions that do not indicate writing-intensive courses on the
+          transcript should make sure they receive credit for having completed the proper number of
+          W courses. Contact the Advising Center (Kiely 217) if there are problems.
         </p>
         <p>
-          The following $num_rows writing-intensive course$suffix scheduled to be offered
-          during the $term_name semester. The list is accurate as of $enrollment_date, but may change as
-          additional courses are scheduled or if scheduled courses are canceled during the enrollment period.
+          The following $num_rows writing-intensive course$suffix scheduled to be offered during the
+          $term_name semester. The list is accurate as of $enrollment_date, but may change as
+          additional courses are scheduled or if scheduled courses are canceled during the
+          enrollment period.
         </p>
         <p>
-          <em>
-            Courses in italics had fewer than 10% open seats as of $enrollment_date.
-          </em>
-          (Abbreviations in parentheses give Perspectives and Pathways requirements also satisfied by each
-                    course.)
+          <em> Courses in italics had fewer than 10% open seats as of $enrollment_date. </em>
+            (Abbreviations in parentheses give Perspectives and Pathways requirements also satisfied
+            by each course.)
         </p>
         <p class='print-only'>
           The current version of this list is available online at http://bit.ly/R20mGz .
@@ -483,7 +491,9 @@ EOD;
 
 EOD;
           $other_result = pg_query($curric_db, $other_query)
-          or die("<h1 class='error'>Query failed: " . basename(__FILE__) . ' line ' . __LINE__ ."</h1>");
+          or die("<h1 class='error'>Query failed: " . basename(__FILE__)
+                 . ' line '
+                 . __LINE__ ."</h1>");
           $other_designations = "";
           while ($other_row = pg_fetch_assoc($other_result))
           {
