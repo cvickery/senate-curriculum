@@ -171,6 +171,6 @@ if os.getenv('REQUEST_METHOD') == 'GET':
 else:
   sys.stdout.buffer.write("Content-Type: text/json; charset=utf-8\r\n".encode('utf-8'))
   sys.stdout.buffer.write("X-Content-Type-Options: nosniff\r\n".encode('utf-8'))
-  sys.stdout.buffer.write("Access-Control-Allow-Origin: http://pmakerdev.qc.cuny.edu\r\n\r\n"
+  sys.stdout.buffer.write("Access-Control-Allow-Origin: https://pmakerdev.qc.cuny.edu\r\n\r\n"
                           .encode('utf-8'))
   sys.stdout.buffer.write(json.dumps(return_list).encode('utf-8'))
