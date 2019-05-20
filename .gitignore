@@ -19,3 +19,5 @@ oci_query
 Syllabi.bz2
 enrollments/
 phpinfo.*
+
+/Approved_Courses/.view_only_passwd
