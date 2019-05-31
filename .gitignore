@@ -21,3 +21,5 @@ enrollments/
 phpinfo.*
 
 /Approved_Courses/.view_only_passwd
+
+/latest_queries
