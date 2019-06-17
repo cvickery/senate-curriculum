@@ -42,14 +42,14 @@ for query in latest_queries.glob('*.csv'):
     bytes /= 1000
     power += 1
   print(f'<li>{bytes:>5.1f} {suffixes[power]}B <a href="{query}" download>{query.name}</a></li>')
-other_queries = Path('./other_queries')
-update_date = datetime.fromtimestamp(other_queries.stat().st_mtime).strftime('%B %e, %Y')
-print(f'</ul><h1>Other Queries</h1>\n<p>Last updated {update_date}</p><ul>')
-for query in other_queries.glob('*.csv'):
-  bytes = query.stat().st_size
+other_resources = Path('./other_resources')
+update_date = datetime.fromtimestamp(other_resources.stat().st_mtime).strftime('%B %e, %Y')
+print(f'</ul><h1>Other Resources</h1>\n<p>Last updated {update_date}</p><ul>')
+for resource in other_resources.glob('*'):
+  bytes = resource.stat().st_size
   power = 0
   while bytes > 1000:
     bytes /= 1000
     power += 1
-  print(f'<li>{bytes:>5.1f} {suffixes[power]}B <a href="{query}" download>{query.name}</a></li>')
+  print(f'<li>{bytes:>5.1f} {suffixes[power]}B <a href="{resource}" download>{resource.name}</a></li>')
 print('</ul></body></html>')
