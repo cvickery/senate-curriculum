@@ -34,7 +34,7 @@ chmod($html_name, 0644);
 $msg_file = tempnam('/tmp/', 'msg');
 $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py 2> $msg_file";
 $cmd .= " -s 'Jack’s Alive'";
-$cmd .= " -p $plain_name";
+$cmd .= " -t $plain_name";
 $cmd .= " -h $html_name";
 $cmd .= " -f '$sender_email'";
 $cmd .= " -- $recipient_email cvickery@gmail.com";
