@@ -77,7 +77,7 @@ class Senate_Mail
     $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py";
     $cmd .= " -f $this->from_addr";
     $cmd .= " -s '$this->subject'";
-    $cmd .= " -p '$this->plain_name'";
+    $cmd .= " -t '$this->plain_name'";
 
     // Optional options
     if (! is_null($this->html_name))
