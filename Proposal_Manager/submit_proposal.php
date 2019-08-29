@@ -186,7 +186,7 @@ EOD;
         $action_name      = 'Submit';
         echo <<<EOD
     <h1>
-      Submitting Proposal #<a href='../Proposals/?id=$proposal_id'>$proposal_id</a>
+      Submitting Proposal #<a href="../Proposals/?id=$proposal_id">$proposal_id</a>
       <br/>$proposal_type for $discipline $course_number
     </h1>
 
@@ -200,7 +200,7 @@ EOD;
         $action_name      = 'Resubmit';
         echo <<<EOD
     <h1>
-      Resubmitting Proposal #<a href='../Proposals/?id=$proposal_id'>$proposal_id</a>
+      Resubmitting Proposal #<a href="../Proposals/?id=$proposal_id">$proposal_id</a>
       <br/>$proposal_type for $discipline $course_number
     </h1>
 
@@ -412,7 +412,7 @@ EOD;
     <p class="warning">
       Actually, that’s not quite true. The proposal has indeed been $transaction_type, for
       approval, and
-      <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. Also, a final
+      <a href="../Proposals/?id=$proposal_id"><em>anyone</em> can look at it</a>. Also, a final
       confirmation has been sent to you for your records, and a blind copy has been sent to
       Christopher Vickery (cvickery@qc.cuny.edu) for verification.
       <em>But no email notifications will be sent to your chair or dean at this time.</em>
