@@ -378,7 +378,7 @@ EOD;
   <p>$submitter_name:</p>
 
   <p>
-    Your <a href='$proposal_link'>$proposal_type proposal for $discipline $course_number
+    Your <a href="$proposal_link">$proposal_type proposal for $discipline $course_number
     (ID #$proposal_id)</a> has been $transaction_type to the $agency. You can track the
     progress of the proposal at $proposal_link.
   </p>
