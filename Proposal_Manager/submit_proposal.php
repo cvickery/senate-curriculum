@@ -409,7 +409,7 @@ EOD;
         {
           echo "<p>A copy will also be forwarded to $notify_text.</p>";
           echo <<<EOD
-    <p class='warning'>
+    <p class="warning">
       Actually, that’s not quite true. The proposal has indeed been $transaction_type, for
       approval, and
       <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. Also, a final
@@ -448,7 +448,7 @@ EOD;
 
     }
     echo <<<EOD
-    <h2><a href='https://senate.qc.cuny.edu/$site_home_url/Proposal_Manager/'>
+    <h2><a href="$site_home_url/Proposal_Manager/">
       Manage Proposals</a>
     </h2>
 
