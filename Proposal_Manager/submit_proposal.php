@@ -139,7 +139,14 @@ EOD;
       }
       if ($dean_email !== '')
       {
-        $notify_list[] = "Dean $dean_name ($dean_email)";
+        if ($div_abbr === 'PROV')
+        {
+          $notify_list[] = "Associate Provost $dean_name ($dean_email)";
+        }
+        else
+        {
+          $notify_list[] = "Dean $dean_name ($dean_email)";
+        }
       }
       $notify_text = '';
       switch (count($notify_list))
@@ -390,10 +397,11 @@ EOD;
   </p>
 
 EOD;
-        $mail = new Senate_Mail("QC Curriculum<$webmaster_email>",
-          $submitter_email,
-          "$discipline $course_number Proposal #$proposal_id $transaction_type",
-          $mail_text, $mail_html);
+        $mail = new Senate_Mail("QC Curriculum<$webmaster_email>", // from
+          $submitter_email, // to
+          "$discipline $course_number Proposal #$proposal_id $transaction_type", //subject
+          $mail_text, $mail_html); // text content, html content
+        $mail->add_cc('senate@qc.cuny.edu');
         $mail->add_bcc('cvickery@qc.cuny.edu');
         $mail->send() or die( $mail->getMessage() .
             " Please report the problem to $webmaster_email");
@@ -407,15 +415,18 @@ EOD;
 EOD;
         if ($notify_text)
         {
-          echo "<p>A copy will also be forwarded to $notify_text.</p>";
+          echo "<p>A copy will <strong>not</strong> be forwarded to your dean, $notify_text.</p>";
           echo <<<EOD
     <p class="warning">
-      Actually, that’s not quite true. The proposal has indeed been $transaction_type, for
-      approval, and
-      <a href="../Proposals/?id=$proposal_id"><em>anyone</em> can look at it</a>. Also, a final
-      confirmation has been sent to you for your records, and a blind copy has been sent to
-      Christopher Vickery (cvickery@qc.cuny.edu) for verification.
-      <em>But no email notifications will be sent to your chair or dean at this time.</em>
+      The proposal has been $transaction_type to the Academic Senate for approval, and is available
+      for public viewing at <a
+      href="../Proposals/?id=$proposal_id">https://senate.qc.cuny.edu/Proposals/?id=$proposal_id</a>.
+    </p>
+    <p>
+      Also, a final confirmation has been sent to you for your records, and a blind copy has been
+      sent to Christopher Vickery (cvickery@qc.cuny.edu) for verification. <em>But no email
+      notifications will be sent to your chair or dean at this time.</em><br/> Proposals are being
+      forwarded to the appropriate reviewers manually for now.
     </p>
 
 EOD;
