@@ -394,8 +394,8 @@ EOD;
           $submitter_email,
           "$discipline $course_number Proposal #$proposal_id $transaction_type",
           $mail_text, $mail_html);
-        $mail->add_cc('Alicia Alvero<Alicia.Alvero@qc.cuny.edu>')
-        $mail->add_cc('Academic Senate<Senate@qc.cuny.edu>')
+        $mail->add_cc('Alicia Alvero<Alicia.Alvero@qc.cuny.edu>');
+        $mail->add_cc('Academic Senate<Senate@qc.cuny.edu>');
         $mail->add_bcc('cvickery@qc.cuny.edu');
         $mail->send() or die( $mail->getMessage() .
             " Please report the problem to $webmaster_email");
