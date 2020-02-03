@@ -370,7 +370,7 @@ EOD;
   $proposal_link.
 
   Thank you,
-  An Academic Senate Robot
+  Academic Senate
 
 EOD;
         $mail_html = <<<EOD
@@ -386,7 +386,7 @@ EOD;
     Thank you,
   </p>
   <p>
-    An Academic Senate Robot
+    Academic Senate
   </p>
 
 EOD;
