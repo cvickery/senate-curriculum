@@ -389,6 +389,10 @@ EOD;
     (ID #$proposal_id)</a> has been $transaction_type to the $agency. You can track the
     progress of the proposal at $proposal_link.
   </p>
+      <p>
+        If you have any questions about this proposal, you may contact Associate Provost Alicia
+        Alvero or the Senate Administrative Coordinator, Brenda Salas, who are copied on this email.
+      </p>
   <p>
     Thank you,
   </p>
@@ -415,11 +419,12 @@ EOD;
       </p>
       <p>
         If you have any questions about this proposal, you may contact Associate Provost Alicia
-        Alvero or the Senate Administrative Coordinator, Brenda Salas, who are copied on this email.
+        Alvero or the Senate Administrative Coordinator, Brenda Salas. Their email addresses are
+        in the confirmation email that was just sent to you.
       </p>
 EOD;
-/*
 
+/*
         if ($notify_text)
         {
           echo "<p>A copy will <strong>not</strong> be forwarded to your dean, $notify_text.</p>";
