@@ -33,7 +33,7 @@ $submit_url =
   "https://senate.qc.cuny.edu/$base_dir/Proposal_Manager/submit_proposal.php?token=$guid";
 
 //  To be determined:
-$email_sender     = 'An Academic Senate Robot';
+$email_sender     = 'Academic Senate';
 $designation = $proposal_type_id2name[$proposal->type_id];
 
 $introductory_text = <<<EOD

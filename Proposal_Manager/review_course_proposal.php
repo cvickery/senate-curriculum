@@ -39,7 +39,7 @@ $submission_url     =
        "https://senate.qc.cuny.edu/$base_dir/Proposal_Manager/submit_proposal.php?token=$guid";
 
 //  To be determined:
-$email_sender     = 'An Academic Senate Robot';
+$email_sender     = 'Academic Senate';
 
 $introductory_text = <<<EOD
 You, or someone else using this Queens College email account on your behalf, created a Curriculum proposal. If this is not the case, you may ignore this message. But if you do want to submit the proposal, you must now click the “Submit” link below. If you do nothing, the proposal will simply disappear after a while.
