@@ -390,10 +390,12 @@ EOD;
   </p>
 
 EOD;
-        $mail = new Senate_Mail("QC Curriculum<$webmaster_email>",
+        $mail = new Senate_Mail("Academic Senate<Senate@qc.cuny.edu>",
           $submitter_email,
           "$discipline $course_number Proposal #$proposal_id $transaction_type",
           $mail_text, $mail_html);
+        $mail->add_cc('Alicia Alvero<Alicia.Alvero@qc.cuny.edu>')
+        $mail->add_cc('Academic Senate<Senate@qc.cuny.edu>')
         $mail->add_bcc('cvickery@qc.cuny.edu');
         $mail->send() or die( $mail->getMessage() .
             " Please report the problem to $webmaster_email");
@@ -404,7 +406,13 @@ EOD;
         Your proposal for $discipline $course_number has been $transaction_type and will be
         forwarded to the $agency.
       </p>
+      <p>
+        If you have any questions about this proposal, you may contact Associate Provost Alicia
+        Alvero or the Senate Administrative Coordinator, Brenda Salas, who are copied on this email.
+      </p>
 EOD;
+/*
+
         if ($notify_text)
         {
           echo "<p>A copy will also be forwarded to $notify_text.</p>";
@@ -420,6 +428,7 @@ EOD;
 
 EOD;
         }
+*/
       }
       else
       {
