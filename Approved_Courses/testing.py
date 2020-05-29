@@ -3,6 +3,8 @@
 """
 import sys
 import csv
+
+from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 
