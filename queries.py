@@ -18,7 +18,8 @@ print("""
       font-family: sans-serif;
       }
       li {
-      white-space:pre;
+      list-style-type: none;
+      white-space: pre;
       font-family: monospace;
       }
       a {
