@@ -36,6 +36,7 @@ table = table.replace('&', '&amp;')
 cursor.execute("select update_date from updates where table_name = 'courses'")
 update_date = datetime.fromisoformat(cursor.fetchone().update_date).strftime('%B %d, %Y')
 html_page = f"""
+Content-Type: text/html; charset=UTF-8\r\n\r\n
   <!DOCTYPE html>
   <html>
     <head>
