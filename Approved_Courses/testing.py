@@ -2,39 +2,25 @@
 """ Currently active courses that have the WRIC attribute.
 """
 import sys
+import csv
 from datetime import datetime
+from pathlib import Path
 
-# For curric db access
-import psycopg2
-from psycopg2.extras import NamedTupleCursor
-
-# CGI stuff -- with debugging
-import cgi
-import cgitb
-from pprint import pprint
-cgitb.enable(display=0, logdir='./debug')
-
-DEBUG = False
-
-passwd = open('./.view_only_passwd', 'r').read().strip(' \n')
-conn = psycopg2.connect(f'dbname=cuny_courses user=view_only password={passwd}')
-cursor = conn.cursor(cursor_factory=NamedTupleCursor)
-cursor.execute("""
-  select discipline, catalog_number, title
-  from courses
-  where institution = 'QNS01'
-  and attributes ~* 'WRIC'
-  and course_status = 'A'
-  order by discipline, catalog_number
-""")
-
-table = '<table><tr><th>Course</th><th>Title</th></tr>'
-table += '\n'.join([f'<tr><td>{row.discipline} {row.catalog_number}</td><td>{row.title}</td></tr>'
-                   for row in cursor.fetchall()])
+gened_courses = Path('gened_courses.csv')
+table = '<table><tr><th>Course</th><th>Title</th><th>Common Core</th><th>College Option</th></tr>'
+cols = None
+with open(gened_courses) as csv_file:
+  reader = csv.reader(csv_file)
+  for line in reader:
+    if cols is None:
+      cols = [col.lower().replace(' ', '_') for col in line]
+      Columns = namedtuple('Columns', cols)
+      continue
+    row = Columns._make(line)
+    table += (f'<tr><td>{row.course}</td><td>{row.title}</td><td>{row.core}</td>'
+              f'<td>{row.stem_variant}</td><td>{row.gened_attributes}</td></tr>')
 table += '</table>'
 table = table.replace('&', '&amp;')
-cursor.execute("select update_date from updates where table_name = 'courses'")
-update_date = datetime.fromisoformat(cursor.fetchone().update_date).strftime('%B %d, %Y')
 print('Content-Type: text/html; charset=UTF-8\r\n\r\n')
 html_page = f"""
   <!DOCTYPE html>
