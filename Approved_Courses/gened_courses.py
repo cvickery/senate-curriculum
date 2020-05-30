@@ -11,7 +11,7 @@ from pathlib import Path
 gened_courses = Path('gened_courses.csv')
 update_date = datetime.fromtimestamp(gened_courses.stat().st_mtime).strftime('%b %d, %Y')
 
-table = ('<table><thead><tr><th>Course</th><th>Title</th><th>Pathways Area</th><'
+table = ('<table><thead><tr><th>Course</th><th>Title</th><th>Pathways Area</th>'
          '<th>Writing Intensive / College Option</th><th>STEM Variant?</th></tr></thead><tbody>')
 cols = None
 with open(gened_courses) as csv_file:
@@ -33,11 +33,18 @@ html_page = f"""<!DOCTYPE html>
       <title>QC GenEd Courses</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="./css/writing_intensive.css" />
+      <link rel="stylesheet" href="./css/gened_courses.css" />
     </head>
     <body>
       <h1>Active Queens College General Education Courses</h1>
       <h2>List was last updated {update_date}</h2>
+      <p>Writing Intensive courses have WRIC in the fourth column; College Option courses have
+      QNSLIT (Literature), QNSLANG (Language), QNSSCI (Science), or QNSSYN (“Synthesis,” but
+      normally called “Additional.”)</p>
+      <p>STEM Variant courses are courses which exceed the Pathways limit of 3 credits, but which
+      can be used to satisfy a requirement for a major. Some STEM Variants can be used to satisfy
+      the MQR requirement, others can be used for either LPS or SW. Ones that can satisfy SW could
+      be used to satisfy QNSSCI instead.</p>
       {table}
     </body>
   </html>"""
