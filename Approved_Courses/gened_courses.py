@@ -45,6 +45,8 @@ html_page = f"""<!DOCTYPE html>
       can be used to satisfy a requirement for a major. Some STEM Variants can be used to satisfy
       the MQR requirement, others can be used for either LPS or SW. Ones that can satisfy SW could
       be used to satisfy QNSSCI instead.</p>
+      <p>You can <a href="./gened_courses.csv" download>down load this table as a spreadsheet</a>.
+      </p>
       {table}
     </body>
   </html>"""
