@@ -32,3 +32,10 @@ td:first-child {
 td:last-child {
   border-right-color: black;
 }
+a {
+  text-decoration:none;
+  font-weight:bold;
+}
+a:hover {
+  font-size:1.05em;
+}
