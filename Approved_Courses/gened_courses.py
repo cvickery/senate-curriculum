@@ -43,8 +43,9 @@ html_page = f"""<!DOCTYPE html>
       normally called “Additional.”)</p>
       <p>STEM Variant courses are courses which exceed the Pathways limit of 3 credits, but which
       can be used to satisfy a requirement for a major. Some STEM Variants can be used to satisfy
-      the MQR requirement, others can be used for either LPS or SW. Ones that can satisfy SW could
-      be used to satisfy QNSSCI instead.</p>
+      the MQR requirement, others can be used for LPS or SW, as indicated in the fourth column.
+      STEM Variants that have LPS in the fourth column can be used for SW instead if that is to the
+      student’s advantage.</p>
       <p>You can <a href="./gened_courses.csv" download>download this table as a spreadsheet</a>.
       </p>
       {table}
