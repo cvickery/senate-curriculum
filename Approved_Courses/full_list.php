@@ -1,4 +1,6 @@
 <?php
+header('Location: https://senate.qc.cuny.edu/Curriculum/Approved_Courses/gened_courses.py');
+exit;
 //  /Approved_Courses/full_list.php
 /*  Master list of all courses with all their designations.
  */
