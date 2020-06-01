@@ -1,5 +1,7 @@
+#! /usr/local/bin/python3
 """ Build a MongoDB collection of approved courses and their reasons therefore.
 """
+# /Library/Server/Web/Data/Sites/senate.qc.cuny.edu/Curriculum/Approved_Courses/mongo_conversion/mongo_conversion.py
 
 import psycopg2
 from psycopg2.extras import NamedTupleCursor

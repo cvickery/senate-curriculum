@@ -73,11 +73,10 @@ class Senate_Mail
    */
   function send()
   {
-    var_dump($this);
     $cmd = "SMTP_SERVER=smtp.qc.cuny.edu /Users/vickery/bin/mail.py";
     $cmd .= " -f $this->from_addr";
     $cmd .= " -s '$this->subject'";
-    $cmd .= " -p '$this->plain_name'";
+    $cmd .= " -t '$this->plain_name'";
 
     // Optional options
     if (! is_null($this->html_name))
@@ -104,6 +103,7 @@ class Senate_Mail
     $cmd .= " -- $recipients";
 
     $msg_file = tempnam('/tmp/', 'msg');
+    error_log($cmd);
     system("$cmd 2> $msg_file", $exit_status);
 
     unlink($this->plain_name);

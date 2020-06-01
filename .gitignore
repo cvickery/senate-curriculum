@@ -23,3 +23,7 @@ phpinfo.*
 /Approved_Courses/.view_only_passwd
 
 /latest_queries
+
+/Approved_Courses/mongo_conversion/gened_courses.json
+
+/Approved_Courses/gened_courses.csv

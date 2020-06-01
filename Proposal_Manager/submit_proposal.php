@@ -139,7 +139,14 @@ EOD;
       }
       if ($dean_email !== '')
       {
-        $notify_list[] = "Dean $dean_name ($dean_email)";
+        if ($div_abbr === 'PROV')
+        {
+          $notify_list[] = "Associate Provost $dean_name ($dean_email)";
+        }
+        else
+        {
+          $notify_list[] = "Dean $dean_name ($dean_email)";
+        }
       }
       $notify_text = '';
       switch (count($notify_list))
@@ -186,7 +193,7 @@ EOD;
         $action_name      = 'Submit';
         echo <<<EOD
     <h1>
-      Submitting Proposal #<a href='../Proposals/?id=$proposal_id'>$proposal_id</a>
+      Submitting Proposal #<a href="../Proposals/?id=$proposal_id">$proposal_id</a>
       <br/>$proposal_type for $discipline $course_number
     </h1>
 
@@ -200,7 +207,7 @@ EOD;
         $action_name      = 'Resubmit';
         echo <<<EOD
     <h1>
-      Resubmitting Proposal #<a href='../Proposals/?id=$proposal_id'>$proposal_id</a>
+      Resubmitting Proposal #<a href="../Proposals/?id=$proposal_id">$proposal_id</a>
       <br/>$proposal_type for $discipline $course_number
     </h1>
 
@@ -370,7 +377,7 @@ EOD;
   $proposal_link.
 
   Thank you,
-  An Academic Senate Robot
+  Academic Senate
 
 EOD;
         $mail_html = <<<EOD
@@ -378,22 +385,28 @@ EOD;
   <p>$submitter_name:</p>
 
   <p>
-    Your <a href='$proposal_link'>$proposal_type proposal for $discipline $course_number
+    Your <a href="$proposal_link">$proposal_type proposal for $discipline $course_number
     (ID #$proposal_id)</a> has been $transaction_type to the $agency. You can track the
     progress of the proposal at $proposal_link.
   </p>
+      <p>
+        If you have any questions about this proposal, you may contact Associate Provost Alicia
+        Alvero or the Senate Administrative Coordinator, Brenda Salas, who are copied on this email.
+      </p>
   <p>
     Thank you,
   </p>
   <p>
-    An Academic Senate Robot
+    Academic Senate
   </p>
 
 EOD;
-        $mail = new Senate_Mail("QC Curriculum<$webmaster_email>",
+        $mail = new Senate_Mail("Academic Senate<Senate@qc.cuny.edu>",
           $submitter_email,
           "$discipline $course_number Proposal #$proposal_id $transaction_type",
           $mail_text, $mail_html);
+        $mail->add_cc('Alicia Alvero<Alicia.Alvero@qc.cuny.edu>');
+        $mail->add_cc('Academic Senate<Senate@qc.cuny.edu>');
         $mail->add_bcc('cvickery@qc.cuny.edu');
         $mail->send() or die( $mail->getMessage() .
             " Please report the problem to $webmaster_email");
@@ -404,22 +417,33 @@ EOD;
         Your proposal for $discipline $course_number has been $transaction_type and will be
         forwarded to the $agency.
       </p>
+      <p>
+        If you have any questions about this proposal, you may contact Associate Provost Alicia
+        Alvero or the Senate Administrative Coordinator, Brenda Salas. Their email addresses are
+        in the confirmation email that was just sent to you.
+      </p>
 EOD;
+
+/*
         if ($notify_text)
         {
-          echo "<p>A copy will also be forwarded to $notify_text.</p>";
+          echo "<p>A copy will <strong>not</strong> be forwarded to your dean, $notify_text.</p>";
           echo <<<EOD
-    <p class='warning'>
-      Actually, that’s not quite true. The proposal has indeed been $transaction_type, for
-      approval, and
-      <a href='../Proposals/?id=$proposal_id'><em>anyone</em> can look at it</a>. Also, a final
-      confirmation has been sent to you for your records, and a blind copy has been sent to
-      Christopher Vickery (cvickery@qc.cuny.edu) for verification.
-      <em>But no email notifications will be sent to your chair or dean at this time.</em>
+    <p class="warning">
+      The proposal has been $transaction_type to the Academic Senate for approval, and is available
+      for public viewing at <a
+      href="../Proposals/?id=$proposal_id">https://senate.qc.cuny.edu/Proposals/?id=$proposal_id</a>.
+    </p>
+    <p>
+      Also, a final confirmation has been sent to you for your records, and a blind copy has been
+      sent to Christopher Vickery (cvickery@qc.cuny.edu) for verification. <em>But no email
+      notifications will be sent to your chair or dean at this time.</em><br/> Proposals are being
+      forwarded to the appropriate reviewers manually for now.
     </p>
 
 EOD;
         }
+*/
       }
       else
       {
@@ -448,7 +472,7 @@ EOD;
 
     }
     echo <<<EOD
-    <h2><a href='https://senate.qc.cuny.edu/$site_home_url/Proposal_Manager/'>
+    <h2><a href="$site_home_url/Proposal_Manager/">
       Manage Proposals</a>
     </h2>
 
