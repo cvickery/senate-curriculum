@@ -10,7 +10,8 @@ for link in available_pages:
   links.append(f'<li><a href="{link}">{date_str}</a></li>')
 links = '\n'.join(links)
 
-print(f"""<!DOCTYPE html>
+print(f"""Content-type: text/html\r\n\r\n
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8"/>
