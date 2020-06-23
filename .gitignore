@@ -27,3 +27,5 @@ phpinfo.*
 /Approved_Courses/mongo_conversion/gened_courses.json
 
 /Approved_Courses/gened_courses.csv
+/Approved_Courses/__pycache__/
+/Approved_Courses/offered_gened
