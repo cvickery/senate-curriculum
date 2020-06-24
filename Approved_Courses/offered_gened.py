@@ -17,16 +17,19 @@ print(f"""Content-type: text/html\r\n\r\n
     <meta charset="utf-8"/>
     <title>Scheduled GenEd Courses</title>
     <style>
-      body {
+      body {{
         font-family: sans-serif;
-      }
-      a {
+      }}
+      ul {{
+        list-style-type: none;
+      }}
+      a {{
         text-decoration: none;
         font-size: 1.2em;
-      }
-      a:hover {
+      }}
+      a:hover {{
         text-decoration: underline;
-      }
+      }}
     </style>
   </head>
   <body>
