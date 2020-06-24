@@ -16,6 +16,18 @@ print(f"""Content-type: text/html\r\n\r\n
   <head>
     <meta charset="utf-8"/>
     <title>Scheduled GenEd Courses</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      a {
+        text-decoration: none;
+        font-size: 1.2em;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <h1>Enrollment Information Is Available For The Following Terms</h1>
