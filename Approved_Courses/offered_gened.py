@@ -7,6 +7,8 @@ available_pages = Path('./offered_gened/').glob('*.html')
 links = []
 for link in available_pages:
   date_str = term_code_to_name(link.name[0:7])
+  # Put the year at the beginning
+  date_str = date_str[-4:] + ' ' + date_str[0:-5]
   links.append(f'<li><a href="{link}">{date_str}</a></li>')
 links = '\n'.join(links)
 
@@ -23,12 +25,16 @@ print(f"""Content-type: text/html\r\n\r\n
       ul {{
         list-style-type: none;
       }}
+      li {{
+        margin:0.5em;
+      }}
       a {{
         text-decoration: none;
         font-size: 1.2em;
       }}
       a:hover {{
         text-decoration: underline;
+        font-weight: bold;
       }}
     </style>
   </head>
