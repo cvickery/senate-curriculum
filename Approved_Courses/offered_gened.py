@@ -1,6 +1,7 @@
 #! /usr/local/bin/python3
 
 from pathlib import Path
+from datetime import date
 from term_codes import term_code_to_name
 
 available_pages = Path('./offered_gened/').glob('*.html')
