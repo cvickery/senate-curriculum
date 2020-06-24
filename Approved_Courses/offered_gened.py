@@ -7,7 +7,7 @@ available_pages = Path('./offered_gened/').glob('*.html')
 last_change = 0
 links = []
 for link in available_pages:
-  if link.stat().m_time > last_change:
+  if link.stat().mtime > last_change:
     last_change = link.stat().mtime
   date_str = term_code_to_name(link.name[0:7])
   # Put the year at the beginning
