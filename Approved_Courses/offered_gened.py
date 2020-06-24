@@ -15,7 +15,7 @@ for link in available_pages:
   this_year = date_str[-4:]
   if this_year != last_year:
     if last_year == '':
-      links.append('ul')
+      links.append('<ul>')
     last_year = this_year
     links = links + ['</ul>', '<hr>', '<ul>']
   # Put the year at the beginning
