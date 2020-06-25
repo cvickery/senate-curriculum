@@ -34,7 +34,7 @@ print(f"""Content-type: text/html\r\n\r\n
     <title>Scheduled GenEd Courses</title>
     <style>
       body {{
-        font-family: sans-serif;
+        font-family: "Cooper Black", sans-serif;
       }}
       h1, p {{
         text-align:center;
