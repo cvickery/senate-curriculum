@@ -56,7 +56,7 @@ print(f"""Content-type: text/html\r\n\r\n
     </style>
   </head>
   <body>
-    <h1>General Education Enrollment Information Is Available For The Following Terms</h1>
+    <h1>Scheduled General Education Courses</h1>
     <p>This list was last updated on {last_update}</p>
     {links}
   </body>
