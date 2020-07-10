@@ -46,6 +46,11 @@ html_page = f"""<!DOCTYPE html>
       the MQR requirement, others can be used for LPS or SW, as indicated in the fourth column.
       STEM Variants that have LPS in the fourth column can be used for SW instead if that is to the
       student’s advantage.</p>
+      <p>
+        The CUNY English Composition (EC) requirement is for two courses. At Queens, the first
+        course is College Writing I (ENGL 110), and the second course is any one of several College
+        Writing II courses (CW2).
+      </p>
       <p>You can <a href="./gened_courses.csv" download>download this table as a spreadsheet</a>.
       </p>
       {table}
