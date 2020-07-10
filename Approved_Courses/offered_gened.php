@@ -1,4 +1,5 @@
 <?php
+header("Location: https://senate.qc.cuny.edu/Curriculum/Approved_Courses/offered_gened.py");
 //  Curriculum/gened_offerings/advisement_list.php
   date_default_timezone_set('America/New_York');
   session_start();
