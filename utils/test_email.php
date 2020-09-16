@@ -37,7 +37,7 @@ $cmd .= " -s 'Jack’s Alive'";
 $cmd .= " -t $plain_name";
 $cmd .= " -h $html_name";
 $cmd .= " -f '$sender_email'";
-$cmd .= " -- $recipient_email cvickery@gmail.com";
+// $cmd .= " -- $recipient_email cvickery@gmail.com";
 
 error_log($cmd);
 
