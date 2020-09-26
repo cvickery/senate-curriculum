@@ -326,14 +326,14 @@ EOD;
     //  -------------------------------------------------------------------------------
 
     //  Always provide the option to select a different proposal or start a new one.
-    require_once('scripts/select_proposal.php');
+    //require_once('scripts/select_proposal.php');
 
     //  Display catalog information and editor controls only if a proposal has been
     //  selected for editing.
     if (isset($_SESSION[proposal]))
     {
       $proposal = unserialize($_SESSION[proposal]);
-      require_once('scripts/proposal_editor.php');
+      //require_once('scripts/proposal_editor.php');
     }
     else
     {
