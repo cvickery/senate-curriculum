@@ -77,7 +77,7 @@ if (! isset($person))
     <!--
       <button class='nav-button' id='select-proposal-section-nav'>Create Proposal</button>
       -->
-      <span class="nav-button">Create Proposal</span>
+      <span class="warning">Create Proposal — Contact Associate Provost Alevero</span>
 
 EOD;
   if (isset($_SESSION['proposal']))
@@ -89,10 +89,10 @@ EOD;
       <button id='save-changes-nav' disabled='disabled'>Save Changes</button>
       <button id='submit-proposal-nav'>Submit Proposal</button>
       -->
-      <span class="nav-button">Catalog Info</span>
-      <span class="nav-button">Edit Proposal</span>
-      <span class="nav-button">Save Changes</span>
-      <span class="nav-button">Submit Proposal</span>
+      <span class="warning">Catalog Info</span>
+      <span class="warning">Edit Proposal</span>
+      <span class="warning">Save Changes</span>
+      <span class="warning">Submit Proposal</span>
 
 EOD;
   }
@@ -101,7 +101,7 @@ EOD;
       <!--
         <button class='nav-button' id='upload-syllabus-section-nav'>Upload Syllabus</button>
         -->
-      <span class="nav-button">Upload Syllabus</span>
+      <span class="warning">Upload Syllabus</span>
     </nav>
 
 EOD;
