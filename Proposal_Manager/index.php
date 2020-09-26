@@ -74,28 +74,34 @@ if (! isset($person))
   //  Navigation row for Proposal Manager
   $editor_nav = <<<EOD
     <nav>
-      <button class='nav-button' id='select-proposal-section-nav'>
-        Create Proposal
-      </button>
+    <!--
+      <button class='nav-button' id='select-proposal-section-nav'>Create Proposal</button>
+      -->
+      <span class="nav-button">Create Proposal</span>
 
 EOD;
   if (isset($_SESSION['proposal']))
   {
     $editor_nav .= <<<EOD
+    <!--
       <button class='nav-button' id='catalog-info-section-nav'>Catalog Info</button>
       <button class='nav-button' id='edit-proposal-section-nav'>Edit Proposal</button>
       <button id='save-changes-nav' disabled='disabled'>Save Changes</button>
-      <button id='submit-proposal-nav'>
-        Submit Proposal
-     </button>
+      <button id='submit-proposal-nav'>Submit Proposal</button>
+      -->
+      <span class="nav-button">Catalog Info</span>
+      <span class="nav-button">Edit Proposal</span>
+      <span class="nav-button">Save Changes</span>
+      <span class="nav-button">Submit Proposal</span>
 
 EOD;
   }
 
   $editor_nav .= <<<EOD
-      <button class='nav-button' id='upload-syllabus-section-nav'>
-        Upload Syllabus
-      </button>
+      <!--
+        <button class='nav-button' id='upload-syllabus-section-nav'>Upload Syllabus</button>
+        -->
+      <span class="nav-button">Upload Syllabus</span>
     </nav>
 
 EOD;
@@ -115,6 +121,10 @@ EOD;
 EOD;
 ?>
     <div class='warning overview'>
+      <h2 class="warning">
+        This is an archive of the Curriculum Proposal System, which was deactivated
+        in September, 2020. Until it is replaced by the new “Coursedog” system, contact Associate
+        Provost Alicia Alvero for information on the interim proposal procedure.</h2>
       <ul>
         <li>
           <strong>Sign in</strong> using your Queens College email address. No password
@@ -155,7 +165,7 @@ EOD;
     <div class='instructions'>
       <p><strong>Overview</strong></p>
       <p>
-        This is the Academic Senate’s site for preparing proposals for the Graduate or
+        This is an archive of the Academic Senate’s site for preparing proposals for the Graduate or
         Undergraduate Curriculum committee and their subcommittees, including
         <span class='acronym' title='Abstract or Quantitative Reasoning Advisory Committee'>
           AQRAC
