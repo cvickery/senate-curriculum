@@ -156,8 +156,7 @@ EOD;
         </li>
       </ul>
       <p>
-        Please report suggestions or problems that you encounter with the site to
-        Christopher Vickery.
+        This site was developed by Professor Christopher Vickery and is no longer being maintained.
       </p>
     </div>
 
@@ -165,8 +164,9 @@ EOD;
     <div class='instructions'>
       <p><strong>Overview</strong></p>
       <p>
-        This is an archive of the Academic Senate’s site for preparing proposals for the Graduate or
-        Undergraduate Curriculum committee and their subcommittees, including
+        <span class="warning">This is an archive</span> of the Academic Senate site that was used
+        for preparing proposals for the Graduate or Undergraduate Curriculum committee and their
+        subcommittees, including
         <span class='acronym' title='Abstract or Quantitative Reasoning Advisory Committee'>
           AQRAC
         </span>,
