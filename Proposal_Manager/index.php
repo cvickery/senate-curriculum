@@ -77,7 +77,7 @@ if (! isset($person))
     <!--
       <button class='nav-button' id='select-proposal-section-nav'>Create Proposal</button>
       -->
-      <span class="warning">Create Proposal — Contact Associate Provost Alevero</span>
+      <span class="error">Contact Associate Provost Alevero To Submit Curriculum Changes</span>
 
 EOD;
   if (isset($_SESSION['proposal']))
@@ -101,7 +101,6 @@ EOD;
       <!--
         <button class='nav-button' id='upload-syllabus-section-nav'>Upload Syllabus</button>
         -->
-      <span class="warning">Upload Syllabus</span>
     </nav>
 
 EOD;
