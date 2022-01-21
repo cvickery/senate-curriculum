@@ -57,6 +57,8 @@ print(f"""Content-type: text/html\r\n\r\n
   </head>
   <body>
     <h1>Scheduled General Education Courses</h1>
+    <p>A list of all currently-active QC courses that have been approved as GenEd (Pathways) courses
+      is avalable at <a href="./gened_courses.py">Approved GenEd Courses</a></p>
     <p>This list was last updated on {last_update}</p>
     {links}
   </body>
