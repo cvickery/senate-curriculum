@@ -33,7 +33,6 @@ td:last-child {
   border-right-color: black;
 }
 a {
-  text-decoration:none;
   font-weight:bold;
 }
 a:hover {
