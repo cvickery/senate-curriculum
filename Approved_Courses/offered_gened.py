@@ -46,8 +46,7 @@ print(f"""Content-type: text/html\r\n\r\n
         margin:0.5em;
       }}
       a {{
-        text-decoration: none;
-        font-size: 1.2em;
+        font-size: 1.1em;
       }}
       a:hover {{
         text-decoration: underline;
