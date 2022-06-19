@@ -296,7 +296,7 @@ EOD;
     <fieldset>
       <legend>Your College Option Requirements</legend>
       <p>
-        Based on the questions above:
+        Based on the answers above:
       </p>
       <div id='result'>
         <p id='need-javascript' class='error'>
