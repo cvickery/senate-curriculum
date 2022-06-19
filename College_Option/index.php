@@ -34,8 +34,8 @@ EOD;
     $form_class = " class='explain'";
     $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
-Queens College, with a technical explanation. You may also display the results <a
-href='{$_SERVER['PHP_SELF']}'>without the technical explanations</a>.
+Queens College, with a technical explanation. [Information is square brackets shows a related
+piece of data that can be used by the QC Registrar’s Office.]
 EOD;
   }
 
