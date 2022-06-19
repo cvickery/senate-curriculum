@@ -23,21 +23,21 @@ require_once('init_session.php');
 
 //  Tailor the instructions to the type of statement that will be generated, and attach
 //  the student-group-report class to the form so JavaScript will know what to display.
- $form_class = '';
- $instructions = <<<EOD
-Answer the following questions to see what College Option courses you will need to take at
-Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>display technical
-explanations</a> with the results.
-EOD;
-  if (isset($_GET['explain']))
-  {
-    $form_class = " class='explain'";
-    $instructions = <<<EOD
+//  $form_class = '';
+//  $instructions = <<<EOD
+// Answer the following questions to see what College Option courses you will need to take at
+// Queens College.  You may also <a href='{$_SERVER['PHP_SELF']}?explain'>display technical
+// explanations</a> with the results.
+// EOD;
+//   if (isset($_GET['explain']))
+//   {
+  $form_class = " class='explain'";
+  $instructions = <<<EOD
 Answer the following questions to see what College Option courses you will need to take at
 Queens College, with a technical explanation. [Information is square brackets shows a related
 piece of data that can be used by the QC Registrar’s Office.]
 EOD;
-  }
+  // }
 
 //  Initial values for inputs
 //  -------------------------------------------------------------------------------------
