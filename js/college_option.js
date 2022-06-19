@@ -36,7 +36,7 @@ $(function()
   // var do_explain              = $('form').hasClass('explain');
   var do_explain              = true;
   var student_group_msg       = '';
-
+  console.log(do_explain);
   //  Update display and recalculate number of required courses when anything changes
   //  -----------------------------------------------------------------------------------
   $('input').change(function()
