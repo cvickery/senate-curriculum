@@ -46,17 +46,19 @@ print(f"""Content-type: text/html\r\n\r\n
         margin:0.5em;
       }}
       a {{
-        text-decoration: none;
-        font-size: 1.2em;
+        font-weight: bold;
       }}
       a:hover {{
         text-decoration: underline;
         font-weight: bold;
+        font-size: 1.05em
       }}
     </style>
   </head>
   <body>
     <h1>Scheduled General Education Courses</h1>
+    <p>A list of all currently-active QC courses that have been approved as GenEd (Pathways) courses
+      is avalable at <a href="./gened_courses.py">Approved GenEd Courses</a></p>
     <p>This list was last updated on {last_update}</p>
     {links}
   </body>

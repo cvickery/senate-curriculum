@@ -30,14 +30,19 @@ print('Content-Type: text/html; charset=UTF-8\r\n\r\n')
 html_page = f"""<!DOCTYPE html>
   <html>
     <head>
-      <title>QC GenEd Courses</title>
+      <title>Approved GenEd Courses</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="stylesheet" href="./css/gened_courses.css" />
     </head>
     <body>
-      <h1>Active Queens College General Education Courses</h1>
-      <h2>List was last updated {update_date}</h2>
+      <h1>Approved Queens College General Education Courses</h1>
+      <p>These are all the courses that have been approved for GenEd at Queens College and are
+      currently active in CUNYfirst (able to be offered).</p>
+      <p>The <a href="./offered_gened.py">Scheduled GenEd Courses</a> page tells which of these
+      courses have actually been offered recently, are currently being offered, or scheduled to be
+      offered in the near future.</p>
+      <h2>This list was last updated {update_date}</h2>
       <p>Writing Intensive courses have WRIC in the fourth column; College Option courses have
       QNSLIT (Literature), QNSLANG (Language), QNSSCI (Science), or QNSSYN (“Synthesis,” but
       normally called “Additional.”)</p>
