@@ -13,7 +13,7 @@ require_once('sanitize.php');
 //  db Setup
 //  --------------------------------------------------------------------------------------
 $curric_db      = curric_connect() or die('Unable to access curriculum db');
-$result = pg_query("select * from update_log where table_name = 'cf_catalog'")
+$result = pg_query($curric_db, "select * from update_log where table_name = 'cf_catalog'")
     or die("Unable to query update_log");
 $row = pg_fetch_assoc($result);
 $cf_update_date_raw = new DateTime($row['updated_date']);
