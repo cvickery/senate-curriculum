@@ -75,12 +75,13 @@ EOD;
 
     <h2>Information</h2>
     <dl>
-
+<!--
       <dt><a href="Approved_Courses">Approved General Education Courses</a></dt>
       <dd>
         List of QC courses approved for Pathways requirements.
       </dd>
-      <dt><a href="Approved_Courses/offered_gened.php">Scheduled General Education Courses</a>
+ -->
+      <dt><a href="/Curriculum/Approved_Courses/gened_courses.py">Approved General Education Courses</a>
       </dt>
       <dd>
         Select from past as well as present terms. Indicates “nearly full” enrollment indicators.

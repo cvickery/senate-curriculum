@@ -33,9 +33,10 @@ $(function()
   $('#ask-associate, #ask-over-30, #ask-num-prev-co').hide();
 
   //    Is this a student-group report?
-  var do_explain              = $('form').hasClass('explain');
+  // var do_explain              = $('form').hasClass('explain');
+  var do_explain              = true;
   var student_group_msg       = '';
-
+  console.log(do_explain);
   //  Update display and recalculate number of required courses when anything changes
   //  -----------------------------------------------------------------------------------
   $('input').change(function()
@@ -110,7 +111,7 @@ $(function()
         }
         else
         {
-          student_group_msg   = "Associate’s degree: 0 previous CO courses";
+          student_group_msg   = "Associate’s degree: 0 previous College Option credits";
           need_student_group  = false;
         }
       }
@@ -123,7 +124,7 @@ $(function()
         $('#ask-bachelor, #ask-associate, #ask-began, #ask-if-prev-co').show(250);
 
         student_group_msg   = "No degree; started at 4-year; " + reduce_co_by +
-            " previous CO course" + suffix;
+            " previous College Option credit" + suffix;
         need_student_group  = true;
       }
       else if (over_30)
@@ -136,7 +137,7 @@ $(function()
         num_remaining       = num_required - reduce_co_by;
         suffix = (reduce_co_by === 1) ? '' : 's';
         student_group_msg   = "No degree; started at 2-year; over 30 credits; " +
-          reduce_co_by + " previous CO course" + suffix;
+          reduce_co_by + " previous College Option credit" + suffix;
         need_student_group  = true;
         if (reduce_co_by === 0) need_student_group = false;
       }
@@ -146,7 +147,7 @@ $(function()
         $('#ask-bachelor, #ask-associate, #ask-began, #ask-over-30, #ask-if-prev-co')
           .show(250);
         student_group_msg   = "Started at 2-year; fewer than 31 credits; " +
-          reduce_co_by + " previous CO course" + suffix;
+          reduce_co_by + " previous College Option credit" + suffix;
         need_student_group  = true;
         if (reduce_co_by === 0) need_student_group = false;
       }
@@ -192,17 +193,17 @@ $(function()
                       'You do not need to take any College Option courses at Queens.';
                     break;
           case 1:   student_report_msg  =
-                      'You must take a Literature course.';
+                      'You must take a Literature course at Queens.';
                     break;
           case 2:   student_report_msg  =
-                      'You must take a Literature and a Language course.';
+                      'You must take a Literature and a Language course at Queens.';
                     break;
           case 3:   student_report_msg  =
-                      'You must take a Literature, a Language, and a Science course.';
+                      'You must take a Literature, a Language, and a Science course at Queens.';
                     break;
           case 4:   student_report_msg=
                       'You must take a Literature, a Language, a Science, and an ' +
-                          'additional course.';
+                          'additional course at Queens.';
                     break;
           default:  student_report_msg= 'Program Error in ' + __FILE__ + ' line ' + __LINE__;
                     break;
