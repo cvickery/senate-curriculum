@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import date
 from term_codes import term_code_to_name
 
-available_pages = Path('./offered_gened/').glob('*.html')
+available_pages = sorted(Path('./offered_gened/').glob('*.html'))
 last_change = 0
 links = []
 last_year = ''
@@ -58,7 +58,7 @@ print(f"""Content-type: text/html\r\n\r\n
   <body>
     <h1>Scheduled General Education Courses</h1>
     <p>A list of all currently-active QC courses that have been approved as GenEd (Pathways) courses
-      is avalable at <a href="./gened_courses.py">Approved GenEd Courses</a></p>
+      is available at <a href="./gened_courses.py">Approved GenEd Courses</a></p>
     <p>This list was last updated on {last_update}</p>
     {links}
   </body>
