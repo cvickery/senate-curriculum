@@ -197,7 +197,7 @@ EOD;
     $csv .= "\"$type\",";
     //  Separate the Course into discipline and number columns for CSV
     $discipline_number = explode(' ', $course);
-    $csv .= "\"${discipline_number[0]}\",\"{$discipline_number[1]}\",";
+    $csv .= "\"{$discipline_number[0]}\",\"{$discipline_number[1]}\",";
     $csv .= "\"$submitted_date\",";
     $csv .= "\"$submitter_name\",";
     //  Separate subcommittee fields: action-date-agency
