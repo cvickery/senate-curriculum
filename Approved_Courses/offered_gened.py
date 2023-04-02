@@ -21,7 +21,7 @@ for link in available_pages:
   # Put the year at the beginning
   date_str = this_year + ' ' + date_str[0:-5]
   links.append(f'<li><a href="{link}">{date_str}</a></li>')
-links.pop()  # drop extra ul at end
+# links.pop()  # drop extra ul at end (what was this about?? It dropped the most-recent term.)
 links = '\n'.join(links)
 
 last_update = date.fromtimestamp(last_change).strftime('%B %-d, %Y')
